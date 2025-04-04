@@ -1,0 +1,34 @@
+<div class="custom-list-container">
+    <h3 *ngIf="foods.length > 0" class="p-mb-2">Resultados da Busca:</h3>
+    <div *ngIf="foods.length > 0; else noResults">
+      <div *ngFor="let food of foods; let i = index" >
+        <div class="custom-list-item p-d-flex p-ai-center p-jc-between p-py-2 p-flex-wrap p-gap-2">
+          <div class="food-details p-mr-2">
+            <div class="food-name p-d-flex p-ai-center p-mb-1">
+                <i class="pi pi-shopping-bag p-mr-2" style="color: var(--primary-color);"></i>
+                <span style="font-weight: 500;">{{ food.name }}</span>
+            </div>
+            <div class="nutrient-details">
+                Kcal: {{ food.energy_kcal | number:'1.0-0' }} |
+                P: {{ food.protein_g | number:'1.1-1' }}g |
+                C: {{ food.carbohydrate_g | number:'1.1-1' }}g |
+                F: {{ food.fat_g | number:'1.1-1' }}g
+                <span *ngIf="food.fiber_g">| Fib: {{ food.fiber_g | number:'1.1-1' }}g</span>
+            </div>
+          </div>
+          <div class="food-actions">
+            <button
+                pButton
+                type="button"
+                label="Adicionar"
+                icon="pi pi-plus"
+                styleClass="p-button-sm p-button-outlined"
+                (click)="addFoodToDiet(food)">
+            </button>
+          </div>
+        </div>
+        <p-divider *ngIf="i < foods.length - 1" styleClass="p-my-0"></p-divider>
+      </div>
+    </div>
+    <ng-template #noResults><p>Nenhum alimento encontrado.</p></ng-template>
+  </div>

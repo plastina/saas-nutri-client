@@ -1,0 +1,22 @@
+.app-main-toolbar {
+  background-color: var(--primary-color);
+  color: var(--primary-color-text);
+  border-bottom: 1px solid var(--surface-d);
+  span { color: var(--primary-color-text); }
+}
+.header-actions .import-label span { cursor: pointer; }
+
+.add-meal-button {
+  background-color: var(--custom-accent-blue) !important;
+  border-color: var(--custom-accent-blue) !important;
+  color: var(--custom-accent-blue-text) !important;
+  &:hover {
+      background-color: color-mix(in srgb, var(--custom-accent-blue) 85%, black) !important;
+      border-color: color-mix(in srgb, var(--custom-accent-blue) 85%, black) !important;
+  }
+}
+
+.totals {
+h3 { color: var(--primary-color); } 
+p { font-size: 0.95em; } 
+}

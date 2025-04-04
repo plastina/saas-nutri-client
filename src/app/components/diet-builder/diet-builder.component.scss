@@ -1,0 +1,137 @@
+.meals-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.meal-column-card {
+  flex: 0 0 calc(33.333% - 10px);
+  box-sizing: border-box;
+  min-width: 280px;
+
+  @media (max-width: 960px) {
+    flex: 0 0 calc(50% - 8px);
+  }
+  @media (max-width: 600px) {
+    flex: 0 0 100%;
+  }
+}
+
+.meal-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .p-card-header {
+    padding: 0.75rem 1rem;
+    background-color: var(--surface-b); 
+  }
+  ::ng-deep .p-card-body {
+    padding: 0;
+    flex-grow: 1;
+    display: flex; 
+  }
+  ::ng-deep .p-card-content {
+    padding: 0.75rem 1rem;
+    flex-grow: 1;
+  }
+}
+
+.meal-card-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+}
+
+.meal-header-view, .meal-header-edit {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+.meal-header-view { justify-content: space-between; }
+.meal-title {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 500;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+
+}
+
+.edit-meal-name-input {
+  flex-grow: 1;
+  ::ng-deep .p-inputtext {
+      padding: 0.4rem 0.5rem; 
+      font-size: 1em;
+  }
+}
+
+.meal-header-actions, .edit-actions {
+  white-space: nowrap;
+  button[pButton] {
+      width: 2rem;
+      height: 2rem;
+  }
+}
+
+.meal-items-list {
+  padding-top: 0.5rem;
+}
+
+.diet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--surface-d);
+
+  &:last-child {
+      border-bottom: none;
+  }
+}
+
+.item-name {
+  flex-grow: 1;
+  margin-right: 1rem;
+  font-size: 0.95em;
+}
+
+.item-qty {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-right: 0.5rem;
+
+  ::ng-deep .p-inputnumber {
+    max-width: 110px;
+    .p-inputtext {
+      max-width: 50px;
+      padding: 0.3rem;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .p-button {
+      width: 2rem;
+    }
+  }
+  .ml-1 { margin-left: 0.25rem; }
+}
+
+.item-actions {
+    white-space: nowrap;
+     button[pButton] { 
+      width: 2rem;
+      height: 2rem;
+  }
+}
+
+.empty-meal-message {
+    padding: 0.75rem 0;
+    font-style: italic;
+    color: var(--text-color-secondary);
+    text-align: center;
+}

@@ -1,0 +1,51 @@
+<div class="meals-container" *ngIf="meals.length > 0">
+  <div *ngFor="let meal of meals; let mealIndex = index" class="meal-column-card">
+    <p-card styleClass="meal-card">
+      <ng-template pTemplate="header">
+        <div class="meal-card-header-content">
+          <div *ngIf="editingMealIndex !== mealIndex" class="meal-header-view">
+            <h4 class="meal-title">{{ meal.name }}</h4>
+            <div class="meal-header-actions">
+              <button pButton type="button" icon="pi pi-pencil" styleClass="p-button-text p-button-sm p-button-rounded" (click)="startEditMeal(mealIndex, meal.name)" pTooltip="Editar nome da refeição" tooltipPosition="top" aria-label="Editar nome da refeição"></button> <button pButton type="button" icon="pi pi-trash" styleClass="p-button-text p-button-danger p-button-sm p-button-rounded" (click)="deleteMeal(mealIndex)" pTooltip="Excluir refeição" tooltipPosition="top" aria-label="Excluir refeição"></button> </div>
+          </div>
+          <div *ngIf="editingMealIndex === mealIndex" class="meal-header-edit p-inputgroup">
+             <input pInputText type="text" [(ngModel)]="editedMealName" placeholder="Novo nome" (keydown.enter)="saveEditMeal(mealIndex)" class="p-inputtext-sm edit-meal-name-input"/>
+             <button pButton type="button" icon="pi pi-check" styleClass="p-button-success p-button-sm" (click)="saveEditMeal(mealIndex)" pTooltip="Salvar" tooltipPosition="top" aria-label="Salvar novo nome"></button> <button pButton type="button" icon="pi pi-times" styleClass="p-button-secondary p-button-sm" (click)="cancelEditMeal()" pTooltip="Cancelar" tooltipPosition="top" aria-label="Cancelar edição"></button> </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <div class="meal-items-list">
+          <div *ngFor="let item of meal.items; let itemIndex = index" class="diet-item">
+             <div class="item-name">{{ item.food.name }}</div>
+             <div class="item-qty">
+                <p-inputNumber
+                    [(ngModel)]="item.quantity"
+                    mode="decimal"
+                    [showButtons]="true"
+                    buttonLayout="horizontal"
+                    spinnerMode="horizontal"
+                    inputId="horizontal"
+                    decrementButtonClass="p-button-secondary p-button-sm"
+                    incrementButtonClass="p-button-secondary p-button-sm"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    [min]="0"
+                    [step]="10"
+                    inputStyleClass="quantity-input-dense"
+                    (onInput)="onQuantityChange()">
+                </p-inputNumber>
+                 <span class="ml-1">g</span>
+             </div>
+             <div class="item-actions">
+                 <button pButton type="button" icon="pi pi-times" styleClass="p-button-rounded p-button-danger p-button-text p-button-sm" (click)="removeFoodFromDiet(mealIndex, itemIndex)" pTooltip="Remover item" tooltipPosition="top" aria-label="Remover item"></button> </div>
+          </div>
+           <div *ngIf="meal.items.length === 0" class="empty-meal-message">
+               <i>Refeição vazia.</i>
+            </div>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<p *ngIf="meals.length === 0">Nenhuma refeição adicionada ainda.</p>

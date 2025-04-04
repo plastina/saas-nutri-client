@@ -1,0 +1,69 @@
+<p-toast></p-toast>
+
+<p-toolbar styleClass="app-main-toolbar">
+  <div class="p-toolbar-group-start">
+    <span style="font-size: 1.2em; font-weight: bold;">SaaS Nutri</span>
+  </div>
+</p-toolbar>
+
+<div class="main-container p-d-flex p-flex-wrap p-gap-3 p-p-3">
+
+  <div class="left-column p-flex-1" style="min-width: 300px;">
+
+      <div class="p-d-flex p-jc-between p-ai-center p-flex-wrap p-mb-3 p-gap-2">
+        <div class="meal-add-controls p-d-flex p-ai-center p-gap-2 p-flex-wrap">
+          <h3 class="p-m-0">Refeições</h3>
+          <input pInputText type="text" placeholder="Nova Refeição" id="new-meal-name" #newMealNameInput class="p-inputtext-sm"/>
+          <button pButton type="button" icon="pi pi-plus" label="Adicionar" styleClass="p-button-outlined p-button-sm add-meal-button" (click)="addMeal(newMealNameInput.value); newMealNameInput.value=''" aria-label></button>
+        </div>
+        <div class="actions header-actions p-d-flex p-ai-center p-gap-2">
+          <button pButton type="button" label="Exportar Plano (JSON)" icon="pi pi-download" styleClass="p-button-raised p-button-primary p-button-sm" (click)="exportToJson()" [disabled]="!hasItemsInAnyMeal" aria-label></button>
+          <button type="button" pButton label="Importar Plano (JSON)" icon="pi pi-upload" styleClass="p-button-outlined p-button-sm" (click)="fileImportInput.click()" aria-label></button>
+          <input hidden type="file" id="import-json" accept=".json" (change)="handleFileInput($event)" #fileImportInput>
+        </div>
+    </div>
+
+    <p-divider layout="horizontal" styleClass="p-my-3"></p-divider>
+
+
+    <div class="section section-search-container p-d-flex p-flex-wrap p-gap-3 p-mb-3">
+      <div class="search-controls p-flex-1 p-d-flex p-flex-column p-gap-3" style="min-width: 250px;">
+        <h2 class="p-mb-2">Buscar Alimentos</h2>
+        <app-food-search (searchTermSubmitted)="handleSearch($event)"></app-food-search>
+        <div *ngIf="meals.length > 0" class="meal-selector">
+          <p-dropdown [options]="meals" [(ngModel)]="selectedMealName" optionLabel="name" optionValue="name" placeholder="Selecione a refeição para adicionar" styleClass="w-full" />
+        </div>
+      </div>
+
+      <div class="search-results p-flex-2 p-pl-3 p-border-left-1" style="min-width: 300px; border-color: var(--surface-d);">
+        <div class="results-content">
+          <div *ngIf="isLoadingResults" class="p-d-flex p-jc-center p-ai-center p-mt-3" style="min-height: 100px;">
+             <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="6" animationDuration=".5s"></p-progressSpinner>
+          </div>
+          <app-food-list *ngIf="!isLoadingResults" [foods]="searchResults" (foodSelected)="addFoodToCurrentDiet($event)"></app-food-list>
+        </div>
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+  </div>
+
+
+  <div class="right-column p-flex-1" style="min-width: 300px;">
+    <h2 class="p-mb-3">Plano Alimentar Atual</h2>
+    <app-diet-builder [meals]="meals" (itemRemoved)="handleRemoveFood($event)" (quantityChanged)="handleQuantityChange()" (mealNameChanged)="handleMealNameChange($event)" (mealDeleted)="handleMealDelete($event)"></app-diet-builder>
+    <div *ngIf="hasItemsInAnyMeal">
+        <p-divider layout="horizontal" styleClass="p-my-3"></p-divider>
+        <div class="totals">
+            <h3 class="p-mb-2">Totais do Plano:</h3>
+            <p class="p-m-0 p-pb-1">Calorias: {{ totalKcal | number:'1.0-0' }} kcal</p>
+            <p class="p-m-0 p-pb-1">Proteínas: {{ totalProtein | number:'1.1-1' }} g</p>
+            <p class="p-m-0 p-pb-1">Carboidratos: {{ totalCarbs | number:'1.1-1' }} g</p>
+            <p class="p-m-0 p-pb-1">Gorduras: {{ totalFat | number:'1.1-1' }} g</p>
+            <p class="p-m-0">Fibras: {{ totalFiber | number:'1.1-1' }} g</p>
+        </div>
+    </div>
+  </div>
+
+</div>
