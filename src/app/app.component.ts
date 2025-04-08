@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-
 import { DietBuilderComponent } from './components/diet-builder/diet-builder.component';
 import { FoodListComponent } from './components/food-list/food-list.component';
 import { FoodSearchComponent } from './components/food-search/food-search.component';
@@ -31,16 +30,17 @@ const APP_COMPONENT_IMPORTS = [
   DividerModule,
   ToolbarModule,
   ToastModule,
-  ProgressSpinnerModule
+  ProgressSpinnerModule,
+  ConfirmDialogModule,
 ];
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ ...APP_COMPONENT_IMPORTS ],
+  imports: [...APP_COMPONENT_IMPORTS],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  providers: [ MessageService ]
+  providers: [MessageService, ConfirmationService],
 })
 export class AppComponent implements OnInit {
   title = 'saas-nutri-frontend';
@@ -60,7 +60,9 @@ export class AppComponent implements OnInit {
   ) {}
 
   get hasItemsInAnyMeal(): boolean {
-    return this.meals.length > 0 && this.meals.some(meal => meal.items.length > 0);
+    return (
+      this.meals.length > 0 && this.meals.some((meal) => meal.items.length > 0)
+    );
   }
 
   ngOnInit(): void {
@@ -68,7 +70,7 @@ export class AppComponent implements OnInit {
       this.meals = [
         { name: 'Café da Manhã', items: [] },
         { name: 'Almoço', items: [] },
-        { name: 'Jantar', items: [] }
+        { name: 'Jantar', items: [] },
       ];
     }
     if (this.meals.length > 0 && !this.selectedMealName) {
@@ -79,24 +81,43 @@ export class AppComponent implements OnInit {
   addMeal(name: string): void {
     const mealName = name.trim();
     if (!mealName) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Por favor, insira um nome para a refeição.', life: 3000 });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Por favor, insira um nome para a refeição.',
+        life: 3000,
+      });
       return;
     }
-    const exists = this.meals.some(meal => meal.name.toLowerCase() === mealName.toLowerCase());
+    const exists = this.meals.some(
+      (meal) => meal.name.toLowerCase() === mealName.toLowerCase()
+    );
     if (exists) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: `Refeição "${mealName}" já existe.`, life: 3000 });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: `Refeição "${mealName}" já existe.`,
+        life: 3000,
+      });
       return;
     }
 
     const newMeal: Meal = { name: mealName, items: [] };
     this.meals = [...this.meals, newMeal];
     this.selectedMealName = mealName;
-    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: `Refeição "${mealName}" adicionada!`, life: 2000 });
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: `Refeição "${mealName}" adicionada!`,
+      life: 2000,
+    });
   }
 
-  handleMealNameChange(event: { index: number, newName: string }): void {
+  handleMealNameChange(event: { index: number; newName: string }): void {
     const currentName = this.meals[event.index]?.name;
-    console.log(`AppComponent: Mudando nome da refeição ${event.index} de "${currentName}" para "${event.newName}"`);
+    console.log(
+      `AppComponent: Mudando nome da refeição ${event.index} de "${currentName}" para "${event.newName}"`
+    );
 
     const updatedMeals = this.meals.map((meal, index) => {
       if (index === event.index) {
@@ -129,14 +150,21 @@ export class AppComponent implements OnInit {
       error: () => {
         // ... (tratamento de erro existente) ...
         this.isLoadingResults = false;
-        this.messageService.add({ severity: 'error', summary: 'Erro na Busca', detail: 'Não foi possível buscar alimentos. Tente novamente.', life: 3000 });
-      }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro na Busca',
+          detail: 'Não foi possível buscar alimentos. Tente novamente.',
+          life: 3000,
+        });
+      },
     });
   }
 
   handleMealDelete(indexToRemove: number): void {
     const mealNameToDelete = this.meals[indexToRemove]?.name;
-    console.log(`AppComponent: Removendo refeição ${indexToRemove} "${mealNameToDelete}"`);
+    console.log(
+      `AppComponent: Removendo refeição ${indexToRemove} "${mealNameToDelete}"`
+    );
 
     this.meals = this.meals.filter((meal, index) => index !== indexToRemove);
 
@@ -152,13 +180,22 @@ export class AppComponent implements OnInit {
     const newItem: DietItem = { food: food, quantity: 100 };
 
     if (!this.selectedMealName) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Por favor, selecione uma refeição antes de adicionar alimentos.', life: 3000 });
-      if (this.meals.length === 0) { this.addMeal('Refeição 1'); }
-      else { this.selectedMealName = this.meals[0].name; }
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail:
+          'Por favor, selecione uma refeição antes de adicionar alimentos.',
+        life: 3000,
+      });
+      if (this.meals.length === 0) {
+        this.addMeal('Refeição 1');
+      } else {
+        this.selectedMealName = this.meals[0].name;
+      }
     }
 
     let mealFound = false;
-    const updatedMeals = this.meals.map(meal => {
+    const updatedMeals = this.meals.map((meal) => {
       if (meal.name === this.selectedMealName) {
         mealFound = true;
         return { ...meal, items: [...meal.items, newItem] };
@@ -167,8 +204,13 @@ export class AppComponent implements OnInit {
     });
 
     if (!mealFound && updatedMeals.length > 0) {
-      console.warn(`Refeição selecionada "${this.selectedMealName}" não encontrada. Adicionando na primeira.`);
-      updatedMeals[0] = { ...updatedMeals[0], items: [...updatedMeals[0].items, newItem] };
+      console.warn(
+        `Refeição selecionada "${this.selectedMealName}" não encontrada. Adicionando na primeira.`
+      );
+      updatedMeals[0] = {
+        ...updatedMeals[0],
+        items: [...updatedMeals[0].items, newItem],
+      };
       this.selectedMealName = updatedMeals[0].name;
     } else if (!mealFound && updatedMeals.length === 0) {
       const firstMeal: Meal = { name: 'Refeição 1', items: [newItem] };
@@ -181,12 +223,16 @@ export class AppComponent implements OnInit {
     console.log('Refeições Atuais:', this.meals);
   }
 
-  handleRemoveFood(indices: { mealIndex: number, itemIndex: number }): void {
+  handleRemoveFood(indices: { mealIndex: number; itemIndex: number }): void {
     console.log('AppComponent: Removendo item:', indices);
 
     const updatedMeals = this.meals.map((meal, currentMealIndex) => {
-      if (currentMealIndex !== indices.mealIndex) { return meal; }
-      const updatedItems = meal.items.filter((item, currentItemIndex) => currentItemIndex !== indices.itemIndex);
+      if (currentMealIndex !== indices.mealIndex) {
+        return meal;
+      }
+      const updatedItems = meal.items.filter(
+        (item, currentItemIndex) => currentItemIndex !== indices.itemIndex
+      );
       return { ...meal, items: updatedItems };
     });
 
@@ -219,7 +265,9 @@ export class AppComponent implements OnInit {
   }
 
   exportToJson(): void {
-    if (!this.hasItemsInAnyMeal) { return; } // Usar o getter aqui
+    if (!this.hasItemsInAnyMeal) {
+      return;
+    } // Usar o getter aqui
     const jsonString = JSON.stringify(this.meals, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -230,12 +278,20 @@ export class AppComponent implements OnInit {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Plano exportado com sucesso!', life: 3000 });
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Plano exportado com sucesso!',
+      life: 3000,
+    });
   }
 
   handleFileInput(event: Event): void {
     const input = event.target as HTMLInputElement | null;
-    if (!input?.files?.length) { if(input) input.value = ''; return; }
+    if (!input?.files?.length) {
+      if (input) input.value = '';
+      return;
+    }
     const file = input.files[0];
     const reader = new FileReader();
 
@@ -244,22 +300,44 @@ export class AppComponent implements OnInit {
         const content = reader.result as string;
         const importedMeals = JSON.parse(content);
 
-        if (!Array.isArray(importedMeals)) { throw new Error('Arquivo JSON inválido: não é um array de refeições.'); }
-        if (importedMeals.length > 0 && ( importedMeals[0].name === undefined || importedMeals[0].items === undefined || !Array.isArray(importedMeals[0].items) )) {
-          throw new Error('Arquivo JSON inválido: formato de refeição incorreto.');
+        if (!Array.isArray(importedMeals)) {
+          throw new Error(
+            'Arquivo JSON inválido: não é um array de refeições.'
+          );
+        }
+        if (
+          importedMeals.length > 0 &&
+          (importedMeals[0].name === undefined ||
+            importedMeals[0].items === undefined ||
+            !Array.isArray(importedMeals[0].items))
+        ) {
+          throw new Error(
+            'Arquivo JSON inválido: formato de refeição incorreto.'
+          );
         }
 
         this.meals = importedMeals as Meal[];
         // Após importar, talvez redefinir a seleção para a primeira refeição importada?
         this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
         this.calculateTotals();
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Plano importado com sucesso!', life: 3000 });
-
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Plano importado com sucesso!',
+          life: 3000,
+        });
       } catch (error: unknown) {
         console.error('Erro ao importar ou parsear JSON:', error);
         let errorMessage = 'Erro desconhecido ao processar arquivo.';
-        if (error instanceof Error) { errorMessage = error.message; }
-        this.messageService.add({ severity: 'error', summary: 'Falha na Importação', detail: errorMessage, life: 5000 });
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Falha na Importação',
+          detail: errorMessage,
+          life: 5000,
+        });
       } finally {
         if (input) input.value = '';
       }
@@ -267,7 +345,12 @@ export class AppComponent implements OnInit {
 
     reader.onerror = () => {
       console.error('Erro ao ler arquivo:', reader.error);
-      this.messageService.add({ severity: 'error', summary: 'Erro de Leitura', detail: 'Não foi possível ler o arquivo selecionado.', life: 5000 });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro de Leitura',
+        detail: 'Não foi possível ler o arquivo selecionado.',
+        life: 5000,
+      });
       if (input) input.value = '';
     };
 

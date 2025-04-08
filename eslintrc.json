@@ -1,0 +1,129 @@
+{
+    "root": true,
+    "ignorePatterns": ["projects/**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "extends": [
+                "eslint:recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@angular-eslint/recommended",
+                "plugin:@angular-eslint/template/process-inline-templates",
+                "plugin:prettier/recommended",
+                "plugin:boundaries/recommended"
+            ],
+            "parserOptions": {
+              "createDefaultProgram": true,
+              "sourceType": "module"
+            },
+            "plugins": ["prettier", "boundaries"],
+            "parser": "@typescript-eslint/parser",
+
+            "settings": {       
+                "import/resolver": {
+                  "typescript": {}
+                },
+                "boundaries/elements": [
+                  {
+                    "type": "core",
+                    "pattern": "src/app/core/*"
+                  },
+                  {
+                    "type": "shared",
+                    "pattern": "src/app/shared/*",
+                    "capture": ["category"]
+                  },
+                  {
+                    "type": "modules",
+                    "pattern": "src/app/modules/*",
+                    "capture":["module"]
+                  }
+                ]
+            },
+
+            "rules": {
+              "boundaries/element-types": [
+                2,
+                {
+                  "default": "allow",
+                  "message": "Arquivos do tipo '${file.type}' não podem importar arquivos do tipo '${dependency.type}'",
+                  "rules": [
+                    {
+                      "from": ["core"],
+                      "disallow": ["modules"],
+                      "message": "Arquivos do tipo '${file.type}' não podem ter dependências com '${dependency.type}'"
+                    },
+                    {
+                      "from": ["shared"],
+                      "disallow": ["modules", "core"]
+                    },
+                    {
+                      "from": ["modules"],
+                      "disallow": [
+                        ["modules", {"module": "!${from.module}"}]
+                      ],
+                      "message": "O módulo '${file.module}' não pode importar arquivos de '${dependency.module}' ou outros módulos"
+                    }
+                  ]
+                }
+              ],
+
+                "space-before-function-paren": "off",
+                "no-console": "warn",
+                "comma-dangle": ["error", {
+                    "arrays": "always-multiline",
+                    "objects": "always-multiline",
+                    "imports": "always-multiline",
+                    "exports": "always-multiline",
+                    "functions": "only-multiline"
+                }],
+                "jsx-quotes": ["error", "prefer-double"],
+                "curly": ["error", "all"],
+                "@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
+                "@typescript-eslint/explicit-function-return-type": [
+                    0,
+                    {
+                        "allowExpressions": true,
+                        "allowTypedFunctionExpressions": true,
+                        "allowHigherOrderFunctions": true,
+                        "allowDirectConstAssertionInArrowFunctions": true,
+                        "allowConciseArrowFunctionExpressionsStartingWithVoid": true
+                    }
+                ],
+                "@angular-eslint/directive-selector": [
+                    "error",
+                    {
+                        "type": "attribute",
+                        "prefix": "app",
+                        "style": "camelCase"
+                    }
+                ],
+                "@angular-eslint/component-selector": [
+                    "error",
+                    {
+                        "type": "element",
+                        "prefix": "app",
+                        "style": "kebab-case"
+                    }
+                ]
+            }
+        },
+        {
+            "files": ["*.html"],
+            "excludedFiles": ["*inline-template-*.component.html"],
+            "extends": [
+                "plugin:@angular-eslint/template/recommended",
+                "plugin:@angular-eslint/template/accessibility",
+                "plugin:prettier/recommended"
+            ],
+            "rules": {
+                "prettier/prettier": [
+                    "error",
+                    {
+                        "parser": "angular"
+                    }
+                ]
+            }
+        }
+    ]
+}

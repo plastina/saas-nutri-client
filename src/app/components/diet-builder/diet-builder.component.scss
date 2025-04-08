@@ -1,18 +1,56 @@
+:host {
+  display: block;
+}
+.meal-card-header-content {
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  gap: var(--spacing-sm);
+}
 .meals-container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
+}
+.diet-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--surface-border);
+  gap: var(--spacing-md);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.item-qty {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
+.meal-header-view,
+.meal-header-edit {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--spacing-sm);
+}
+.meal-header-actions,
+.edit-actions {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
 .meal-column-card {
-  flex: 0 0 calc(33.333% - 10px);
   box-sizing: border-box;
   min-width: 280px;
 
-  @media (max-width: 960px) {
-    flex: 0 0 calc(50% - 8px);
-  }
+  flex: 0 0 calc(50% - 0.5rem);
+
   @media (max-width: 600px) {
     flex: 0 0 100%;
   }
@@ -22,15 +60,17 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: var(--surface-card);
+  border-radius: var(--border-radius);
+  overflow: hidden;
 
   ::ng-deep .p-card-header {
     padding: 0.75rem 1rem;
-    background-color: var(--surface-b); 
   }
   ::ng-deep .p-card-body {
     padding: 0;
     flex-grow: 1;
-    display: flex; 
+    display: flex;
   }
   ::ng-deep .p-card-content {
     padding: 0.75rem 1rem;
@@ -38,100 +78,110 @@
   }
 }
 
-.meal-card-header-content {
-  display: flex;
-  justify-content: space-between;
+%small-action-button {
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  min-width: initial;
+  width: 2.25rem;
+  height: 2.25rem;
+  box-shadow: none;
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  width: 100%;
-  min-height: 40px;
 }
 
-.meal-header-view, .meal-header-edit {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 0.5rem;
-}
-.meal-header-view { justify-content: space-between; }
-.meal-title {
-  margin: 0;
-  font-size: 1.1em;
-  font-weight: 500;
-  flex-grow: 1;
-  margin-right: 0.5rem;
-
-}
-
-.edit-meal-name-input {
-  flex-grow: 1;
-  ::ng-deep .p-inputtext {
-      padding: 0.4rem 0.5rem; 
-      font-size: 1em;
+%text-button {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--primary-color);
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 
-.meal-header-actions, .edit-actions {
-  white-space: nowrap;
-  button[pButton] {
-      width: 2rem;
-      height: 2rem;
+%rounded-button {
+  border-radius: 50%;
+}
+
+.meal-edit-btn {
+  @extend %small-action-button;
+  @extend %text-button;
+  @extend %rounded-button;
+  color: var(--text-color-secondary);
+  &:hover {
+    color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 
-.meal-items-list {
-  padding-top: 0.5rem;
-}
-
-.diet-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--surface-d);
-
-  &:last-child {
-      border-bottom: none;
+.meal-delete-btn {
+  @extend %small-action-button;
+  @extend %text-button;
+  @extend %rounded-button;
+  color: var(--red-500);
+  &:hover {
+    color: var(--red-500);
+    background: rgba(239, 68, 68, 0.1);
   }
 }
 
-.item-name {
-  flex-grow: 1;
-  margin-right: 1rem;
-  font-size: 0.95em;
+.meal-save-btn {
+  @extend %small-action-button;
+  padding: 2rem;
+  width: auto;
+  background-color: var(--green-500);
+  border-color: var(--green-500);
+  color: #ffffff;
+  &:hover {
+    background-color: var(--green-600);
+    border-color: var(--green-600);
+  }
 }
 
-.item-qty {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  margin-right: 0.5rem;
+.meal-cancel-btn {
+  @extend %small-action-button;
+  padding: 2rem;
+  width: auto;
+  background-color: var(--surface-200);
+  border-color: var(--surface-200);
+  color: var(--text-color);
+  &:hover {
+    background-color: var(--surface-300);
+    border-color: var(--surface-300);
+  }
+}
 
-  ::ng-deep .p-inputnumber {
-    max-width: 110px;
-    .p-inputtext {
-      max-width: 50px;
-      padding: 0.3rem;
-      font-size: 0.9em;
-      text-align: center;
+.item-remove-btn {
+  @extend %small-action-button;
+  @extend %text-button;
+  @extend %rounded-button;
+  color: var(--red-500);
+  &:hover {
+    color: var(--red-500);
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.meal-item-quantity-input {
+  max-width: 110px;
+
+  ::ng-deep .p-inputnumber-button-up,
+  ::ng-deep .p-inputnumber-button-down {
+    @extend %small-action-button;
+    background-color: var(--surface-200);
+    border-color: var(--surface-200);
+    color: var(--text-color);
+    padding: 0;
+
+    &:hover {
+      background-color: var(--surface-300);
+      border-color: var(--surface-300);
     }
-    .p-button {
-      width: 2rem;
-    }
   }
-  .ml-1 { margin-left: 0.25rem; }
-}
 
-.item-actions {
-    white-space: nowrap;
-     button[pButton] { 
-      width: 2rem;
-      height: 2rem;
-  }
-}
-
-.empty-meal-message {
-    padding: 0.75rem 0;
-    font-style: italic;
-    color: var(--text-color-secondary);
+  ::ng-deep .p-inputnumber-input {
+    padding: 0.4375rem 0.5rem;
+    font-size: 0.9em;
     text-align: center;
+  }
 }

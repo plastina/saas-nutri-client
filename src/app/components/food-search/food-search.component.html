@@ -1,18 +1,18 @@
-<div class="p-inputgroup search-container">
+<div class="search-container">
   <input
     pInputText
     type="text"
     [(ngModel)]="searchTerm"
     placeholder="Buscar alimento..."
     (keydown.enter)="onSearch()"
-    class="p-inputtext-sm"
+    class="search-input"
    />
   <button
     pButton
     type="button"
     icon="pi pi-search"
     label="Buscar"
-    styleClass="p-button-sm"
+    styleClass="search-button"
     (click)="onSearch()"
     [disabled]="!searchTerm.trim()">
   </button>

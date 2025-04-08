@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Meal } from '../../models/meal.model';
-
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
+import { Meal } from '../../models/meal.model';
 
 const DIET_BUILDER_IMPORTS = [
   CommonModule,
@@ -38,6 +38,8 @@ export class DietBuilderComponent {
   editingMealIndex: number | null = null;
   editedMealName = '';
 
+  constructor(private confirmationService: ConfirmationService) { }
+  
   removeFoodFromDiet(mealIndex: number, itemIndex: number): void {
     this.itemRemoved.emit({ mealIndex, itemIndex });
   }
@@ -67,8 +69,19 @@ export class DietBuilderComponent {
   }
 
   deleteMeal(index: number): void {
-    if (confirm(`Tem certeza que deseja excluir a refeição "${this.meals[index].name}" e todos os seus itens?`)) {
-      this.mealDeleted.emit(index);
-    }
+    this.confirmationService.confirm({
+        message: `Tem certeza que deseja excluir a refeição "${this.meals[index].name}" e todos os seus itens?`,
+        header: 'Confirmar Exclusão',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim',
+        rejectLabel: 'Não',
+        acceptButtonStyleClass: 'p-button-danger', 
+        rejectButtonStyleClass: 'p-button-text',   
+        accept: () => {
+            this.mealDeleted.emit(index);
+        },
+        reject: () => {
+        }
+    });
   }
 }
