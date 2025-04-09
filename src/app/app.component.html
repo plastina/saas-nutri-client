@@ -2,12 +2,87 @@
 <p-confirmDialog icon="pi pi-exclamation-triangle"></p-confirmDialog>
 <p-toolbar styleClass="app-main-toolbar">
   <div class="toolbar-group-start">
-    <span class="toolbar-title">SaaS Nutri</span>
+    <span class="toolbar-title">Plano Alimentar System</span>
   </div>
 </p-toolbar>
 
 <div class="app-layout-container">
   <div class="left-column">
+    <div class="patient-data-section">
+      <h3 class="section-title">Dados do Paciente</h3>
+      <div class="patient-form-layout">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="patientName">Nome</label>
+            <input
+              id="patientName"
+              type="text"
+              pInputText
+              [(ngModel)]="patientSessionData.name"
+            />
+          </div>
+          <div class="form-field">
+            <label for="patientDob">Data de Nascimento</label>
+            <p-calendar
+              id="patientDob"
+              [(ngModel)]="patientSessionData.dob"
+              dateFormat="dd/mm/yy"
+              showIcon="true"
+              inputId="dob"
+            ></p-calendar>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="patientWeight">Peso (kg)</label>
+            <p-inputNumber
+              id="patientWeight"
+              [(ngModel)]="patientSessionData.weight"
+              mode="decimal"
+              minFractionDigits="1"
+              maxFractionDigits="1"
+              suffix=" kg"
+            ></p-inputNumber>
+          </div>
+          <div class="form-field">
+            <label for="patientHeight">Altura (cm)</label>
+            <p-inputNumber
+              id="patientHeight"
+              [(ngModel)]="patientSessionData.height"
+              mode="decimal"
+              minFractionDigits="0"
+              maxFractionDigits="0"
+              suffix=" cm"
+            ></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="form-field form-field-full">
+          <label for="patientGoals">Objetivos</label>
+          <textarea
+            id="patientGoals"
+            pInputTextarea
+            [(ngModel)]="patientSessionData.goals"
+            rows="3"
+            autoResize="true"
+          ></textarea>
+        </div>
+
+        <div class="form-field form-field-full">
+          <label for="patientObs">Observações</label>
+          <textarea
+            id="patientObs"
+            pInputTextarea
+            [(ngModel)]="patientSessionData.observations"
+            rows="4"
+            autoResize="true"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <p-divider layout="horizontal" styleClass="section-divider"></p-divider>
     <div class="meal-add-section">
       <div class="meal-add-controls">
         <h3 class="section-title">Refeições</h3>
@@ -48,6 +123,18 @@
           styleClass="import-plan-btn"
           (click)="fileImportInput.click()"
           aria-label="Importar Plano"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Exportar PDF"
+          icon="pi pi-file-pdf"
+          styleClass="export-pdf-btn"
+          (click)="exportPlanToPdf()"
+          [disabled]="!hasItemsInAnyMeal"
+          pTooltip="Exportar plano atual para PDF"
+          tooltipPosition="bottom"
+          aria-label="Exportar Plano para PDF"
         ></button>
         <input
           hidden

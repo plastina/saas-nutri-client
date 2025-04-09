@@ -1,11 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
@@ -16,9 +23,12 @@ import { FoodSearchComponent } from './components/food-search/food-search.compon
 import { DietItem } from './models/diet-item.model';
 import { Food } from './models/food.model';
 import { Meal } from './models/meal.model';
+import { PatientData } from './models/patient-data.model';
+import { PlanTotals } from './models/plan-totals.model';
 import { FoodApiService } from './services/food-api.service';
+import { PdfExportService } from './services/pdf-export.service';
 
-const APP_COMPONENT_IMPORTS = [
+const IMPORTS = [
   FormsModule,
   CommonModule,
   FoodSearchComponent,
@@ -32,17 +42,19 @@ const APP_COMPONENT_IMPORTS = [
   ToastModule,
   ProgressSpinnerModule,
   ConfirmDialogModule,
+  CalendarModule,
+  InputNumberModule,
 ];
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [...APP_COMPONENT_IMPORTS],
+  imports: [...IMPORTS],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   providers: [MessageService, ConfirmationService],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   title = 'saas-nutri-frontend';
   searchResults: Food[] = [];
   meals: Meal[] = [];
@@ -53,10 +65,19 @@ export class AppComponent implements OnInit {
   totalFat = 0;
   totalFiber = 0;
   isLoadingResults = false;
-
+  patientSessionData: PatientData = {
+    name: null,
+    dob: null,
+    goals: null,
+    weight: null,
+    height: null,
+    observations: null,
+  };
   constructor(
     private foodApiService: FoodApiService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private pdfExportService: PdfExportService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get hasItemsInAnyMeal(): boolean {
@@ -77,7 +98,9 @@ export class AppComponent implements OnInit {
       this.selectedMealName = this.meals[0].name;
     }
   }
-
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
   addMeal(name: string): void {
     const mealName = name.trim();
     if (!mealName) {
@@ -143,12 +166,11 @@ export class AppComponent implements OnInit {
 
     this.foodApiService.searchFoods(term).subscribe({
       next: (results) => {
-        console.log('>>> DADOS RECEBIDOS DA API:', results); // <<<< Adicionar este log
-        this.searchResults = results; // Atribuição acontece aqui
+        console.log('>>> DADOS RECEBIDOS DA API:', results);
+        this.searchResults = results;
         this.isLoadingResults = false;
       },
       error: () => {
-        // ... (tratamento de erro existente) ...
         this.isLoadingResults = false;
         this.messageService.add({
           severity: 'error',
@@ -267,7 +289,7 @@ export class AppComponent implements OnInit {
   exportToJson(): void {
     if (!this.hasItemsInAnyMeal) {
       return;
-    } // Usar o getter aqui
+    }
     const jsonString = JSON.stringify(this.meals, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -317,7 +339,6 @@ export class AppComponent implements OnInit {
         }
 
         this.meals = importedMeals as Meal[];
-        // Após importar, talvez redefinir a seleção para a primeira refeição importada?
         this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
         this.calculateTotals();
         this.messageService.add({
@@ -356,4 +377,33 @@ export class AppComponent implements OnInit {
 
     reader.readAsText(file);
   }
-} // Fim da classe
+
+  exportPlanToPdf(): void {
+    this.calculateTotals();
+    const currentTotals: PlanTotals = {
+      totalKcal: this.totalKcal,
+      totalProtein: this.totalProtein,
+      totalCarbs: this.totalCarbs,
+      totalFat: this.totalFat,
+      totalFiber: this.totalFiber,
+    };
+
+    const currentPatientData: PatientData | undefined = this.patientSessionData
+      ?.name
+      ? this.patientSessionData
+      : undefined;
+
+    this.pdfExportService.generateDietPlanPdf(
+      this.meals,
+      currentTotals,
+      currentPatientData
+    );
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'PDF gerado com sucesso!',
+      life: 3000,
+    });
+  }
+}
