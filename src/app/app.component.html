@@ -19,6 +19,7 @@
               type="text"
               pInputText
               [(ngModel)]="patientSessionData.name"
+              (ngModelChange)="onPatientDataChange()"
             />
           </div>
           <div class="form-field">
@@ -26,6 +27,7 @@
             <p-calendar
               id="patientDob"
               [(ngModel)]="patientSessionData.dob"
+              (ngModelChange)="onPatientDataChange()"
               dateFormat="dd/mm/yy"
               showIcon="true"
               inputId="dob"
@@ -39,6 +41,7 @@
             <p-inputNumber
               id="patientWeight"
               [(ngModel)]="patientSessionData.weight"
+              (ngModelChange)="onPatientDataChange()"
               mode="decimal"
               minFractionDigits="1"
               maxFractionDigits="1"
@@ -50,6 +53,7 @@
             <p-inputNumber
               id="patientHeight"
               [(ngModel)]="patientSessionData.height"
+              (ngModelChange)="onPatientDataChange()"
               mode="decimal"
               minFractionDigits="0"
               maxFractionDigits="0"
@@ -64,6 +68,7 @@
             id="patientGoals"
             pInputTextarea
             [(ngModel)]="patientSessionData.goals"
+            (ngModelChange)="onPatientDataChange()"
             rows="3"
             autoResize="true"
           ></textarea>
@@ -75,6 +80,7 @@
             id="patientObs"
             pInputTextarea
             [(ngModel)]="patientSessionData.observations"
+            (ngModelChange)="onPatientDataChange()"
             rows="4"
             autoResize="true"
           ></textarea>

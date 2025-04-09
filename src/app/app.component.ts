@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { DietBuilderComponent } from './components/diet-builder/diet-builder.component';
 import { FoodListComponent } from './components/food-list/food-list.component';
 import { FoodSearchComponent } from './components/food-search/food-search.component';
@@ -52,9 +55,9 @@ const IMPORTS = [
   imports: [...IMPORTS],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService, ConfirmationService], // ConfirmationService is needed
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'saas-nutri-frontend';
   searchResults: Food[] = [];
   meals: Meal[] = [];
@@ -73,11 +76,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     height: null,
     observations: null,
   };
+
+  private readonly AUTOSAVE_STORAGE_KEY = 'saasNutri_autoSaveData_v1';
+  private stateChanged = new Subject<void>();
+  private autoSaveSubscription?: Subscription;
+
   constructor(
     private foodApiService: FoodApiService,
     private messageService: MessageService,
     private pdfExportService: PdfExportService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private confirmationService: ConfirmationService
   ) {}
 
   get hasItemsInAnyMeal(): boolean {
@@ -87,20 +96,157 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.loadStateWithConfirmation();
+    this.setupAutoSave();
+
     if (this.meals.length === 0) {
-      this.meals = [
-        { name: 'Café da Manhã', items: [] },
-        { name: 'Almoço', items: [] },
-        { name: 'Jantar', items: [] },
-      ];
+      this.initializeDefaultMeals();
     }
     if (this.meals.length > 0 && !this.selectedMealName) {
       this.selectedMealName = this.meals[0].name;
     }
   }
+
   ngAfterViewInit(): void {
     this.cdr.detectChanges();
   }
+
+  ngOnDestroy(): void {
+    this.autoSaveSubscription?.unsubscribe();
+  }
+
+  private initializeDefaultMeals(): void {
+    this.meals = [
+      { name: 'Café da Manhã', items: [] },
+      { name: 'Almoço', items: [] },
+      { name: 'Jantar', items: [] },
+    ];
+  }
+
+  private setupAutoSave(): void {
+    this.autoSaveSubscription = this.stateChanged
+      .pipe(debounceTime(1500))
+      .subscribe(() => {
+        this.saveStateToLocalStorage();
+      });
+  }
+
+  private saveStateToLocalStorage(): void {
+    try {
+      const stateToSave = {
+        meals: this.meals,
+        patientSessionData: this.patientSessionData,
+        timestamp: new Date().toISOString(),
+      };
+      const stateString = JSON.stringify(stateToSave);
+      localStorage.setItem(this.AUTOSAVE_STORAGE_KEY, stateString);
+    } catch (error) {
+      console.error('Error saving state to localStorage:', error);
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Auto-Save Falhou',
+        detail: 'Não foi possível salvar o progresso automaticamente.',
+        life: 4000,
+      });
+    }
+  }
+
+  private loadStateFromLocalStorage(): any | null {
+    try {
+      const savedStateString = localStorage.getItem(this.AUTOSAVE_STORAGE_KEY);
+      if (savedStateString) {
+        const savedState = JSON.parse(savedStateString);
+        if (
+          savedState &&
+          savedState.meals &&
+          savedState.patientSessionData &&
+          savedState.timestamp
+        ) {
+          return savedState;
+        } else {
+          this.clearAutoSavedState('Dado salvo parece inválido/incompleto.');
+        }
+      }
+    } catch (error) {
+      console.error('Error reading or parsing state from localStorage:', error);
+      this.clearAutoSavedState('Erro ao ler dado salvo.');
+    }
+    return null;
+  }
+
+  private loadStateWithConfirmation(): void {
+    const savedState = this.loadStateFromLocalStorage();
+
+    if (savedState) {
+      const savedTimestamp = new Date(savedState.timestamp);
+      this.confirmationService.confirm({
+        message: `Encontramos um trabalho não salvo de ${savedTimestamp.toLocaleDateString()} ${savedTimestamp.toLocaleTimeString()}. Deseja restaurá-lo?<br><br><small>(Atenção: Este salvamento é temporário e pode ser perdido se o cache do navegador for limpo).</small>`,
+        header: 'Restaurar Trabalho?',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Sim, Restaurar',
+        rejectLabel: 'Não, Descartar',
+        accept: () => {
+          this.meals = savedState.meals;
+          if (
+            savedState.patientSessionData?.dob &&
+            typeof savedState.patientSessionData.dob === 'string'
+          ) {
+            this.patientSessionData = {
+              ...savedState.patientSessionData,
+              dob: new Date(savedState.patientSessionData.dob),
+            };
+          } else {
+            this.patientSessionData = savedState.patientSessionData;
+          }
+
+          if (this.meals.length > 0) {
+            this.selectedMealName = this.meals[0].name;
+          } else {
+            this.selectedMealName = '';
+          }
+          this.calculateTotals();
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Restaurado',
+            detail: 'Trabalho anterior restaurado com sucesso.',
+            life: 3000,
+          });
+          this.triggerStateChange();
+        },
+        reject: () => {
+          this.clearAutoSavedState();
+          if (this.meals.length === 0) {
+            this.initializeDefaultMeals();
+            if (this.meals.length > 0) {
+              this.selectedMealName = this.meals[0].name;
+            }
+          }
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Descartado',
+            detail: 'Trabalho não salvo anterior foi descartado.',
+            life: 3000,
+          });
+        },
+      });
+    }
+  }
+
+  triggerStateChange(): void {
+    this.stateChanged.next();
+  }
+
+  clearAutoSavedState(reason?: string): void {
+    localStorage.removeItem(this.AUTOSAVE_STORAGE_KEY);
+    if (reason) {
+      console.warn(`Auto-saved state cleared: ${reason}`);
+    } else {
+      console.log('Auto-saved state cleared by user or rejection.');
+    }
+  }
+
+  // --- Métodos Originais Modificados para chamar triggerStateChange ---
+
   addMeal(name: string): void {
     const mealName = name.trim();
     if (!mealName) {
@@ -134,68 +280,32 @@ export class AppComponent implements OnInit, AfterViewInit {
       detail: `Refeição "${mealName}" adicionada!`,
       life: 2000,
     });
+    this.triggerStateChange();
   }
 
   handleMealNameChange(event: { index: number; newName: string }): void {
     const currentName = this.meals[event.index]?.name;
-    console.log(
-      `AppComponent: Mudando nome da refeição ${event.index} de "${currentName}" para "${event.newName}"`
-    );
-
     const updatedMeals = this.meals.map((meal, index) => {
       if (index === event.index) {
         return { ...meal, name: event.newName };
       }
       return meal;
     });
-
     this.meals = updatedMeals;
-
     if (this.selectedMealName === currentName) {
       this.selectedMealName = event.newName;
     }
-  }
-
-  handleSearch(term: string): void {
-    if (!term) {
-      this.searchResults = [];
-      return;
-    }
-    this.isLoadingResults = true;
-    this.searchResults = [];
-
-    this.foodApiService.searchFoods(term).subscribe({
-      next: (results) => {
-        console.log('>>> DADOS RECEBIDOS DA API:', results);
-        this.searchResults = results;
-        this.isLoadingResults = false;
-      },
-      error: () => {
-        this.isLoadingResults = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro na Busca',
-          detail: 'Não foi possível buscar alimentos. Tente novamente.',
-          life: 3000,
-        });
-      },
-    });
+    this.triggerStateChange();
   }
 
   handleMealDelete(indexToRemove: number): void {
     const mealNameToDelete = this.meals[indexToRemove]?.name;
-    console.log(
-      `AppComponent: Removendo refeição ${indexToRemove} "${mealNameToDelete}"`
-    );
-
     this.meals = this.meals.filter((meal, index) => index !== indexToRemove);
-
     if (this.selectedMealName === mealNameToDelete) {
       this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
     }
-
     this.calculateTotals();
-    console.log('Refeições Atualizadas após exclusão:', this.meals);
+    this.triggerStateChange();
   }
 
   addFoodToCurrentDiet(food: Food): void {
@@ -214,24 +324,26 @@ export class AppComponent implements OnInit, AfterViewInit {
       } else {
         this.selectedMealName = this.meals[0].name;
       }
+      return;
     }
 
     let mealFound = false;
     const updatedMeals = this.meals.map((meal) => {
       if (meal.name === this.selectedMealName) {
         mealFound = true;
-        return { ...meal, items: [...meal.items, newItem] };
+        const currentItems = Array.isArray(meal.items) ? meal.items : [];
+        return { ...meal, items: [...currentItems, newItem] };
       }
       return meal;
     });
 
     if (!mealFound && updatedMeals.length > 0) {
-      console.warn(
-        `Refeição selecionada "${this.selectedMealName}" não encontrada. Adicionando na primeira.`
-      );
+      const firstMealItems = Array.isArray(updatedMeals[0].items)
+        ? updatedMeals[0].items
+        : [];
       updatedMeals[0] = {
         ...updatedMeals[0],
-        items: [...updatedMeals[0].items, newItem],
+        items: [...firstMealItems, newItem],
       };
       this.selectedMealName = updatedMeals[0].name;
     } else if (!mealFound && updatedMeals.length === 0) {
@@ -242,12 +354,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.meals = updatedMeals;
     this.calculateTotals();
-    console.log('Refeições Atuais:', this.meals);
+    this.triggerStateChange();
   }
 
   handleRemoveFood(indices: { mealIndex: number; itemIndex: number }): void {
-    console.log('AppComponent: Removendo item:', indices);
-
     const updatedMeals = this.meals.map((meal, currentMealIndex) => {
       if (currentMealIndex !== indices.mealIndex) {
         return meal;
@@ -257,55 +367,14 @@ export class AppComponent implements OnInit, AfterViewInit {
       );
       return { ...meal, items: updatedItems };
     });
-
     this.meals = updatedMeals;
     this.calculateTotals();
-    console.log('Dieta Atualizada após remoção:', this.meals);
-  }
-
-  private calculateTotals(): void {
-    this.totalKcal = 0;
-    this.totalProtein = 0;
-    this.totalCarbs = 0;
-    this.totalFat = 0;
-    this.totalFiber = 0;
-    for (const meal of this.meals) {
-      for (const item of meal.items) {
-        const quantityFactor = item.quantity / 100;
-        this.totalKcal += item.food.energy_kcal * quantityFactor;
-        this.totalProtein += item.food.protein_g * quantityFactor;
-        this.totalCarbs += item.food.carbohydrate_g * quantityFactor;
-        this.totalFat += item.food.fat_g * quantityFactor;
-        this.totalFiber += item.food.fiber_g * quantityFactor;
-      }
-    }
+    this.triggerStateChange();
   }
 
   handleQuantityChange(): void {
-    console.log('AppComponent: Quantidade alterada, recalculando totais...');
     this.calculateTotals();
-  }
-
-  exportToJson(): void {
-    if (!this.hasItemsInAnyMeal) {
-      return;
-    }
-    const jsonString = JSON.stringify(this.meals, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'plano-alimentar.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Sucesso',
-      detail: 'Plano exportado com sucesso!',
-      life: 3000,
-    });
+    this.triggerStateChange();
   }
 
   handleFileInput(event: Event): void {
@@ -347,6 +416,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           detail: 'Plano importado com sucesso!',
           life: 3000,
         });
+        this.triggerStateChange();
       } catch (error: unknown) {
         console.error('Erro ao importar ou parsear JSON:', error);
         let errorMessage = 'Erro desconhecido ao processar arquivo.';
@@ -378,7 +448,102 @@ export class AppComponent implements OnInit, AfterViewInit {
     reader.readAsText(file);
   }
 
+  onPatientDataChange(): void {
+    console.log('Patient data changed:', this.patientSessionData);
+    this.triggerStateChange();
+  }
+
+  handleSearch(term: string): void {
+    if (!term) {
+      this.searchResults = [];
+      return;
+    }
+    this.isLoadingResults = true;
+    this.searchResults = [];
+
+    this.foodApiService.searchFoods(term).subscribe({
+      next: (results) => {
+        this.searchResults = results;
+        this.isLoadingResults = false;
+      },
+      error: () => {
+        this.isLoadingResults = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro na Busca',
+          detail: 'Não foi possível buscar alimentos. Tente novamente.',
+          life: 3000,
+        });
+      },
+    });
+  }
+
+  private calculateTotals(): void {
+    this.totalKcal = 0;
+    this.totalProtein = 0;
+    this.totalCarbs = 0;
+    this.totalFat = 0;
+    this.totalFiber = 0;
+    if (!this.meals) return;
+    for (const meal of this.meals) {
+      if (!meal || !Array.isArray(meal.items)) continue;
+      for (const item of meal.items) {
+        if (!item || !item.food || typeof item.quantity !== 'number') continue;
+        const quantityFactor = item.quantity / 100;
+        this.totalKcal += (item.food.energy_kcal || 0) * quantityFactor;
+        this.totalProtein += (item.food.protein_g || 0) * quantityFactor;
+        this.totalCarbs += (item.food.carbohydrate_g || 0) * quantityFactor;
+        this.totalFat += (item.food.fat_g || 0) * quantityFactor;
+        this.totalFiber += (item.food.fiber_g || 0) * quantityFactor;
+      }
+    }
+  }
+
+  exportToJson(): void {
+    if (!this.hasItemsInAnyMeal) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Não há itens no plano para exportar.',
+        life: 3000,
+      });
+      return;
+    }
+    const stateToExport = {
+      meals: this.meals,
+      patientSessionData: this.patientSessionData,
+    };
+    const jsonString = JSON.stringify(stateToExport, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fileName = this.patientSessionData?.name
+      ? `plano-${this.patientSessionData.name.replace(/\s+/g, '_')}.json`
+      : 'plano-alimentar.json';
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Plano exportado para JSON!',
+      life: 3000,
+    });
+  }
+
   exportPlanToPdf(): void {
+    if (!this.hasItemsInAnyMeal) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Não há itens no plano para gerar PDF.',
+        life: 3000,
+      });
+      return;
+    }
     this.calculateTotals();
     const currentTotals: PlanTotals = {
       totalKcal: this.totalKcal,
