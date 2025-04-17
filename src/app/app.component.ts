@@ -55,7 +55,7 @@ const IMPORTS = [
   imports: [...IMPORTS],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  providers: [MessageService, ConfirmationService], // ConfirmationService is needed
+  providers: [MessageService, ConfirmationService],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'saas-nutri-frontend';
@@ -238,14 +238,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearAutoSavedState(reason?: string): void {
     localStorage.removeItem(this.AUTOSAVE_STORAGE_KEY);
-    if (reason) {
-      console.warn(`Auto-saved state cleared: ${reason}`);
-    } else {
-      console.log('Auto-saved state cleared by user or rejection.');
-    }
   }
-
-  // --- Métodos Originais Modificados para chamar triggerStateChange ---
 
   addMeal(name: string): void {
     const mealName = name.trim();
@@ -389,37 +382,102 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     reader.onload = () => {
       try {
         const content = reader.result as string;
-        const importedMeals = JSON.parse(content);
+        const importedData = JSON.parse(content);
 
-        if (!Array.isArray(importedMeals)) {
-          throw new Error(
-            'Arquivo JSON inválido: não é um array de refeições.'
-          );
-        }
+        let importedMeals: Meal[] = [];
+        let importedPatientData: PatientData | null = null;
+
         if (
-          importedMeals.length > 0 &&
-          (importedMeals[0].name === undefined ||
-            importedMeals[0].items === undefined ||
-            !Array.isArray(importedMeals[0].items))
+          importedData &&
+          typeof importedData === 'object' &&
+          !Array.isArray(importedData) &&
+          importedData.meals &&
+          importedData.patientSessionData
         ) {
+          if (!Array.isArray(importedData.meals)) {
+            throw new Error(
+              'Formato inválido: A propriedade "meals" não é um array no arquivo JSON.'
+            );
+          }
+          if (
+            typeof importedData.patientSessionData !== 'object' ||
+            importedData.patientSessionData === null
+          ) {
+            throw new Error(
+              'Formato inválido: A propriedade "patientSessionData" não é um objeto no arquivo JSON.'
+            );
+          }
+          importedMeals = importedData.meals as Meal[];
+          importedPatientData = importedData.patientSessionData as PatientData;
+        } else if (Array.isArray(importedData)) {
+          importedMeals = importedData as Meal[];
+          importedPatientData = null;
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Aviso',
+            detail:
+              'Arquivo no formato antigo importado (apenas refeições). Dados do paciente não foram carregados do arquivo.',
+            life: 4000,
+          });
+        } else {
           throw new Error(
-            'Arquivo JSON inválido: formato de refeição incorreto.'
+            'Arquivo JSON inválido: formato desconhecido. O arquivo deve ser um array de refeições ou um objeto contendo as chaves "meals" e "patientSessionData".'
           );
         }
 
-        this.meals = importedMeals as Meal[];
+        this.meals = importedMeals;
+
+        if (importedPatientData) {
+          if (
+            importedPatientData.dob &&
+            typeof importedPatientData.dob === 'string'
+          ) {
+            try {
+              this.patientSessionData = {
+                ...importedPatientData,
+                dob: new Date(importedPatientData.dob),
+              };
+            } catch (dateError) {
+              console.error(
+                'Erro ao converter data de nascimento do JSON importado:',
+                dateError
+              );
+              this.patientSessionData = { ...importedPatientData, dob: null };
+              this.messageService.add({
+                severity: 'warn',
+                summary: 'Atenção',
+                detail:
+                  'Não foi possível converter a Data de Nascimento do arquivo. Verifique o formato.',
+                life: 4000,
+              });
+            }
+          } else {
+            this.patientSessionData = importedPatientData;
+          }
+        } else {
+          this.patientSessionData = {
+            name: null,
+            dob: null,
+            goals: null,
+            weight: null,
+            height: null,
+            observations: null,
+          };
+        }
+
         this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
         this.calculateTotals();
+        this.triggerStateChange();
+
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
           detail: 'Plano importado com sucesso!',
           life: 3000,
         });
-        this.triggerStateChange();
       } catch (error: unknown) {
-        console.error('Erro ao importar ou parsear JSON:', error);
-        let errorMessage = 'Erro desconhecido ao processar arquivo.';
+        console.error('Erro ao importar ou processar JSON:', error);
+        let errorMessage = 'Erro desconhecido ao processar o arquivo.';
         if (error instanceof Error) {
           errorMessage = error.message;
         }
@@ -435,7 +493,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     reader.onerror = () => {
-      console.error('Erro ao ler arquivo:', reader.error);
+      console.error('Erro ao ler o arquivo:', reader.error);
       this.messageService.add({
         severity: 'error',
         summary: 'Erro de Leitura',
@@ -447,9 +505,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     reader.readAsText(file);
   }
-
   onPatientDataChange(): void {
-    console.log('Patient data changed:', this.patientSessionData);
     this.triggerStateChange();
   }
 
@@ -500,36 +556,49 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   exportToJson(): void {
-    if (!this.hasItemsInAnyMeal) {
+    const hasPatientName = !!this.patientSessionData?.name?.trim();
+    const hasItems = this.hasItemsInAnyMeal;
+
+    if (!hasPatientName && !hasItems) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Atenção',
-        detail: 'Não há itens no plano para exportar.',
+        detail: 'Não há dados do paciente ou itens no plano para exportar.',
         life: 3000,
       });
       return;
     }
+
     const stateToExport = {
-      meals: this.meals,
       patientSessionData: this.patientSessionData,
+      meals: this.meals,
     };
+
     const jsonString = JSON.stringify(stateToExport, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const fileName = this.patientSessionData?.name
-      ? `plano-${this.patientSessionData.name.replace(/\s+/g, '_')}.json`
-      : 'plano-alimentar.json';
+
+    let fileName = 'plano-alimentar.json';
+    if (hasPatientName && this.patientSessionData.name) {
+      const safeName = this.patientSessionData.name
+        .trim()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-zA-Z0-9_.-]/g, '');
+      fileName = `plano-${safeName || 'paciente'}.json`;
+    }
+
     a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
     this.messageService.add({
       severity: 'success',
       summary: 'Sucesso',
-      detail: 'Plano exportado para JSON!',
+      detail: `Plano exportado para ${fileName}!`,
       life: 3000,
     });
   }
