@@ -13,7 +13,7 @@
                 pButton
                 type="button"
                 icon="pi pi-pencil"
-                styleClass="meal-edit-btn"
+                styleClass="meal-edit-btn p-button-sm p-button-text"
                 (click)="startEditMeal(mealIndex, meal.name)"
                 pTooltip="Editar nome da refeição"
                 tooltipPosition="top"
@@ -23,7 +23,7 @@
                 pButton
                 type="button"
                 icon="pi pi-trash"
-                styleClass="meal-delete-btn"
+                styleClass="meal-delete-btn p-button-sm p-button-danger p-button-text"
                 (click)="deleteMeal(mealIndex)"
                 pTooltip="Excluir refeição"
                 tooltipPosition="top"
@@ -47,7 +47,7 @@
               pButton
               type="button"
               icon="pi pi-check"
-              styleClass="meal-save-btn"
+              styleClass="meal-save-btn p-button-sm p-button-success p-button-text"
               (click)="saveEditMeal(mealIndex)"
               pTooltip="Salvar"
               tooltipPosition="top"
@@ -57,7 +57,7 @@
               pButton
               type="button"
               icon="pi pi-times"
-              styleClass="meal-cancel-btn"
+              styleClass="meal-cancel-btn p-button-sm p-button-secondary p-button-text"
               (click)="cancelEditMeal()"
               pTooltip="Cancelar"
               tooltipPosition="top"
@@ -71,40 +71,75 @@
           <div
             *ngFor="let item of meal.items; let itemIndex = index"
             class="diet-item"
+            (click)="selectItem(mealIndex, itemIndex)"
           >
             <div class="item-name">{{ item.food.name }}</div>
-            <div class="item-qty">
+
+            <div class="item-qty-measure">
               <p-inputNumber
-                [(ngModel)]="item.quantity"
+                [(ngModel)]="item.displayQuantity"
+                (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
+                inputId="'displayQty-' + mealIndex + '-' + itemIndex"
                 mode="decimal"
-                [showButtons]="true"
-                buttonLayout="horizontal"
-                spinnerMode="horizontal"
-                inputId="horizontal"
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
                 [min]="0"
-                [step]="10"
-                styleClass="meal-item-quantity-input"
-                (onInput)="onQuantityChange()"
+                [step]="0.5"
+                [showButtons]="true"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="1"
+                styleClass="meal-item-quantity-input p-inputtext-sm"
+                [style]="{ width: '80px' }"
               >
               </p-inputNumber>
-              <span class="ml-1">g</span>
+
+              <p-dropdown
+                #measureDropdown
+                placeholder="Medida"
+                styleClass="meal-item-measure-dropdown p-inputtext-sm"
+                [style]="{ 'min-width': '130px' }"
+                appendTo="body"
+                [options]="
+                  selectedMealIndex === mealIndex &&
+                  selectedItemIndex === itemIndex
+                    ? availableMeasures
+                    : [
+                        {
+                          measure_name: 'grama',
+                          display_name: 'Grama',
+                          gram_equivalent: 1
+                        }
+                      ]
+                "
+                [(ngModel)]="item.selectedMeasure"
+                (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
+                optionLabel="display_name"
+                optionValue="measure_name"
+              >
+              </p-dropdown>
+
+              <span class="calculated-grams">
+                ( {{ item.quantityInGrams | number : "1.0-1" }} g )
+              </span>
             </div>
             <div class="item-actions">
               <button
                 pButton
                 type="button"
                 icon="pi pi-times"
-                styleClass="item-remove-btn"
-                (click)="removeFoodFromDiet(mealIndex, itemIndex)"
+                styleClass="item-remove-btn p-button-sm p-button-danger p-button-text"
+                (click)="
+                  removeFoodFromDiet(mealIndex, itemIndex);
+                  $event.stopPropagation()
+                "
                 pTooltip="Remover item"
                 tooltipPosition="top"
                 aria-label="Remover item"
               ></button>
             </div>
           </div>
-          <div *ngIf="meal.items.length === 0" class="empty-meal-message">
+          <div
+            *ngIf="!meal.items || meal.items.length === 0"
+            class="empty-meal-message"
+          >
             <i>Refeição vazia.</i>
           </div>
         </div>
@@ -112,5 +147,4 @@
     </p-card>
   </div>
 </div>
-
-<p *ngIf="meals.length === 0">Nenhuma refeição adicionada ainda.</p>
+<p *ngIf="!meals || meals.length === 0">Nenhuma refeição adicionada ainda.</p>

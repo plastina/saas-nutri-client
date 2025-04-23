@@ -198,11 +198,16 @@
     <h2 class="section-title">Plano Alimentar Atual</h2>
     <app-diet-builder
       [meals]="meals"
+      [availableMeasures]="availableMeasures"
+      [selectedMealIndex]="selectedMealIndex"
+      [selectedItemIndex]="selectedItemIndex"
       (itemRemoved)="handleRemoveFood($event)"
-      (quantityChanged)="handleQuantityChange()"
+      (itemChanged)="handleItemChange($event)"
+      (itemSelectedForEdit)="loadMeasuresForItem($event)"
       (mealNameChanged)="handleMealNameChange($event)"
       (mealDeleted)="handleMealDelete($event)"
-    ></app-diet-builder>
+    >
+    </app-diet-builder>
     <div *ngIf="hasItemsInAnyMeal">
       <p-divider layout="horizontal" styleClass="section-divider"></p-divider>
       <div class="totals">

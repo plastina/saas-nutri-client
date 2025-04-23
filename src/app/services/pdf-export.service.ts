@@ -99,7 +99,8 @@ export class PdfExportService {
       const head = [['Alimento', 'Qtd (g)', 'Kcal', 'P (g)', 'C (g)', 'F (g)']];
       const body = meal.items.map((item) => {
         const food = item.food || {};
-        const qty = typeof item.quantity === 'number' ? item.quantity : 0;
+        const qty =
+          typeof item.displayQuantity === 'number' ? item.displayQuantity : 0;
         const factor = qty / 100;
         return [
           food.name || 'N/A',

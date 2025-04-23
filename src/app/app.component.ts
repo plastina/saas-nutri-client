@@ -26,6 +26,7 @@ import { FoodSearchComponent } from './components/food-search/food-search.compon
 import { DietItem } from './models/diet-item.model';
 import { Food } from './models/food.model';
 import { Meal } from './models/meal.model';
+import { Measure } from './models/measure.model';
 import { PatientData } from './models/patient-data.model';
 import { PlanTotals } from './models/plan-totals.model';
 import { FoodApiService } from './services/food-api.service';
@@ -76,6 +77,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     height: null,
     observations: null,
   };
+  availableMeasures: Measure[] = [];
+  selectedMealIndex: number | null = null;
+  selectedItemIndex: number | null = null;
 
   private readonly AUTOSAVE_STORAGE_KEY = 'saasNutri_autoSaveData_v1';
   private stateChanged = new Subject<void>();
@@ -141,7 +145,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       const stateString = JSON.stringify(stateToSave);
       localStorage.setItem(this.AUTOSAVE_STORAGE_KEY, stateString);
     } catch (error) {
-      console.error('Error saving state to localStorage:', error);
       this.messageService.add({
         severity: 'warn',
         summary: 'Auto-Save Falhou',
@@ -168,7 +171,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     } catch (error) {
-      console.error('Error reading or parsing state from localStorage:', error);
       this.clearAutoSavedState('Erro ao ler dado salvo.');
     }
     return null;
@@ -302,7 +304,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addFoodToCurrentDiet(food: Food): void {
-    const newItem: DietItem = { food: food, quantity: 100 };
+    const newItem: DietItem = {
+      food: food,
+      displayQuantity: 100,
+      selectedMeasure: 'grama',
+      quantityInGrams: 100,
+    };
 
     if (!this.selectedMealName) {
       this.messageService.add({
@@ -438,10 +445,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 dob: new Date(importedPatientData.dob),
               };
             } catch (dateError) {
-              console.error(
-                'Erro ao converter data de nascimento do JSON importado:',
-                dateError
-              );
               this.patientSessionData = { ...importedPatientData, dob: null };
               this.messageService.add({
                 severity: 'warn',
@@ -476,7 +479,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           life: 3000,
         });
       } catch (error: unknown) {
-        console.error('Erro ao importar ou processar JSON:', error);
         let errorMessage = 'Erro desconhecido ao processar o arquivo.';
         if (error instanceof Error) {
           errorMessage = error.message;
@@ -493,7 +495,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     reader.onerror = () => {
-      console.error('Erro ao ler o arquivo:', reader.error);
       this.messageService.add({
         severity: 'error',
         summary: 'Erro de Leitura',
@@ -544,8 +545,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const meal of this.meals) {
       if (!meal || !Array.isArray(meal.items)) continue;
       for (const item of meal.items) {
-        if (!item || !item.food || typeof item.quantity !== 'number') continue;
-        const quantityFactor = item.quantity / 100;
+        if (!item || !item.food || typeof item.quantityInGrams !== 'number')
+          continue;
+        const quantityFactor = item.quantityInGrams / 100;
         this.totalKcal += (item.food.energy_kcal || 0) * quantityFactor;
         this.totalProtein += (item.food.protein_g || 0) * quantityFactor;
         this.totalCarbs += (item.food.carbohydrate_g || 0) * quantityFactor;
@@ -553,6 +555,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.totalFiber += (item.food.fiber_g || 0) * quantityFactor;
       }
     }
+    this.totalKcal = Math.round(this.totalKcal);
+    this.totalProtein = Math.round(this.totalProtein * 10) / 10;
+    this.totalCarbs = Math.round(this.totalCarbs * 10) / 10;
+    this.totalFat = Math.round(this.totalFat * 10) / 10;
+    this.totalFiber = Math.round(this.totalFiber * 10) / 10;
   }
 
   exportToJson(): void {
@@ -639,5 +646,77 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       detail: 'PDF gerado com sucesso!',
       life: 3000,
     });
+  }
+
+  loadMeasuresForItem(indices: { mealIndex: number; itemIndex: number }): void {
+    this.selectedMealIndex = indices.mealIndex;
+    this.selectedItemIndex = indices.itemIndex;
+    this.availableMeasures = [];
+
+    const item = this.meals[indices.mealIndex]?.items[indices.itemIndex];
+
+    if (!item?.food?.id) {
+      this.availableMeasures = [
+        { measure_name: 'grama', display_name: 'Grama', gram_equivalent: 1 },
+      ];
+      return;
+    }
+
+    this.foodApiService.getFoodMeasures(item.food.id).subscribe({
+      next: (measures) => {
+        const hasGrama = measures.some((m) => m.measure_name === 'grama');
+        this.availableMeasures = hasGrama
+          ? measures
+          : [
+              {
+                measure_name: 'grama',
+                display_name: 'Grama',
+                gram_equivalent: 1,
+              },
+              ...measures,
+            ];
+        this.availableMeasures.sort((a, b) =>
+          a.display_name.localeCompare(b.display_name)
+        );
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro Medidas',
+          detail: 'Não foi possível carregar as medidas caseiras.',
+        });
+        this.availableMeasures = [
+          { measure_name: 'grama', display_name: 'Grama', gram_equivalent: 1 },
+        ];
+      },
+    });
+  }
+
+  updateGrams(item: DietItem): void {
+    if (!item || !this.availableMeasures) {
+      return;
+    }
+
+    const selectedMeasureData = this.availableMeasures.find(
+      (m) => m.measure_name === item.selectedMeasure
+    );
+
+    if (item.selectedMeasure === 'grama' || !selectedMeasureData) {
+      item.quantityInGrams = item.displayQuantity;
+    } else {
+      item.quantityInGrams =
+        item.displayQuantity * selectedMeasureData.gram_equivalent;
+    }
+
+    item.quantityInGrams = Math.round(item.quantityInGrams * 10) / 10;
+
+    this.calculateTotals();
+    this.triggerStateChange();
+  }
+  handleItemChange(indices: { mealIndex: number; itemIndex: number }): void {
+    const item = this.meals[indices.mealIndex]?.items[indices.itemIndex];
+    if (item) {
+      this.updateGrams(item);
+    }
   }
 }
