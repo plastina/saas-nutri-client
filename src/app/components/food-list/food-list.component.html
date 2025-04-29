@@ -1,12 +1,18 @@
 <div class="custom-list-container">
-  <h3 *ngIf="foods.length > 0" class="list-title">Resultados da Busca:</h3>
-  <div *ngIf="foods.length > 0; else noResults">
+  <h3 *ngIf="foods && foods.length > 0" class="list-title">
+    Resultados da Busca:
+  </h3>
+
+  <div *ngIf="foods && foods.length > 0; else noResults">
     <div *ngFor="let food of foods; let i = index">
       <div class="custom-list-item">
         <div class="food-details">
           <div class="food-name">
             <i class="pi pi-shopping-bag food-icon"></i>
             <span class="food-name-text">{{ food.name }}</span>
+            <span *ngIf="food.source" class="food-source">
+              [{{ food.source }}]</span
+            >
           </div>
           <div class="nutrient-details">
             Kcal: {{ food.energy_kcal | number : "1.0-0" }} | P:
@@ -24,16 +30,19 @@
             type="button"
             label="Adicionar"
             icon="pi pi-plus"
-            styleClass="add-food-btn"
+            styleClass="add-food-btn p-button-sm p-button-raised p-button-text"
             (click)="addFoodToDiet(food)"
           ></button>
         </div>
       </div>
       <p-divider
-        *ngIf="i < foods.length - 1"
+        *ngIf="foods && i < foods.length - 1"
         styleClass="list-item-divider"
       ></p-divider>
     </div>
   </div>
-  <ng-template #noResults><p>Nenhum alimento encontrado.</p></ng-template>
+
+  <ng-template #noResults>
+    <p>Nenhum alimento encontrado.</p>
+  </ng-template>
 </div>
