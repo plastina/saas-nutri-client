@@ -88,37 +88,19 @@
                 [maxFractionDigits]="1"
                 styleClass="meal-item-quantity-input p-inputtext-sm"
                 [style]="{ width: '80px' }"
-              >
-              </p-inputNumber>
+              ></p-inputNumber>
 
               <p-dropdown
-                #measureDropdown
                 placeholder="Medida"
                 styleClass="meal-item-measure-dropdown p-inputtext-sm"
                 [style]="{ 'min-width': '130px' }"
                 appendTo="body"
-                [options]="
-                  selectedMealIndex === mealIndex &&
-                  selectedItemIndex === itemIndex
-                    ? availableMeasures
-                    : [
-                        {
-                          measure_name: 'grama',
-                          display_name: 'Grama',
-                          gram_equivalent: 1
-                        }
-                      ]
-                "
+                [options]="availableMeasures"
                 [(ngModel)]="item.selectedMeasure"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
                 optionLabel="display_name"
                 optionValue="measure_name"
-              >
-              </p-dropdown>
-
-              <span class="calculated-grams">
-                ( {{ item.quantityInGrams | number : "1.0-1" }} g )
-              </span>
+              ></p-dropdown>
             </div>
             <div class="item-actions">
               <button
