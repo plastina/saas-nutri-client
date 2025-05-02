@@ -8,11 +8,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import {
-  AutoCompleteCompleteEvent,
-  AutoCompleteModule,
-  AutoCompleteSelectEvent,
-} from 'primeng/autocomplete';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -32,7 +28,9 @@ import {
   distinctUntilChanged,
   switchMap,
 } from 'rxjs/operators';
-import { DietBuilderComponent } from './components/diet-builder/diet-builder.component';
+import { MealManagementComponent } from './components/meal-management/meal-management.component';
+import { PatientSectionComponent } from './components/patient-section/patient-section.component';
+import { PlanSummaryComponent } from './components/plan-summary/plan-summary.component';
 import { DietItem } from './models/diet-item.model';
 import { Food } from './models/food.model';
 import { Meal } from './models/meal.model';
@@ -45,7 +43,6 @@ import { PdfExportService } from './services/pdf-export.service';
 const IMPORTS = [
   FormsModule,
   CommonModule,
-  DietBuilderComponent,
   ButtonModule,
   InputTextModule,
   Textarea,
@@ -59,6 +56,9 @@ const IMPORTS = [
   InputNumberModule,
   AutoCompleteModule,
   TooltipModule,
+  PatientSectionComponent,
+  MealManagementComponent,
+  PlanSummaryComponent,
 ];
 
 @Component({
@@ -330,17 +330,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.triggerStateChange();
   }
 
-  searchFoodsForAutocomplete(event: AutoCompleteCompleteEvent): void {
-    this.searchSubject.next(event.query);
+  searchFoodsByTerm(query: string): void {
+    this.searchSubject.next(query);
   }
 
-  onFoodSelectedFromAutocomplete(event: AutoCompleteSelectEvent): void {
-    const selectedFood = event.value as Food;
-    if (selectedFood && typeof selectedFood === 'object' && selectedFood.id) {
-      if (
-        !this.selectedFoodsForAdding.some((food) => food.id === selectedFood.id)
-      ) {
-        this.selectedFoodsForAdding.push(selectedFood);
+  onFoodSelectedFromAutocomplete(food: Food): void {
+    if (food && food.id && typeof food === 'object') {
+      if (!this.selectedFoodsForAdding.some((f) => f.id === food.id)) {
+        this.selectedFoodsForAdding.push(food);
       }
     }
     this.selectedFoodAutoComplete = '';

@@ -1,0 +1,61 @@
+<div class="global-actions">
+  <button
+    pButton
+    type="button"
+    label="Exportar (PDF)"
+    icon="pi pi-file-pdf"
+    (click)="exportToPdf.emit()"
+    class="p-button-secondary mb-2"
+  ></button>
+
+  <input
+    hidden
+    type="file"
+    id="import-json"
+    accept=".json"
+    (change)="onFileInput($event)"
+    #fileImportInput
+  />
+</div>
+
+<div class="col-12 md:col-6 xl:col-12">
+  <h2 class="section-title">Plano Alimentar Atual</h2>
+
+  <app-diet-builder
+    [meals]="meals"
+    [availableMeasures]="availableMeasures"
+    [selectedMealIndex]="selectedMealIndex"
+    [selectedItemIndex]="selectedItemIndex"
+    (itemRemoved)="itemRemoved.emit($event)"
+    (itemChanged)="itemChanged.emit($event)"
+    (itemSelectedForEdit)="itemSelectedForEdit.emit($event)"
+    (mealNameChanged)="mealNameChanged.emit($event)"
+    (mealDeleted)="mealDeleted.emit($event)"
+  ></app-diet-builder>
+</div>
+
+<div class="col-12 md:col-6 xl:col-6">
+  <div class="totals-section">
+    <div *ngIf="hasItemsInAnyMeal">
+      <div class="totals">
+        <h3 class="section-title">Totais do Plano:</h3>
+        <p class="total-item">
+          Calorias: {{ totalKcal | number : "1.0-0" }} kcal
+        </p>
+        <p class="total-item">
+          Proteínas: {{ totalProtein | number : "1.1-1" }} g
+        </p>
+        <p class="total-item">
+          Carboidratos: {{ totalCarbs | number : "1.1-1" }} g
+        </p>
+        <p class="total-item">Gorduras: {{ totalFat | number : "1.1-1" }} g</p>
+        <p class="total-item total-item-last">
+          Fibras: {{ totalFiber | number : "1.1-1" }} g
+        </p>
+      </div>
+    </div>
+    <div *ngIf="!hasItemsInAnyMeal" class="no-totals-message mt-3">
+      <p><i>Adicione itens ao plano para ver os totais.</i></p>
+    </div>
+  </div>
+</div>

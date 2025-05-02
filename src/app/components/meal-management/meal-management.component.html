@@ -1,0 +1,106 @@
+<div class="meal-add-section mb-3">
+  <div class="meal-add-controls">
+    <h3 class="section-title">Refeições</h3>
+    <div class="p-inputgroup">
+      <input
+        pInputText
+        type="text"
+        placeholder="Nova Refeição"
+        id="new-meal-name"
+        #newMealNameInput
+        class="new-meal-input"
+      />
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="Adicionar"
+        styleClass="add-meal-button p-button-outlined"
+        (click)="onAddMeal(newMealNameInput)"
+        aria-label="Adicionar Refeição"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<p-divider></p-divider>
+
+<div class="section-autocomplete-container mt-3">
+  <h3 class="section-title">Buscar e Adicionar Alimentos</h3>
+  <div class="autocomplete-wrapper p-fluid mb-3">
+    <p-autoComplete
+      inputId="foodAutocomplete"
+      [(ngModel)]="selectedFoodAutoComplete"
+      [suggestions]="foodSearchSuggestions"
+      (completeMethod)="foodSearch.emit($event.query)"
+      (onSelect)="foodSelected.emit($event.value)"
+      field="name"
+      placeholder="Ex: arroz, feijão, maçã..."
+      [minLength]="3"
+      [forceSelection]="true"
+      styleClass="w-full"
+      appendTo="body"
+    >
+      <ng-template pTemplate="item" let-foodSuggestion>
+        <div class="autocomplete-suggestion-item">
+          <div>{{ foodSuggestion.name }}</div>
+          <small *ngIf="foodSuggestion.source"
+            >[{{ foodSuggestion.source }}]</small
+          >
+          <small *ngIf="foodSuggestion.energy_kcal">
+            - {{ foodSuggestion.energy_kcal | number : "1.0-0" }} kcal/100g
+          </small>
+        </div>
+      </ng-template>
+    </p-autoComplete>
+  </div>
+
+  <div class="temporary-list-section" *ngIf="selectedFoodsForAdding.length > 0">
+    <h4 class="subsection-title">Alimentos selecionados:</h4>
+    <ul class="temporary-food-list p-reset">
+      <li
+        *ngFor="let tempFood of selectedFoodsForAdding; let i = index"
+        class="temporary-list-item"
+      >
+        <span>
+          {{ tempFood.name }}
+          <small *ngIf="tempFood.source">[{{ tempFood.source }}]</small>
+        </span>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-text p-button-sm"
+          (click)="foodRemoved.emit(i)"
+          pTooltip="Remover da lista temporária"
+          tooltipPosition="top"
+          aria-label="Remover da lista temporária"
+        ></button>
+      </li>
+    </ul>
+
+    <div class="add-to-meal-controls p-d-flex p-ai-center p-mt-2">
+      <p-dropdown
+        [options]="meals"
+        [(ngModel)]="selectedMealName"
+        (ngModelChange)="selectedMealNameChange.emit($event)"
+        optionLabel="name"
+        optionValue="name"
+        placeholder="Selecione a refeição"
+        styleClass="meal-target-dropdown p-mr-2"
+        [style]="{ 'min-width': '180px' }"
+        appendTo="body"
+      ></p-dropdown>
+      <button
+        pButton
+        type="button"
+        label="Adicionar à Refeição"
+        icon="pi pi-plus-circle"
+        styleClass="p-button-success"
+        (click)="addFoodsToMeal.emit()"
+        [disabled]="selectedFoodsForAdding.length === 0 || !selectedMealName"
+        aria-label="Adicionar alimentos selecionados à refeição"
+      ></button>
+    </div>
+  </div>
+</div>

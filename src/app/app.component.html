@@ -25,15 +25,6 @@
       (click)="fileImportInput.click()"
       class="p-button-secondary p-mr-2 mb-2"
     ></button>
-    <button
-      pButton
-      type="button"
-      label="Exportar (PDF)"
-      icon="pi pi-file-pdf"
-      (click)="exportPlanToPdf()"
-      [disabled]="!hasItemsInAnyMeal"
-      class="p-button-secondary mb-2"
-    ></button>
     <input
       hidden
       type="file"
@@ -46,245 +37,46 @@
 </div>
 <div class="app-layout-container grid p-4">
   <div class="col-12 md:col-6 xl:col-6">
-    <div class="patient-data-section">
-      <h3 class="section-title">Dados do Paciente</h3>
-      <div class="patient-form-layout grid p-fluid">
-        <div>
-          <div class="field col-12 md:col-12">
-            <label for="patientName">Nome</label>
-            <input
-              id="patientName"
-              type="text"
-              pInputText
-              [(ngModel)]="patientSessionData.name"
-              (ngModelChange)="onPatientDataChange()"
-              class="full-width-input"
-            />
-          </div>
-          <div class="field col-12 md:col-12">
-            <label for="patientDob">Data de Nascimento</label>
-            <p-calendar
-              id="patientDob"
-              [(ngModel)]="patientSessionData.dob"
-              (ngModelChange)="onPatientDataChange()"
-              dateFormat="dd/mm/yy"
-              showIcon="true"
-              inputId="dob"
-            ></p-calendar>
-          </div>
-        </div>
-        <div>
-          <div class="field col-12 md:col-12">
-            <label for="patientWeight">Peso (kg)</label>
-            <p-inputNumber
-              id="patientWeight"
-              [(ngModel)]="patientSessionData.weight"
-              (ngModelChange)="onPatientDataChange()"
-              mode="decimal"
-              minFractionDigits="1"
-              maxFractionDigits="1"
-              suffix=" kg"
-              class="full-width-input"
-            ></p-inputNumber>
-          </div>
-          <div class="field col-12 md:col-12">
-            <label for="patientHeight">Altura (cm)</label>
-            <p-inputNumber
-              id="patientHeight"
-              [(ngModel)]="patientSessionData.height"
-              (ngModelChange)="onPatientDataChange()"
-              mode="decimal"
-              minFractionDigits="0"
-              maxFractionDigits="0"
-              suffix=" cm"
-              class="full-width-input"
-            ></p-inputNumber>
-          </div>
-        </div>
-        <div class="field col-12">
-          <label for="patientGoals">Objetivos</label>
-          <textarea
-            id="patientGoals"
-            pInputTextarea
-            [(ngModel)]="patientSessionData.goals"
-            (ngModelChange)="onPatientDataChange()"
-            rows="3"
-            [autoResize]="true"
-          ></textarea>
-        </div>
-        <div class="field col-12">
-          <label for="patientObs">Observações</label>
-          <textarea
-            id="patientObs"
-            pInputTextarea
-            [(ngModel)]="patientSessionData.observations"
-            (ngModelChange)="onPatientDataChange()"
-            rows="4"
-            [autoResize]="true"
-          ></textarea>
-        </div>
-      </div>
-    </div>
+    <app-patient-section
+      [patientData]="patientSessionData"
+      (patientDataChange)="onPatientDataChange()"
+    ></app-patient-section>
   </div>
 
   <div class="col-12 md:col-6 xl:col-6">
-    <div class="meal-add-section mb-3">
-      <div class="meal-add-controls">
-        <h3 class="section-title">Refeições</h3>
-        <div class="p-inputgroup">
-          <input
-            pInputText
-            type="text"
-            placeholder="Nova Refeição"
-            id="new-meal-name"
-            #newMealNameInput
-            class="new-meal-input"
-          />
-          <button
-            pButton
-            type="button"
-            icon="pi pi-plus"
-            label="Adicionar"
-            styleClass="add-meal-button p-button-outlined"
-            (click)="
-              addMeal(newMealNameInput.value); newMealNameInput.value = ''
-            "
-            aria-label="Adicionar Refeição"
-          ></button>
-        </div>
-      </div>
-    </div>
-
-    <p-divider></p-divider>
-
-    <div class="section-autocomplete-container mt-3">
-      <h3 class="section-title">Buscar e Adicionar Alimentos</h3>
-      <div class="autocomplete-wrapper p-fluid mb-3">
-        <p-autoComplete
-          inputId="foodAutocomplete"
-          [(ngModel)]="selectedFoodAutoComplete"
-          [suggestions]="foodSearchSuggestions"
-          (completeMethod)="searchFoodsForAutocomplete($event)"
-          (onSelect)="onFoodSelectedFromAutocomplete($event)"
-          field="name"
-          placeholder="Ex: arroz, feijão, maçã..."
-          [minLength]="3"
-          [forceSelection]="true"
-          styleClass="w-full"
-          appendTo="body"
-        >
-          <ng-template pTemplate="item" let-foodSuggestion>
-            <div class="autocomplete-suggestion-item">
-              <div>{{ foodSuggestion.name }}</div>
-              <small *ngIf="foodSuggestion.source"
-                >[{{ foodSuggestion.source }}]</small
-              >
-              <small *ngIf="foodSuggestion.energy_kcal">
-                -
-                {{ foodSuggestion.energy_kcal | number : "1.0-0" }}
-                kcal/100g</small
-              >
-            </div>
-          </ng-template>
-        </p-autoComplete>
-      </div>
-      <div
-        class="temporary-list-section"
-        *ngIf="selectedFoodsForAdding.length > 0"
-      >
-        <h4 class="subsection-title">Alimentos selecionados:</h4>
-        <ul class="temporary-food-list p-reset">
-          <li
-            *ngFor="let tempFood of selectedFoodsForAdding; let i = index"
-            class="temporary-list-item"
-          >
-            <span
-              >{{ tempFood.name }}
-              <small *ngIf="tempFood.source"
-                >[{{ tempFood.source }}]</small
-              ></span
-            >
-            <button
-              pButton
-              type="button"
-              icon="pi pi-times"
-              class="p-button-rounded p-button-danger p-button-text p-button-sm"
-              (click)="removeFoodFromTemporaryList(i)"
-              pTooltip="Remover da lista temporária"
-              tooltipPosition="top"
-              aria-label="Remover da lista temporária"
-            ></button>
-          </li>
-        </ul>
-        <div class="add-to-meal-controls p-d-flex p-ai-center p-mt-2">
-          <p-dropdown
-            #mealSelectDropdown
-            [options]="meals"
-            [(ngModel)]="selectedMealName"
-            optionLabel="name"
-            optionValue="name"
-            placeholder="Selecione a refeição"
-            styleClass="meal-target-dropdown p-mr-2"
-            [style]="{ 'min-width': '180px' }"
-            appendTo="body"
-          ></p-dropdown>
-          <button
-            pButton
-            type="button"
-            label="Adicionar à Refeição"
-            icon="pi pi-plus-circle"
-            styleClass="p-button-success"
-            (click)="addAllSelectedFoodsToMeal()"
-            [disabled]="
-              selectedFoodsForAdding.length === 0 || !selectedMealName
-            "
-            aria-label="Adicionar alimentos selecionados à refeição"
-          ></button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12 md:col-6 xl:col-12">
-    <h2 class="section-title">Plano Alimentar Atual</h2>
-    <app-diet-builder
+    <app-meal-management
       [meals]="meals"
-      [availableMeasures]="availableMeasures"
-      [selectedMealIndex]="selectedMealIndex"
-      [selectedItemIndex]="selectedItemIndex"
-      (itemRemoved)="handleRemoveFood($event)"
-      (itemChanged)="handleItemChange($event)"
-      (itemSelectedForEdit)="loadMeasuresForItem($event)"
-      (mealNameChanged)="handleMealNameChange($event)"
-      (mealDeleted)="handleMealDelete($event)"
-    >
-    </app-diet-builder>
-  </div>
-  <div class="col-12 md:col-6 xl:col-6">
-    <div class="totals-section">
-      <div *ngIf="hasItemsInAnyMeal">
-        <div class="totals">
-          <h3 class="section-title">Totais do Plano:</h3>
-          <p class="total-item">
-            Calorias: {{ totalKcal | number : "1.0-0" }} kcal
-          </p>
-          <p class="total-item">
-            Proteínas: {{ totalProtein | number : "1.1-1" }} g
-          </p>
-          <p class="total-item">
-            Carboidratos: {{ totalCarbs | number : "1.1-1" }} g
-          </p>
-          <p class="total-item">
-            Gorduras: {{ totalFat | number : "1.1-1" }} g
-          </p>
-          <p class="total-item total-item-last">
-            Fibras: {{ totalFiber | number : "1.1-1" }} g
-          </p>
-        </div>
-      </div>
-      <div *ngIf="!hasItemsInAnyMeal" class="no-totals-message mt-3">
-        <p><i>Adicione itens ao plano para ver os totais.</i></p>
-      </div>
-    </div>
+      [selectedMealName]="selectedMealName"
+      [foodSearchSuggestions]="foodSearchSuggestions"
+      [selectedFoodsForAdding]="selectedFoodsForAdding"
+      [selectedFoodAutoComplete]="selectedFoodAutoComplete"
+      (mealAdded)="addMeal($event)"
+      (foodSearch)="searchFoodsByTerm($event)"
+      (foodSelected)="onFoodSelectedFromAutocomplete($event)"
+      (foodRemoved)="removeFoodFromTemporaryList($event)"
+      (addFoodsToMeal)="addAllSelectedFoodsToMeal()"
+      (selectedMealNameChange)="selectedMealName = $event"
+    ></app-meal-management>
   </div>
 </div>
+
+<app-plan-summary
+  [meals]="meals"
+  [availableMeasures]="availableMeasures"
+  [selectedMealIndex]="selectedMealIndex"
+  [selectedItemIndex]="selectedItemIndex"
+  [hasItemsInAnyMeal]="hasItemsInAnyMeal"
+  [totalKcal]="totalKcal"
+  [totalProtein]="totalProtein"
+  [totalCarbs]="totalCarbs"
+  [totalFat]="totalFat"
+  [totalFiber]="totalFiber"
+  (exportToJson)="exportToJson()"
+  (exportToPdf)="exportPlanToPdf()"
+  (importFromFile)="handleFileInput($event)"
+  (itemRemoved)="handleRemoveFood($event)"
+  (itemChanged)="handleItemChange($event)"
+  (itemSelectedForEdit)="loadMeasuresForItem($event)"
+  (mealNameChanged)="handleMealNameChange($event)"
+  (mealDeleted)="handleMealDelete($event)"
+></app-plan-summary>

@@ -1,0 +1,34 @@
+.global-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  margin-right: 1.7rem;
+}
+
+.totals {
+  .section-title {
+    margin-bottom: 1rem;
+  }
+
+  .total-item {
+    margin: 0;
+    padding-bottom: 0.7rem;
+    font-size: 18px;
+  }
+
+  .total-item-last {
+    padding-bottom: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+.no-totals-message {
+  margin-top: 1rem;
+}
+
+.section-title {
+  margin: 0;
+  margin-bottom: var(--spacing-md, 1rem);
+  color: var(--primary-color);
+  font-weight: 500;
+}

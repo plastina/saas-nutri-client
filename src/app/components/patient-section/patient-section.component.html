@@ -1,0 +1,79 @@
+<div class="patient-data-section">
+  <h3 class="section-title">Dados do Paciente</h3>
+  <div class="patient-form-layout grid p-fluid">
+    <div>
+      <div class="field col-12 md:col-12">
+        <label for="patientName">Nome</label>
+        <input
+          id="patientName"
+          type="text"
+          pInputText
+          [(ngModel)]="patientData.name"
+          (ngModelChange)="emitChange()"
+          class="full-width-input"
+        />
+      </div>
+      <div class="field col-12 md:col-12">
+        <label for="patientDob">Data de Nascimento</label>
+        <p-calendar
+          id="patientDob"
+          [(ngModel)]="patientData.dob"
+          (ngModelChange)="emitChange()"
+          dateFormat="dd/mm/yy"
+          showIcon="true"
+          inputId="dob"
+        ></p-calendar>
+      </div>
+    </div>
+    <div>
+      <div class="field col-12 md:col-12">
+        <label for="patientWeight">Peso (kg)</label>
+        <p-inputNumber
+          id="patientWeight"
+          [(ngModel)]="patientData.weight"
+          (ngModelChange)="emitChange()"
+          mode="decimal"
+          minFractionDigits="1"
+          maxFractionDigits="1"
+          suffix=" kg"
+          class="full-width-input"
+        ></p-inputNumber>
+      </div>
+      <div class="field col-12 md:col-12">
+        <label for="patientHeight">Altura (cm)</label>
+        <p-inputNumber
+          id="patientHeight"
+          [(ngModel)]="patientData.height"
+          (ngModelChange)="emitChange()"
+          mode="decimal"
+          minFractionDigits="0"
+          maxFractionDigits="0"
+          suffix=" cm"
+          class="full-width-input"
+        ></p-inputNumber>
+      </div>
+    </div>
+    <div class="field col-12">
+      <label for="patientGoals">Objetivos</label>
+      <textarea
+        id="patientGoals"
+        pInputTextarea
+        [(ngModel)]="patientData.goals"
+        (ngModelChange)="emitChange()"
+        rows="3"
+        [autoResize]="true"
+      ></textarea>
+    </div>
+    <div class="field col-12">
+      <label for="patientObs">Observações</label>
+      <textarea
+        id="patientObs"
+        pInputTextarea
+        [(ngModel)]="patientData.observations"
+        (ngModelChange)="emitChange()"
+        rows="4"
+        [autoResize]="true"
+      ></textarea>
+    </div>
+  </div>
+</div>
