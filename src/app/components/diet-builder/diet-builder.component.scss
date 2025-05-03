@@ -2,12 +2,10 @@
   display: block;
 }
 .meal-card-header-content {
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  min-height: 40px;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
+
 .meals-container {
   display: flex;
   flex-wrap: wrap;
@@ -24,9 +22,9 @@
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 80px;
-  font-size: 1em;
   padding-right: 0.5rem;
 }
+
 .item-qty {
   display: flex;
   align-items: center;
@@ -130,7 +128,7 @@
 
 .meal-save-btn {
   @extend %small-action-button;
-  padding: 2rem;
+  padding: 0.5rem 1rem;
   width: auto;
   background-color: var(--green-500);
   border-color: var(--green-500);
@@ -143,7 +141,7 @@
 
 .meal-cancel-btn {
   @extend %small-action-button;
-  padding: 2rem;
+  padding: 0.5rem 1rem;
   width: auto;
   background-color: var(--surface-200);
   border-color: var(--surface-200);
@@ -182,7 +180,6 @@
 
   ::ng-deep .p-inputnumber-input {
     padding: 0.4375rem 0.5rem;
-    font-size: 0.9em;
     text-align: center;
   }
 }
@@ -202,12 +199,11 @@
   justify-content: center;
   gap: 0.5rem;
   flex-shrink: 0;
-  padding: 0.5rem;
+  padding: 0.25rem;
 
   .calculated-grams {
     margin-left: 0.5rem;
     white-space: nowrap;
-    font-size: 0.8em;
     color: var(--text-color-secondary);
     align-self: center;
   }

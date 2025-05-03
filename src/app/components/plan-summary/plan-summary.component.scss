@@ -1,19 +1,14 @@
 .global-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   margin-right: 1.7rem;
 }
 
 .totals {
-  .section-title {
-    margin-bottom: 1rem;
-  }
-
   .total-item {
     margin: 0;
-    padding-bottom: 0.7rem;
-    font-size: 18px;
+    padding-bottom: 0.25rem;
   }
 
   .total-item-last {
@@ -28,7 +23,10 @@
 
 .section-title {
   margin: 0;
-  margin-bottom: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-sm, 0.5rem);
   color: var(--primary-color);
-  font-weight: 500;
+}
+
+.app-layout-container.grid.align-start {
+  align-items: flex-start;
 }

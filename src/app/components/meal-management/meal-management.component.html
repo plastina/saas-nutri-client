@@ -1,4 +1,4 @@
-<div class="meal-add-section mb-3">
+<div class="meal-add-section">
   <div class="meal-add-controls">
     <h3 class="section-title">Refeições</h3>
     <div class="p-inputgroup">
@@ -8,14 +8,14 @@
         placeholder="Nova Refeição"
         id="new-meal-name"
         #newMealNameInput
-        class="new-meal-input"
+        class="new-meal-input text-xs"
       />
       <button
         pButton
         type="button"
         icon="pi pi-plus"
         label="Adicionar"
-        styleClass="add-meal-button p-button-outlined"
+        styleClass="add-meal-button p-button-outlined text-xs"
         (click)="onAddMeal(newMealNameInput)"
         aria-label="Adicionar Refeição"
       ></button>
@@ -25,7 +25,7 @@
 
 <p-divider></p-divider>
 
-<div class="section-autocomplete-container mt-3">
+<div class="section-autocomplete-container">
   <h3 class="section-title">Buscar e Adicionar Alimentos</h3>
   <div class="autocomplete-wrapper p-fluid mb-3">
     <p-autoComplete
@@ -58,7 +58,7 @@
   </div>
 
   <div class="temporary-list-section" *ngIf="selectedFoodsForAdding.length > 0">
-    <h4 class="subsection-title">Alimentos selecionados:</h4>
+    <h4 class="subsection-title heading-xs">Alimentos selecionados:</h4>
     <ul class="temporary-food-list p-reset">
       <li
         *ngFor="let tempFood of selectedFoodsForAdding; let i = index"

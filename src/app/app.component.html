@@ -58,25 +58,27 @@
       (selectedMealNameChange)="selectedMealName = $event"
     ></app-meal-management>
   </div>
-</div>
 
-<app-plan-summary
-  [meals]="meals"
-  [availableMeasures]="availableMeasures"
-  [selectedMealIndex]="selectedMealIndex"
-  [selectedItemIndex]="selectedItemIndex"
-  [hasItemsInAnyMeal]="hasItemsInAnyMeal"
-  [totalKcal]="totalKcal"
-  [totalProtein]="totalProtein"
-  [totalCarbs]="totalCarbs"
-  [totalFat]="totalFat"
-  [totalFiber]="totalFiber"
-  (exportToJson)="exportToJson()"
-  (exportToPdf)="exportPlanToPdf()"
-  (importFromFile)="handleFileInput($event)"
-  (itemRemoved)="handleRemoveFood($event)"
-  (itemChanged)="handleItemChange($event)"
-  (itemSelectedForEdit)="loadMeasuresForItem($event)"
-  (mealNameChanged)="handleMealNameChange($event)"
-  (mealDeleted)="handleMealDelete($event)"
-></app-plan-summary>
+  <div class="col-12">
+    <app-plan-summary
+      [meals]="meals"
+      [availableMeasures]="availableMeasures"
+      [selectedMealIndex]="selectedMealIndex"
+      [selectedItemIndex]="selectedItemIndex"
+      [hasItemsInAnyMeal]="hasItemsInAnyMeal"
+      [totalKcal]="totalKcal"
+      [totalProtein]="totalProtein"
+      [totalCarbs]="totalCarbs"
+      [totalFat]="totalFat"
+      [totalFiber]="totalFiber"
+      (exportToJson)="exportToJson()"
+      (exportToPdf)="exportPlanToPdf()"
+      (importFromFile)="handleFileInput($event)"
+      (itemRemoved)="handleRemoveFood($event)"
+      (itemChanged)="handleItemChange($event)"
+      (itemSelectedForEdit)="loadMeasuresForItem($event)"
+      (mealNameChanged)="handleMealNameChange($event)"
+      (mealDeleted)="handleMealDelete($event)"
+    ></app-plan-summary>
+  </div>
+</div>

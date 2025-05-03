@@ -1,12 +1,11 @@
 .section-title {
   margin: 0;
-  margin-bottom: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-sm, 0.5rem);
   color: var(--primary-color);
-  font-weight: 500;
 }
 
 .patient-form-layout {
-  gap: var(--spacing-md, 1rem);
+  gap: 0.5rem;
 }
 
 .field {
@@ -14,7 +13,7 @@
   flex-direction: column;
 
   label {
-    margin-bottom: var(--spacing-sm, 0.5rem);
+    margin-bottom: 0.25rem;
     font-weight: 500;
     display: block;
   }
