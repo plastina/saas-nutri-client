@@ -40,16 +40,22 @@
       <div class="totals">
         <h3 class="section-title">Totais do Plano:</h3>
         <p class="total-item">
-          Calorias: {{ totalKcal | number : "1.0-0" }} kcal
+          <i class="pi pi-bolt"></i> Calorias: {{ totalKcal }} kcal
         </p>
         <p class="total-item">
-          Proteínas: {{ totalProtein | number : "1.1-1" }} g
+          <i class="pi pi-chart-line p-mr-1"></i> Proteínas:
+          {{ totalProtein }} g
         </p>
         <p class="total-item">
-          Carboidratos: {{ totalCarbs | number : "1.1-1" }} g
+          <i class="pi pi-chart-bar p-mr-1"></i> Carboidratos:
+          {{ totalCarbs }} g
         </p>
-        <p class="total-item">Gorduras: {{ totalFat | number : "1.1-1" }} g</p>
+        <p class="total-item">
+          <i class="pi pi-box"></i> Gorduras:
+          {{ totalFat | number : "1.1-1" }} g
+        </p>
         <p class="total-item total-item-last">
+          <i class="pi pi-sliders-h"></i>
           Fibras: {{ totalFiber | number : "1.1-1" }} g
         </p>
       </div>
