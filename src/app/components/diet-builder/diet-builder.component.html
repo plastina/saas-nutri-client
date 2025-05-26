@@ -3,7 +3,7 @@
     *ngFor="let meal of meals; let mealIndex = index"
     class="meal-column-card"
   >
-    <p-card styleClass="meal-card">
+    <p-card class="meal-card">
       <ng-template pTemplate="header">
         <div class="meal-card-header-content">
           <div *ngIf="editingMealIndex !== mealIndex" class="meal-header-view">
@@ -13,7 +13,7 @@
                 pButton
                 type="button"
                 icon="pi pi-pencil"
-                styleClass="meal-edit-btn p-button-sm p-button-text"
+                class="meal-edit-btn p-button-sm p-button-text"
                 (click)="startEditMeal(mealIndex, meal.name)"
                 pTooltip="Editar nome da refeição"
                 tooltipPosition="top"
@@ -23,7 +23,7 @@
                 pButton
                 type="button"
                 icon="pi pi-trash"
-                styleClass="meal-delete-btn p-button-sm p-button-danger p-button-text"
+                class="meal-delete-btn p-button-sm p-button-danger p-button-text"
                 (click)="deleteMeal(mealIndex)"
                 pTooltip="Excluir refeição"
                 tooltipPosition="top"
@@ -47,7 +47,7 @@
               pButton
               type="button"
               icon="pi pi-check"
-              styleClass="meal-save-btn p-button-sm p-button-success p-button-text"
+              class="meal-save-btn p-button-sm p-button-success p-button-text"
               (click)="saveEditMeal(mealIndex)"
               pTooltip="Salvar"
               tooltipPosition="top"
@@ -57,7 +57,7 @@
               pButton
               type="button"
               icon="pi pi-times"
-              styleClass="meal-cancel-btn p-button-sm p-button-secondary p-button-text"
+              class="meal-cancel-btn p-button-sm p-button-secondary p-button-text"
               (click)="cancelEditMeal()"
               pTooltip="Cancelar"
               tooltipPosition="top"
@@ -86,13 +86,13 @@
                 [showButtons]="true"
                 [minFractionDigits]="0"
                 [maxFractionDigits]="1"
-                styleClass="meal-item-quantity-input p-inputtext-sm"
+                class="meal-item-quantity-input p-inputtext-sm"
                 [style]="{ width: '80px' }"
               ></p-inputNumber>
 
               <p-dropdown
                 placeholder="Medida"
-                styleClass="meal-item-measure-dropdown p-inputtext-sm"
+                class="meal-item-measure-dropdown p-inputtext-sm"
                 [style]="{ 'min-width': '130px' }"
                 appendTo="body"
                 [options]="availableMeasures"
@@ -107,7 +107,7 @@
                 pButton
                 type="button"
                 icon="pi pi-times"
-                styleClass="item-remove-btn p-button-sm p-button-danger p-button-text"
+                class="item-remove-btn p-button-sm p-button-danger p-button-text"
                 (click)="
                   removeFoodFromDiet(mealIndex, itemIndex);
                   $event.stopPropagation()
