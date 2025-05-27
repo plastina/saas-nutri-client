@@ -1,53 +1,57 @@
 <div class="patient-data-section">
   <h3 class="section-title">Dados do Paciente</h3>
   <div class="patient-form-layout grid">
-    <div class="col-12 md:col-6">
-      <div class="field">
-        <label for="patientName">Nome</label>
-        <input
-          id="patientName"
-          type="text"
-          pInputText
-          [(ngModel)]="patientData.name"
-          (ngModelChange)="emitChange()"
-        />
-      </div>
-      <div class="field">
-        <label for="patientDob">Data de Nascimento</label>
-        <p-calendar
-          id="patientDob"
-          [(ngModel)]="patientData.dob"
-          (ngModelChange)="emitChange()"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true"
-          inputId="dob"
-        ></p-calendar>
+    <div class="col-12">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <label for="patientName">Nome</label>
+          <input
+            id="patientName"
+            type="text"
+            pInputText
+            [(ngModel)]="patientData.name"
+            (ngModelChange)="emitChange()"
+          />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label for="patientWeight">Peso (kg)</label>
+          <p-inputNumber
+            id="patientWeight"
+            [(ngModel)]="patientData.weight"
+            (ngModelChange)="emitChange()"
+            mode="decimal"
+            [minFractionDigits]="1"
+            [maxFractionDigits]="1"
+            suffix=" kg"
+          ></p-inputNumber>
+        </div>
       </div>
     </div>
-    <div class="col-12 md:col-6">
-      <div class="field">
-        <label for="patientWeight">Peso (kg)</label>
-        <p-inputNumber
-          id="patientWeight"
-          [(ngModel)]="patientData.weight"
-          (ngModelChange)="emitChange()"
-          mode="decimal"
-          [minFractionDigits]="1"
-          [maxFractionDigits]="1"
-          suffix=" kg"
-        ></p-inputNumber>
-      </div>
-      <div class="field">
-        <label for="patientHeight">Altura (cm)</label>
-        <p-inputNumber
-          id="patientHeight"
-          [(ngModel)]="patientData.height"
-          (ngModelChange)="emitChange()"
-          mode="decimal"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="0"
-          suffix=" cm"
-        ></p-inputNumber>
+    <div class="col-12">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <label for="patientDob">Data de Nascimento</label>
+          <p-calendar
+            id="patientDob"
+            [(ngModel)]="patientData.dob"
+            (ngModelChange)="emitChange()"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            inputId="dob"
+          ></p-calendar>
+        </div>
+        <div class="field col-12 md:col-6">
+          <label for="patientHeight">Altura (cm)</label>
+          <p-inputNumber
+            id="patientHeight"
+            [(ngModel)]="patientData.height"
+            (ngModelChange)="emitChange()"
+            mode="decimal"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
+            suffix=" cm"
+          ></p-inputNumber>
+        </div>
       </div>
     </div>
     <div class="col-12">

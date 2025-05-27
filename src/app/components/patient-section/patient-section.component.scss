@@ -4,10 +4,6 @@
   color: var(--primary-color);
 }
 
-.patient-form-layout {
-  gap: 0.5rem;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -25,7 +21,11 @@
     width: 100%;
   }
 
-  p-calendar,
+  p-calendar {
+    display: block;
+    width: 100%;
+  }
+
   p-inputNumber {
     display: block;
     width: 100%;
