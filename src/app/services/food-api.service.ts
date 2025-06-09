@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 import { Food } from '../models/food.model';
 import { Measure } from '../models/measure.model';
 
@@ -12,7 +13,7 @@ import { Measure } from '../models/measure.model';
   providedIn: 'root',
 })
 export class FoodApiService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
