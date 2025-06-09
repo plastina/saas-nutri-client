@@ -373,13 +373,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.selectedFoodsForAdding.forEach((food) => {
-      const newItem: DietItem = {
-        food: food,
-        displayQuantity: 100,
-        selectedMeasure: 'grama',
-        quantityInGrams: 100,
-      };
-      targetMeal.items.push(newItem);
+      this.foodApiService.getFoodMeasures(food.id).subscribe((measures) => {
+        const hasGrama = measures.some((m) => m.measure_name === 'grama');
+        const allMeasures = hasGrama
+          ? measures
+          : [
+              {
+                measure_name: 'grama',
+                display_name: 'Grama',
+                gram_equivalent: 1,
+              },
+              ...measures,
+            ];
+
+        const newItem: DietItem = {
+          food: food,
+          displayQuantity: 100,
+          selectedMeasure: 'grama',
+          quantityInGrams: 100,
+          measures: allMeasures,
+        };
+        targetMeal.items.push(newItem);
+        this.calculateTotals();
+        this.triggerStateChange();
+      });
     });
 
     this.selectedFoodsForAdding = [];
@@ -438,8 +455,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   updateGrams(item: DietItem): void {
-    if (!item || !this.availableMeasures) return;
-    const selectedMeasureData = this.availableMeasures.find(
+    const selectedMeasureData = item.measures.find(
       (m) => m.measure_name === item.selectedMeasure
     );
     if (item.selectedMeasure === 'grama' || !selectedMeasureData) {
@@ -449,14 +465,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         item.displayQuantity * selectedMeasureData.gram_equivalent;
     }
     item.quantityInGrams = Math.round(item.quantityInGrams * 10) / 10;
-    this.calculateTotals();
-    this.triggerStateChange();
   }
 
   handleItemChange(indices: { mealIndex: number; itemIndex: number }): void {
+    console.log('handleItemChange chamado', indices);
     const item = this.meals[indices.mealIndex]?.items[indices.itemIndex];
     if (item) {
       this.updateGrams(item);
+      this.calculateTotals();
+      this.triggerStateChange();
     }
   }
 

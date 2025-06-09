@@ -95,7 +95,7 @@
                 class="meal-item-measure-dropdown p-inputtext-sm"
                 [style]="{ 'min-width': '130px' }"
                 appendTo="body"
-                [options]="availableMeasures"
+                [options]="item.measures"
                 [(ngModel)]="item.selectedMeasure"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
                 optionLabel="measure_name"
