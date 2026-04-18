@@ -1,9 +1,9 @@
 <div class="plan-summary-layout">
   <div class="diet-builder-section">
-    <h3 class="section-title">Dados do Paciente</h3>
+    <h3 class="section-title">{{ "patient.title" | t }}</h3>
     <div class="patient-primary-fields">
       <div class="field field-name">
-        <label for="patientName">Nome</label>
+        <label for="patientName">{{ "patient.name" | t }}</label>
         <input
           id="patientName"
           type="text"
@@ -14,7 +14,7 @@
       </div>
 
       <div class="field field-weight">
-        <label for="patientWeight">Peso (kg)</label>
+        <label for="patientWeight">{{ "patient.weight" | t }}</label>
         <p-inputNumber
           id="patientWeight"
           [(ngModel)]="patientData.weight"
@@ -27,7 +27,7 @@
       </div>
 
       <div class="field field-height">
-        <label for="patientHeight">Altura (cm)</label>
+        <label for="patientHeight">{{ "patient.height" | t }}</label>
         <p-inputNumber
           id="patientHeight"
           [(ngModel)]="patientData.height"
@@ -40,7 +40,7 @@
       </div>
 
       <div class="field dob-field field-dob">
-        <label for="patientDob">Data de Nascimento</label>
+        <label for="patientDob">{{ "patient.dob" | t }}</label>
         <p-datepicker
           id="patientDob"
           [(ngModel)]="patientData.dob"
@@ -55,7 +55,7 @@
     </div>
     <div>
       <div class="field">
-        <label for="patientGoals">Objetivos</label>
+        <label for="patientGoals">{{ "patient.goals" | t }}</label>
         <textarea
           id="patientGoals"
           pTextarea
@@ -68,7 +68,7 @@
     </div>
     <div>
       <div class="field">
-        <label for="patientObs">Observações</label>
+        <label for="patientObs">{{ "patient.observations" | t }}</label>
         <textarea
           id="patientObs"
           pTextarea

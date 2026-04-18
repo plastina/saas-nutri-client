@@ -12,6 +12,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DietItem } from '../../models/diet-item.model';
 import { Meal } from '../../models/meal.model';
 import { Measure } from '../../models/measure.model';
+import { TranslatePipe } from '../../pipes/t.pipe';
+import { I18nService } from '../../services/i18n.service';
 
 const DIET_BUILDER_IMPORTS = [
   CommonModule,
@@ -23,6 +25,7 @@ const DIET_BUILDER_IMPORTS = [
   DividerModule,
   TooltipModule,
   SelectModule,
+  TranslatePipe,
 ];
 
 @Component({
@@ -59,7 +62,10 @@ export class DietBuilderComponent {
   editingMealIndex: number | null = null;
   editedMealName = '';
 
-  constructor(private confirmationService: ConfirmationService) {}
+  constructor(
+    private confirmationService: ConfirmationService,
+    private i18nService: I18nService,
+  ) {}
 
   onItemInputChange(mealIndex: number, itemIndex: number): void {
     this.itemChanged.emit({ mealIndex, itemIndex });
@@ -95,11 +101,13 @@ export class DietBuilderComponent {
 
   deleteMeal(index: number): void {
     this.confirmationService.confirm({
-      message: `Tem certeza que deseja excluir a refeição "${this.meals[index]?.name}" e todos os seus itens?`,
-      header: 'Confirmar Exclusão',
+      message: this.i18nService.t('confirm.deleteMeal.message', {
+        mealName: this.meals[index]?.name || '',
+      }),
+      header: this.i18nService.t('confirm.deleteMeal.header'),
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sim',
-      rejectLabel: 'Não',
+      acceptLabel: this.i18nService.t('confirm.yes'),
+      rejectLabel: this.i18nService.t('confirm.no'),
       acceptButtonStyleClass: 'p-button-danger',
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {

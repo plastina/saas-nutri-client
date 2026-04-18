@@ -72,7 +72,7 @@
 
 .app-header__container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-xl);
   padding-top: 0.95rem;
@@ -84,6 +84,7 @@
   flex-direction: column;
   gap: var(--spacing-xs);
   min-width: 0;
+  flex: 1;
 }
 
 .app-header__badge {
@@ -119,6 +120,7 @@
 
 .app-header__meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-xs);
@@ -145,11 +147,28 @@
 
 .app-header__actions {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.app-header__actions-top,
+.app-header__actions-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+.app-header__actions-top {
+  justify-content: flex-end;
+}
+
+.app-header__actions-bottom {
+  justify-content: flex-end;
 }
 
 /* Theme toggle button */
@@ -174,6 +193,12 @@
   min-height: var(--control-height);
   border-radius: var(--radius-control);
   box-shadow: var(--shadow-sm);
+}
+
+.app-header__actions-bottom .app-action-btn {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.65rem;
+  font-size: var(--font-size-xs);
 }
 
 .app-header .btn.btn-primary {
@@ -224,7 +249,14 @@ main {
   }
 
   .app-header__actions {
+    align-items: stretch;
+  }
+
+  .app-header__actions-top,
+  .app-header__actions-bottom {
     justify-content: flex-start;
+    flex-wrap: wrap;
+    width: auto;
   }
 
   .app-action-btn {

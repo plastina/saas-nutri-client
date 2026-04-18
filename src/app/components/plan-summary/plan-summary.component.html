@@ -1,6 +1,6 @@
 <div class="plan-summary-layout">
   <div class="diet-builder-section">
-    <h3 class="section-title">Plano Alimentar Atual</h3>
+    <h3 class="section-title">{{ "summary.currentPlan" | t }}</h3>
     <app-diet-builder
       [meals]="meals"
       [availableMeasures]="availableMeasures"
@@ -14,39 +14,38 @@
     ></app-diet-builder>
   </div>
 
-  <!-- Totals Section -->
   <div class="totals-section">
     <div *ngIf="hasItemsInAnyMeal; else noTotals">
-      <h3 class="section-title">Totais do Plano</h3>
+      <h3 class="section-title">{{ "summary.totals" | t }}</h3>
       <div class="totals">
         <div class="total-item">
           <i class="pi pi-bolt"></i>
-          <span>Calorias</span>
+          <span>{{ "summary.calories" | t }}</span>
           <span class="value">{{ totalKcal | number: "1.0-0" }} kcal</span>
         </div>
         <div class="total-item">
           <i class="pi pi-chart-line"></i>
-          <span>Proteínas</span>
+          <span>{{ "summary.protein" | t }}</span>
           <span class="value">{{ totalProtein | number: "1.1-1" }} g</span>
         </div>
         <div class="total-item">
           <i class="pi pi-chart-bar"></i>
-          <span>Carboidratos</span>
+          <span>{{ "summary.carbs" | t }}</span>
           <span class="value">{{ totalCarbs | number: "1.1-1" }} g</span>
         </div>
         <div class="total-item">
           <i class="pi pi-circle"></i>
-          <span>Gorduras</span>
+          <span>{{ "summary.fat" | t }}</span>
           <span class="value">{{ totalFat | number: "1.1-1" }} g</span>
         </div>
         <div class="total-item">
           <i class="pi pi-leaf"></i>
-          <span>Fibras</span>
+          <span>{{ "summary.fiber" | t }}</span>
           <span class="value">{{ totalFiber | number: "1.1-1" }} g</span>
         </div>
         <div class="total-item total-item-last">
           <i class="pi pi-check-circle"></i>
-          <span>Total de Refeições</span>
+          <span>{{ "summary.totalMeals" | t }}</span>
           <span class="value">{{ meals.length }}</span>
         </div>
       </div>
@@ -57,22 +56,21 @@
           class="pi pi-info-circle"
           style="font-size: 2rem; color: var(--text-muted)"
         ></i>
-        <p>Adicione alimentos às refeições para ver os totais nutricionais.</p>
+        <p>{{ "summary.empty" | t }}</p>
       </div>
     </ng-template>
   </div>
 </div>
 
-<!-- Global Actions (moved to bottom for better UX) -->
 <div class="global-actions">
   <button
     pButton
     type="button"
-    label="Exportar PDF"
+    [label]="'summary.exportPdf' | t"
     icon="pi pi-file-pdf"
     (click)="exportToPdf.emit()"
     class="btn btn-secondary"
-    pTooltip="Exportar plano completo como PDF"
+    [pTooltip]="'summary.exportPdfTooltip' | t"
     tooltipPosition="top"
   ></button>
 </div>

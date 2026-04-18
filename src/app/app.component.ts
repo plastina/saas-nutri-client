@@ -41,7 +41,9 @@ import {
   PlanCalculateResponse,
 } from './models/plan-calc.model';
 import { PlanTotals } from './models/plan-totals.model';
+import { TranslatePipe } from './pipes/t.pipe';
 import { FoodApiService } from './services/food-api.service';
+import { AppLanguage, I18nService } from './services/i18n.service';
 import { PdfExportService } from './services/pdf-export.service';
 import { Theme, ThemeService } from './services/theme.service';
 
@@ -61,6 +63,7 @@ const IMPORTS = [
   InputNumberModule,
   AutoCompleteModule,
   TooltipModule,
+  TranslatePipe,
   PatientSectionComponent,
   MealManagementComponent,
   PlanSummaryComponent,
@@ -103,6 +106,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   totalFiber = 0;
 
   currentTheme: Theme = 'light';
+  currentLanguage: AppLanguage = 'en';
+  languageOptions: Array<{
+    label: string;
+    value: AppLanguage;
+    flag: string;
+  }> = [];
 
   private readonly AUTOSAVE_STORAGE_KEY = 'saasNutri_autoSaveData_v1';
   private stateChanged = new Subject<void>();
@@ -120,6 +129,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private confirmationService: ConfirmationService,
     private themeService: ThemeService,
+    private i18nService: I18nService,
   ) {}
 
   get hasItemsInAnyMeal(): boolean {
@@ -129,6 +139,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.currentLanguage = this.i18nService.currentLanguage;
+    this.updateLanguageOptions();
     this.loadStateWithConfirmation();
     this.setupAutoSave();
     this.setupSearchDebounce();
@@ -155,9 +167,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private initializeDefaultMeals(): void {
     this.meals = [
-      { name: 'Café da Manhã', items: [] },
-      { name: 'Almoço', items: [] },
-      { name: 'Jantar', items: [] },
+      { name: this.i18nService.t('meal.default.breakfast'), items: [] },
+      { name: this.i18nService.t('meal.default.lunch'), items: [] },
+      { name: this.i18nService.t('meal.default.dinner'), items: [] },
     ];
   }
 
@@ -182,7 +194,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             catchError((err) => {
               this.messageService.add({
                 severity: 'error',
-                summary: 'Erro Busca',
+                summary: this.i18nService.t('toast.searchErrorSummary'),
                 detail: err.message,
               });
               this.isLoadingResults = false;
@@ -197,8 +209,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         if (results.length === 0) {
           this.messageService.add({
             severity: 'info',
-            summary: 'Nenhum Resultado',
-            detail: `Nenhum alimento encontrado.`,
+            summary: this.i18nService.t('toast.noResultsSummary'),
+            detail: this.i18nService.t('toast.noResultsDetail'),
           });
         }
       });
@@ -213,7 +225,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (!payload) return EMPTY;
           return this.foodApiService.calculatePlanCalories(payload).pipe(
             catchError((err) => {
-              console.error('Erro ao calcular calorias:', err);
+              console.error('Error calculating calories:', err);
               return EMPTY;
             }),
           );
@@ -258,11 +270,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (savedState) {
       const savedTimestamp = new Date(savedState.timestamp);
       this.confirmationService.confirm({
-        message: `Encontramos um trabalho não salvo de ${savedTimestamp.toLocaleDateString()} ${savedTimestamp.toLocaleTimeString()}. Deseja restaurá-lo?`,
-        header: 'Restaurar Trabalho?',
+        acceptButtonStyleClass: 'restore-work-accept-btn',
+        rejectButtonStyleClass: 'restore-work-reject-btn',
+        message: this.i18nService.t('confirm.restore.message', {
+          date: savedTimestamp.toLocaleDateString(),
+          time: savedTimestamp.toLocaleTimeString(),
+        }),
+        header: this.i18nService.t('confirm.restore.header'),
         icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Sim',
-        rejectLabel: 'Não',
+        acceptLabel: this.i18nService.t('confirm.yes'),
+        rejectLabel: this.i18nService.t('confirm.no'),
         accept: () => {
           this.meals = savedState.meals;
           this.patientSessionData = this.parsePatientDataOnLoad(
@@ -273,8 +290,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.calculateTotals();
           this.messageService.add({
             severity: 'info',
-            summary: 'Restaurado',
-            detail: 'Trabalho anterior restaurado.',
+            summary: this.i18nService.t('toast.restoreDoneSummary'),
+            detail: this.i18nService.t('toast.restoreDoneDetail'),
           });
           this.triggerStateChange();
           this.triggerPlanCalc();
@@ -325,8 +342,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (exists) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Atenção',
-        detail: `Refeição "${mealName}" já existe.`,
+        summary: this.i18nService.t('toast.warning'),
+        detail: this.i18nService.t('toast.mealExists', { mealName }),
       });
       return;
     }
@@ -334,8 +351,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedMealName = mealName;
     this.messageService.add({
       severity: 'success',
-      summary: 'Sucesso',
-      detail: `Refeição "${mealName}" adicionada!`,
+      summary: this.i18nService.t('toast.success'),
+      detail: this.i18nService.t('toast.mealAdded', { mealName }),
     });
     this.triggerStateChange();
     this.triggerPlanCalc();
@@ -391,8 +408,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.selectedMealName || this.selectedFoodsForAdding.length === 0) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Atenção',
-        detail: 'Selecione uma refeição e alimentos para adicionar.',
+        summary: this.i18nService.t('toast.warning'),
+        detail: this.i18nService.t('toast.selectMealAndFoods'),
       });
       return;
     }
@@ -402,8 +419,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!targetMeal) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro',
-        detail: 'Refeição alvo não encontrada.',
+        summary: this.i18nService.t('toast.error'),
+        detail: this.i18nService.t('toast.targetMealNotFound'),
       });
       return;
     }
@@ -419,7 +436,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           : [
               {
                 measure_name: 'grama',
-                display_name: 'Grama',
+                display_name: 'Gram',
                 gram_equivalent: 1,
               },
               ...measures,
@@ -451,8 +468,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.triggerPlanCalc();
     this.messageService.add({
       severity: 'success',
-      summary: 'Sucesso',
-      detail: 'Alimentos adicionados à refeição.',
+      summary: this.i18nService.t('toast.success'),
+      detail: this.i18nService.t('toast.foodsAdded'),
     });
   }
 
@@ -465,7 +482,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!foodId) {
       this.availableMeasures = [
-        { measure_name: 'grama', display_name: 'Grama', gram_equivalent: 1 },
+        { measure_name: 'grama', display_name: 'Gram', gram_equivalent: 1 },
       ];
       return;
     }
@@ -478,7 +495,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           : [
               {
                 measure_name: 'grama',
-                display_name: 'Grama',
+                display_name: 'Gram',
                 gram_equivalent: 1,
               },
               ...measures,
@@ -495,12 +512,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (err) => {
         this.messageService.add({
           severity: 'error',
-          summary: 'Erro Medidas',
-          detail:
-            err.message || 'Não foi possível carregar as medidas caseiras.',
+          summary: this.i18nService.t('toast.measureErrorSummary'),
+          detail: err.message || this.i18nService.t('toast.measureErrorDetail'),
         });
         this.availableMeasures = [
-          { measure_name: 'grama', display_name: 'Grama', gram_equivalent: 1 },
+          { measure_name: 'grama', display_name: 'Gram', gram_equivalent: 1 },
         ];
       },
     });
@@ -662,12 +678,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           importedData.patientSessionData
         ) {
           if (!Array.isArray(importedData.meals))
-            throw new Error('Inválido: "meals" não é array.');
+            throw new Error('Invalid: "meals" is not an array.');
           if (
             typeof importedData.patientSessionData !== 'object' ||
             importedData.patientSessionData === null
           )
-            throw new Error('Inválido: "patientSessionData" não é objeto.');
+            throw new Error('Invalid: "patientSessionData" is not an object.');
           importedMeals = importedData.meals as Meal[];
           importedPatientData = importedData.patientSessionData as PatientData;
         } else if (Array.isArray(importedData)) {
@@ -675,12 +691,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           importedPatientData = null;
           this.messageService.add({
             severity: 'info',
-            summary: 'Aviso',
-            detail: 'Formato antigo importado (apenas refeições).',
+            summary: this.i18nService.t('toast.warning'),
+            detail: this.i18nService.t('toast.importLegacy'),
             life: 4000,
           });
         } else {
-          throw new Error('Arquivo JSON inválido: formato desconhecido.');
+          throw new Error('Invalid JSON file: unknown format.');
         }
         this.meals = importedMeals;
         this.patientSessionData =
@@ -691,16 +707,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.triggerPlanCalc();
         this.messageService.add({
           severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Plano importado!',
+          summary: this.i18nService.t('toast.success'),
+          detail: this.i18nService.t('toast.importSuccess'),
           life: 3000,
         });
       } catch (error: unknown) {
-        let errorMessage = 'Erro desconhecido ao processar arquivo.';
+        let errorMessage = 'Unknown error while processing file.';
         if (error instanceof Error) errorMessage = error.message;
         this.messageService.add({
           severity: 'error',
-          summary: 'Falha Importação',
+          summary: this.i18nService.t('toast.importErrorSummary'),
           detail: errorMessage,
           life: 5000,
         });
@@ -711,8 +727,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     reader.onerror = () => {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erro Leitura',
-        detail: 'Não foi possível ler o arquivo.',
+        summary: this.i18nService.t('toast.importReadErrorSummary'),
+        detail: this.i18nService.t('toast.importReadErrorDetail'),
         life: 5000,
       });
       if (input) input.value = '';
@@ -726,8 +742,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!hasPatientName && !hasItems) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Atenção',
-        detail: 'Nada para exportar.',
+        summary: this.i18nService.t('toast.warning'),
+        detail: this.i18nService.t('toast.exportNothing'),
       });
       return;
     }
@@ -740,13 +756,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    let fileName = 'plano-alimentar.json';
+    let fileName = 'meal-plan.json';
     if (hasPatientName && this.patientSessionData.name) {
       const safeName = this.patientSessionData.name
         .trim()
         .replace(/\s+/g, '_')
         .replace(/[^a-zA-Z0-9_.-]/g, '');
-      fileName = `plano-${safeName || 'paciente'}.json`;
+      fileName = `meal-plan-${safeName || 'patient'}.json`;
     }
     a.download = fileName;
     document.body.appendChild(a);
@@ -755,8 +771,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     URL.revokeObjectURL(url);
     this.messageService.add({
       severity: 'success',
-      summary: 'Sucesso',
-      detail: `Plano exportado para ${fileName}!`,
+      summary: this.i18nService.t('toast.success'),
+      detail: this.i18nService.t('toast.exportSuccess', { fileName }),
     });
   }
 
@@ -764,8 +780,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.hasItemsInAnyMeal) {
       this.messageService.add({
         severity: 'warn',
-        summary: 'Atenção',
-        detail: 'Não há itens para gerar PDF.',
+        summary: this.i18nService.t('toast.warning'),
+        detail: this.i18nService.t('toast.pdfNoItems'),
       });
       return;
     }
@@ -788,9 +804,35 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     this.messageService.add({
       severity: 'success',
-      summary: 'Sucesso',
-      detail: 'PDF gerado!',
+      summary: this.i18nService.t('toast.success'),
+      detail: this.i18nService.t('toast.pdfSuccess'),
     });
+  }
+
+  changeLanguage(language: AppLanguage): void {
+    this.i18nService.setLanguage(language);
+    this.currentLanguage = language;
+    this.updateLanguageOptions();
+  }
+
+  private updateLanguageOptions(): void {
+    this.languageOptions = [
+      {
+        label: this.i18nService.t('language.pt-BR'),
+        value: 'pt-BR',
+        flag: '🇧🇷',
+      },
+      {
+        label: this.i18nService.t('language.en'),
+        value: 'en',
+        flag: '🇺🇸',
+      },
+      {
+        label: this.i18nService.t('language.fr'),
+        value: 'fr',
+        flag: '🇫🇷',
+      },
+    ];
   }
 
   toggleTheme(): void {

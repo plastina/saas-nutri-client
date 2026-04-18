@@ -18,9 +18,9 @@
                 icon="pi pi-pencil"
                 class="meal-edit-btn p-button-sm p-button-text"
                 (click)="startEditMeal(mealIndex, meal.name)"
-                pTooltip="Editar nome da refeição"
+                [pTooltip]="'builder.editMeal' | t"
                 tooltipPosition="top"
-                aria-label="Editar nome da refeição"
+                [attr.aria-label]="'builder.editMeal' | t"
               ></button>
               <button
                 pButton
@@ -28,9 +28,9 @@
                 icon="pi pi-trash"
                 class="meal-delete-btn p-button-sm p-button-danger p-button-text"
                 (click)="deleteMeal(mealIndex)"
-                pTooltip="Excluir refeição"
+                [pTooltip]="'builder.deleteMeal' | t"
                 tooltipPosition="top"
-                aria-label="Excluir refeição"
+                [attr.aria-label]="'builder.deleteMeal' | t"
               ></button>
             </div>
           </div>
@@ -42,7 +42,7 @@
               pInputText
               type="text"
               [(ngModel)]="editedMealName"
-              placeholder="Novo nome"
+              [placeholder]="'builder.newName' | t"
               (keydown.enter)="saveEditMeal(mealIndex)"
               class="p-inputtext-sm edit-meal-name-input"
             />
@@ -52,9 +52,9 @@
               icon="pi pi-check"
               class="meal-save-btn p-button-sm p-button-success p-button-text"
               (click)="saveEditMeal(mealIndex)"
-              pTooltip="Salvar"
+              [pTooltip]="'builder.save' | t"
               tooltipPosition="top"
-              aria-label="Salvar novo nome"
+              [attr.aria-label]="'builder.saveNewName' | t"
             ></button>
             <button
               pButton
@@ -62,9 +62,9 @@
               icon="pi pi-times"
               class="meal-cancel-btn p-button-sm p-button-secondary p-button-text"
               (click)="cancelEditMeal()"
-              pTooltip="Cancelar"
+              [pTooltip]="'builder.cancel' | t"
               tooltipPosition="top"
-              aria-label="Cancelar edição"
+              [attr.aria-label]="'builder.cancelEdit' | t"
             ></button>
           </div>
         </div>
@@ -95,7 +95,7 @@
 
             <div class="item-measure">
               <p-select
-                placeholder="Medida"
+                [placeholder]="'builder.measure' | t"
                 class="meal-item-measure-dropdown p-inputtext-sm"
                 appendTo="body"
                 [options]="item.measures"
@@ -120,9 +120,9 @@
                   removeFoodFromDiet(mealIndex, itemIndex);
                   $event.stopPropagation()
                 "
-                pTooltip="Remover item"
+                [pTooltip]="'builder.removeItem' | t"
                 tooltipPosition="top"
-                aria-label="Remover item"
+                [attr.aria-label]="'builder.removeItem' | t"
               ></button>
             </div>
           </div>
@@ -130,11 +130,11 @@
             *ngIf="!meal.items || meal.items.length === 0"
             class="empty-meal-message"
           >
-            <i>Refeição vazia.</i>
+            <i>{{ "builder.emptyMeal" | t }}</i>
           </div>
         </div>
       </ng-template>
     </p-card>
   </div>
 </div>
-<p *ngIf="!meals || meals.length === 0">Nenhuma refeição adicionada ainda.</p>
+<p *ngIf="!meals || meals.length === 0">{{ "builder.noMeals" | t }}</p>

@@ -1,14 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { Meal } from '../../models/meal.model';
 import { Measure } from '../../models/measure.model';
+import { TranslatePipe } from '../../pipes/t.pipe';
 import { DietBuilderComponent } from '../diet-builder/diet-builder.component';
 
 @Component({
   selector: 'app-plan-summary',
   standalone: true,
-  imports: [CommonModule, ButtonModule, DietBuilderComponent],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    TooltipModule,
+    DietBuilderComponent,
+    TranslatePipe,
+  ],
   templateUrl: './plan-summary.component.html',
   styleUrls: ['./plan-summary.component.scss'],
 })

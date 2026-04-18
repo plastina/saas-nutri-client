@@ -1,61 +1,86 @@
 <p-toast></p-toast>
 <p-confirmDialog icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<!-- Header -->
 <header class="app-header">
   <div class="container app-header__container">
     <div class="app-header__brand">
-      <h1 class="app-header__title">Plano Alimentar</h1>
+      <h1 class="app-header__title">{{ "header.title" | t }}</h1>
       <p class="app-header__subtitle">
-        Registro nutricional com foco em acompanhamento de paciente e prescricao
-        alimentar.
+        {{ "header.subtitle" | t }}
       </p>
 
       <div class="app-header__meta">
         <span class="meta-chip">
           <i class="pi pi-save"></i>
-          Prontuario salvo automaticamente
+          {{ "header.autosave" | t }}
         </span>
         <span class="meta-chip" [class.is-active]="hasItemsInAnyMeal">
           <i class="pi pi-chart-line"></i>
-          {{ hasItemsInAnyMeal ? "Acompanhamento em curso" : "Nova avaliacao" }}
+          {{
+            hasItemsInAnyMeal
+              ? ("header.progress.inProgress" | t)
+              : ("header.progress.new" | t)
+          }}
         </span>
       </div>
     </div>
 
-    <nav class="app-header__actions" aria-label="Acoes do plano">
-      <button
-        pButton
-        type="button"
-        [icon]="currentTheme === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
-        (click)="toggleTheme()"
-        class="theme-toggle-btn"
-        pTooltip="Alternar tema"
-        tooltipPosition="bottom"
-      ></button>
+    <nav class="app-header__actions" [attr.aria-label]="'header.actions' | t">
+      <div class="app-header__actions-top">
+        <p-dropdown
+          [options]="languageOptions"
+          [(ngModel)]="currentLanguage"
+          (ngModelChange)="changeLanguage($event)"
+          optionLabel="label"
+          optionValue="value"
+          appendTo="body"
+          [ariaLabel]="'header.languageAria' | t"
+        >
+          <ng-template pTemplate="selectedItem" let-selectedOption>
+            <span *ngIf="selectedOption"
+              >{{ selectedOption.flag }} {{ selectedOption.label }}</span
+            >
+          </ng-template>
+          <ng-template pTemplate="item" let-option>
+            <span>{{ option.flag }} {{ option.label }}</span>
+          </ng-template>
+        </p-dropdown>
 
-      <button
-        pButton
-        type="button"
-        label="Exportar JSON"
-        icon="pi pi-download"
-        (click)="exportToJson()"
-        [disabled]="!hasItemsInAnyMeal && !patientSessionData.name"
-        class="btn btn-primary app-action-btn"
-        pTooltip="Exportar plano como JSON"
-        tooltipPosition="bottom"
-      ></button>
+        <button
+          pButton
+          type="button"
+          [icon]="currentTheme === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
+          (click)="toggleTheme()"
+          class="theme-toggle-btn"
+          [pTooltip]="'header.themeToggle' | t"
+          tooltipPosition="bottom"
+        ></button>
+      </div>
 
-      <button
-        pButton
-        type="button"
-        label="Importar JSON"
-        icon="pi pi-upload"
-        (click)="fileImportInput.click()"
-        class="btn btn-secondary app-action-btn"
-        pTooltip="Importar plano de arquivo JSON"
-        tooltipPosition="bottom"
-      ></button>
+      <div class="app-header__actions-bottom">
+        <button
+          pButton
+          type="button"
+          [label]="'header.exportJson' | t"
+          icon="pi pi-download"
+          (click)="exportToJson()"
+          [disabled]="!hasItemsInAnyMeal && !patientSessionData.name"
+          class="btn btn-primary app-action-btn"
+          [pTooltip]="'header.exportJsonTooltip' | t"
+          tooltipPosition="bottom"
+        ></button>
+
+        <button
+          pButton
+          type="button"
+          [label]="'header.importJson' | t"
+          icon="pi pi-upload"
+          (click)="fileImportInput.click()"
+          class="btn btn-secondary app-action-btn"
+          [pTooltip]="'header.importJsonTooltip' | t"
+          tooltipPosition="bottom"
+        ></button>
+      </div>
     </nav>
 
     <input
@@ -69,16 +94,13 @@
   </div>
 </header>
 
-<!-- Main Content -->
 <main class="container">
-  <!-- Patient Section -->
   <section class="plan-summary-wrapper">
     <app-patient-section
       [patientData]="patientSessionData"
       (patientDataChange)="onPatientDataChange()"
     ></app-patient-section>
 
-    <!-- Meal Management -->
     <app-meal-management
       [meals]="meals"
       [selectedMealName]="selectedMealName"

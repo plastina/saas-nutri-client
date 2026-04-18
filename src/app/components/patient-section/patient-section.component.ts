@@ -6,6 +6,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { PatientData } from '../../models/patient-data.model';
+import { TranslatePipe } from '../../pipes/t.pipe';
 
 @Component({
   selector: 'app-patient-section',
@@ -17,6 +18,7 @@ import { PatientData } from '../../models/patient-data.model';
     DatePickerModule,
     InputNumberModule,
     Textarea,
+    TranslatePipe,
   ],
   templateUrl: './patient-section.component.html',
   styleUrls: ['./patient-section.component.scss'],

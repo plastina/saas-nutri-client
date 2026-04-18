@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { Food } from '../../models/food.model';
 import { Meal } from '../../models/meal.model';
+import { TranslatePipe } from '../../pipes/t.pipe';
 
 @Component({
   selector: 'app-meal-management',
@@ -22,6 +23,7 @@ import { Meal } from '../../models/meal.model';
     AutoCompleteModule,
     TooltipModule,
     DividerModule,
+    TranslatePipe,
   ],
   templateUrl: './meal-management.component.html',
   styleUrls: ['./meal-management.component.scss'],
