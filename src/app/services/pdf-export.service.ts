@@ -17,121 +17,215 @@ export class PdfExportService {
     patientData?: PatientData,
   ) {
     const doc = new jsPDF();
-    let yPos = 20;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginX = 14;
+    const contentWidth = pageWidth - marginX * 2;
+    const appName = 'Plano Alimentar Personalizado';
+    const generatedAt = new Date().toLocaleDateString('pt-BR');
 
-    // Title with custom styling
-    doc.setFont('times', 'bold');
-    doc.setFontSize(22);
-    doc.setTextColor(34, 139, 34); // Forest green
-    doc.text('Plano Alimentar Personalizado', 105, yPos, { align: 'center' });
-    yPos += 15;
+    const palette = {
+      navy: [16, 43, 89] as [number, number, number],
+      cobalt: [26, 86, 219] as [number, number, number],
+      sky: [56, 139, 253] as [number, number, number],
+      baby: [219, 234, 254] as [number, number, number],
+      surfaceBlue: [239, 246, 255] as [number, number, number],
+      borderBlue: [147, 197, 253] as [number, number, number],
+      slate: [51, 65, 85] as [number, number, number],
+      muted: [100, 116, 139] as [number, number, number],
+      white: [255, 255, 255] as [number, number, number],
+    };
 
-    // Subtitle
-    doc.setFont('times', 'italic');
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Nutrição Saudável e Equilibrada', 105, yPos, { align: 'center' });
-    yPos += 10;
+    const spacing = {
+      sectionGap: 9, // big gap between different contexts
+      sectionHeaderHeight: 10,
+      titleToContent: 3, // small gap inside same context
+      lineHeight: 4,
+      contentRowGap: 2,
+      mealTitleToTable: 3,
+      cardPaddingX: 4,
+      cardPaddingY: 4,
+      cardBottomGap: 4,
+    };
 
-    doc.setFont('times', 'normal');
-    doc.setFontSize(11);
+    let yPos = 17;
 
-    // Patient info section with background
+    const ensureSpace = (requiredHeight: number): void => {
+      if (yPos + requiredHeight > pageHeight - 20) {
+        doc.addPage();
+        yPos = 18;
+      }
+    };
+
+    const drawCard = (y: number, h: number): void => {
+      doc.setFillColor(...palette.surfaceBlue);
+      doc.setDrawColor(...palette.borderBlue);
+      doc.roundedRect(marginX, y, contentWidth, h, 2, 2, 'FD');
+    };
+
+    const drawSectionHeading = (
+      text: string,
+      topGap = spacing.sectionGap,
+    ): void => {
+      yPos += topGap;
+      ensureSpace(spacing.sectionHeaderHeight + spacing.titleToContent);
+      doc.setFillColor(...palette.baby);
+      doc.roundedRect(marginX, yPos - 4, contentWidth, 10, 1.8, 1.8, 'F');
+      doc.setFillColor(...palette.cobalt);
+      doc.rect(marginX, yPos - 4, 3, 10, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(...palette.navy);
+      doc.text(text, marginX + 6, yPos + 1, { baseline: 'middle' });
+      yPos += spacing.sectionHeaderHeight + spacing.titleToContent;
+    };
+
+    doc.setFont('helvetica', 'normal');
+
+    // Premium header block
+    doc.setFillColor(...palette.baby);
+    doc.roundedRect(marginX, yPos - 7, contentWidth, 31, 2, 2, 'F');
+
+    doc.setFillColor(...palette.navy);
+    doc.roundedRect(pageWidth - marginX - 22, yPos - 4, 18, 10, 1.6, 1.6, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(...palette.white);
+    doc.text('PAP', pageWidth - marginX - 13, yPos + 1, {
+      align: 'center',
+      baseline: 'middle',
+    });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor(...palette.navy);
+    doc.text(appName, marginX + 4, yPos + 1.5, {
+      align: 'left',
+      baseline: 'middle',
+    });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(...palette.cobalt);
+    doc.text('Relatório nutricional completo', marginX + 4, yPos + 9, {
+      align: 'left',
+      baseline: 'middle',
+    });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...palette.muted);
+    doc.text(`Gerado em ${generatedAt}`, marginX + 4, yPos + 15, {
+      align: 'left',
+      baseline: 'middle',
+    });
+
+    doc.setDrawColor(...palette.borderBlue);
+    doc.setLineWidth(0.3);
+    doc.line(marginX + 4, yPos + 20, pageWidth - (marginX + 4), yPos + 20);
+
+    yPos += 33;
+
     if (
       patientData?.name ||
       patientData?.dob ||
       patientData?.weight ||
       patientData?.height
     ) {
-      doc.setFillColor(240, 248, 255); // Light blue background
-      doc.rect(14, yPos - 5, 180, 25, 'F');
-      doc.setFont('times', 'bold');
-      doc.setTextColor(25, 25, 112); // Midnight blue
-      doc.text('Informações do Paciente', 14, yPos);
-      yPos += 6;
-      doc.setFont('times', 'normal');
-      doc.setTextColor(0, 0, 0);
+      drawSectionHeading('Informações do Paciente');
+
+      const leftRows: string[] = [];
+      const rightRows: string[] = [];
 
       if (patientData?.name) {
-        doc.setFont('times', 'bold');
-        doc.text('Nome:', 16, yPos);
-        doc.setFont('times', 'normal');
-        doc.text(patientData.name!, 35, yPos);
-        yPos += 5;
+        leftRows.push(`Nome: ${patientData.name}`);
       }
-
       if (patientData?.dob) {
         const formattedDob = patientData.dob.toLocaleDateString('pt-BR', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
         });
-        doc.setFont('times', 'bold');
-        doc.text('Data de Nascimento:', 16, yPos);
-        doc.setFont('times', 'normal');
-        doc.text(formattedDob, 55, yPos);
-        yPos += 5;
+        leftRows.push(`Nascimento: ${formattedDob}`);
       }
-
-      let weightHeightLine = '';
       if (patientData?.weight) {
-        weightHeightLine += `Peso: ${patientData.weight.toFixed(1)} kg`;
+        rightRows.push(`Peso: ${patientData.weight.toFixed(1)} kg`);
       }
       if (patientData?.height) {
-        if (weightHeightLine) weightHeightLine += '    ';
-        weightHeightLine += `Altura: ${patientData.height.toFixed(0)} cm`;
+        rightRows.push(`Altura: ${patientData.height.toFixed(0)} cm`);
       }
-      if (weightHeightLine) {
-        doc.setFont('times', 'normal');
-        doc.text(weightHeightLine, 16, yPos);
-        yPos += 5;
-      }
-      yPos += 5;
+
+      const rows = Math.max(leftRows.length, rightRows.length, 1);
+      const cardContentHeight =
+        rows * spacing.lineHeight + (rows - 1) * spacing.contentRowGap;
+      const patientCardHeight = spacing.cardPaddingY * 2 + cardContentHeight;
+
+      ensureSpace(
+        patientCardHeight + spacing.cardBottomGap + spacing.sectionGap,
+      );
+      drawCard(yPos - 1, patientCardHeight);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...palette.slate);
+      const leftX = marginX + spacing.cardPaddingX;
+      const rightX = marginX + contentWidth / 2 + 2;
+      const baseY = yPos + spacing.cardPaddingY;
+
+      leftRows.forEach((text, index) => {
+        const rowY =
+          baseY + index * (spacing.lineHeight + spacing.contentRowGap);
+        doc.text(text, leftX, rowY);
+      });
+
+      rightRows.forEach((text, index) => {
+        const rowY =
+          baseY + index * (spacing.lineHeight + spacing.contentRowGap);
+        doc.text(text, rightX, rowY);
+      });
+
+      // Real breathing space below patient card before next section.
+      yPos += patientCardHeight + spacing.cardBottomGap;
     }
 
     if (patientData?.goals) {
-      doc.setFont('times', 'bold');
-      doc.setTextColor(25, 25, 112);
-      doc.text('Objetivos:', 14, yPos);
-      yPos += 5;
-      doc.setFont('times', 'normal');
-      doc.setTextColor(0, 0, 0);
-      const goalsLines = doc.splitTextToSize(patientData.goals, 175);
-      doc.text(goalsLines, 14, yPos);
-      yPos += goalsLines.length * 4 + 2;
+      drawSectionHeading('Objetivos');
+      ensureSpace(spacing.sectionGap);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...palette.slate);
+      const goalsLines = doc.splitTextToSize(patientData.goals, contentWidth);
+      doc.text(goalsLines, marginX, yPos);
+      yPos += goalsLines.length * spacing.lineHeight;
     }
 
     if (patientData?.observations) {
-      doc.setFont('times', 'bold');
-      doc.setTextColor(25, 25, 112);
-      doc.text('Observações:', 14, yPos);
-      yPos += 5;
-      doc.setFont('times', 'normal');
-      doc.setTextColor(0, 0, 0);
-      const obsLines = doc.splitTextToSize(patientData.observations, 175);
-      doc.text(obsLines, 14, yPos);
-      yPos += obsLines.length * 4 + 2;
+      drawSectionHeading('Observações');
+      ensureSpace(spacing.sectionGap);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...palette.slate);
+      const obsLines = doc.splitTextToSize(
+        patientData.observations,
+        contentWidth,
+      );
+      doc.text(obsLines, marginX, yPos);
+      yPos += obsLines.length * spacing.lineHeight;
     }
 
-    yPos += 10;
-    doc.setFont('times', 'normal');
-    doc.setFontSize(12);
+    meals.forEach((meal, mealIndex) => {
+      drawSectionHeading(`Refeição ${mealIndex + 1}`);
+      ensureSpace(12);
 
-    meals.forEach((meal) => {
-      if (yPos > 250) {
-        doc.addPage();
-        yPos = 20;
-      }
-
-      doc.setFont('times', 'bold');
-      doc.setFontSize(14);
-      doc.setTextColor(34, 139, 34);
-      doc.text(meal.name, 14, yPos);
-      doc.setTextColor(0, 0, 0);
-      yPos += 8;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11.5);
+      doc.setTextColor(...palette.navy);
+      doc.text(meal.name, marginX, yPos);
+      yPos += spacing.mealTitleToTable;
 
       const head = [
-        ['Alimento', 'Qtd (g)', 'Kcal', 'Prot (g)', 'Carb (g)', 'Fat (g)'],
+        ['Alimento', 'Qtd (g)', 'Kcal', 'Prot (g)', 'Carb (g)', 'Gord (g)'],
       ];
       const body = meal.items.map((item) => {
         const food = item.food || {};
@@ -150,84 +244,108 @@ export class PdfExportService {
 
       if (body.length > 0) {
         autoTable(doc, {
-          head: head,
-          body: body,
+          head,
+          body,
           startY: yPos,
           theme: 'grid',
           headStyles: {
-            fillColor: [34, 139, 34],
-            textColor: [255, 255, 255],
+            fillColor: palette.sky,
+            textColor: palette.white,
             fontStyle: 'bold',
             halign: 'center',
+            valign: 'middle',
+            lineColor: palette.borderBlue,
+            lineWidth: 0.2,
           },
           styles: {
-            font: 'times',
+            font: 'helvetica',
             fontSize: 9,
-            cellPadding: 2,
-            lineColor: [200, 200, 200],
-            lineWidth: 0.1,
+            cellPadding: { top: 2.2, right: 2, bottom: 2.2, left: 2 },
+            textColor: palette.slate,
+            lineColor: palette.borderBlue,
+            lineWidth: 0.15,
+            halign: 'center',
+            valign: 'middle',
           },
           columnStyles: {
-            0: { cellWidth: 55, halign: 'left' },
-            1: { cellWidth: 20, halign: 'center' },
-            2: { cellWidth: 20, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
-            4: { cellWidth: 20, halign: 'center' },
-            5: { cellWidth: 20, halign: 'center' },
+            0: { cellWidth: 76, halign: 'left', valign: 'middle' },
+            1: { cellWidth: 20, halign: 'center', valign: 'middle' },
+            2: { cellWidth: 18, halign: 'center', valign: 'middle' },
+            3: { cellWidth: 20, halign: 'center', valign: 'middle' },
+            4: { cellWidth: 20, halign: 'center', valign: 'middle' },
+            5: { cellWidth: 20, halign: 'center', valign: 'middle' },
           },
-          margin: { left: 14, right: 14 },
-          alternateRowStyles: { fillColor: [245, 245, 245] },
+          margin: { left: marginX, right: marginX },
+          alternateRowStyles: { fillColor: palette.surfaceBlue },
         });
-        yPos = (doc as any).lastAutoTable.finalY + 10;
+        yPos = (doc as any).lastAutoTable.finalY;
       } else {
+        doc.setFont('helvetica', 'italic');
         doc.setFontSize(9);
-        doc.setFont('times', 'italic');
-        doc.setTextColor(128, 128, 128);
-        doc.text('Refeição vazia.', 14, yPos);
-        doc.setTextColor(0, 0, 0);
-        doc.setFont('times', 'normal');
-        doc.setFontSize(12);
-        yPos += 10;
+        doc.setTextColor(...palette.muted);
+        doc.text('Refeição vazia.', marginX, yPos + 2);
+        doc.setFont('helvetica', 'normal');
+        yPos += spacing.lineHeight + 3;
       }
     });
 
-    if (yPos > 240) {
-      doc.addPage();
-      yPos = 20;
+    drawSectionHeading(`Totais - ${appName}`);
+    ensureSpace(28);
+
+    const cardGap = 4;
+    const cardW = (contentWidth - cardGap * 2) / 3;
+    const cardH = 12;
+    const totalCards = [
+      `Calorias\n${totals.totalKcal.toFixed(0)} kcal`,
+      `Proteínas\n${totals.totalProtein.toFixed(1)} g`,
+      `Carboidratos\n${totals.totalCarbs.toFixed(1)} g`,
+      `Gorduras\n${totals.totalFat.toFixed(1)} g`,
+      `Fibras\n${totals.totalFiber.toFixed(1)} g`,
+      `Refeições\n${meals.length}`,
+    ];
+
+    totalCards.forEach((card, index) => {
+      const row = Math.floor(index / 3);
+      const col = index % 3;
+      const x = marginX + col * (cardW + cardGap);
+      const y = yPos + row * (cardH + 4);
+
+      doc.setFillColor(...palette.surfaceBlue);
+      doc.setDrawColor(...palette.borderBlue);
+      doc.roundedRect(x, y, cardW, cardH, 1.8, 1.8, 'FD');
+
+      const [label, value] = card.split('\n');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...palette.muted);
+      doc.text(label, x + cardW / 2, y + 4, { align: 'center' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(...palette.navy);
+      doc.text(value, x + cardW / 2, y + 9, { align: 'center' });
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let page = 1; page <= pageCount; page++) {
+      doc.setPage(page);
+
+      // Decorative page lines
+      doc.setDrawColor(...palette.borderBlue);
+      doc.setLineWidth(0.2);
+      doc.line(marginX, 10, pageWidth - marginX, 10);
+      doc.line(marginX, pageHeight - 12, pageWidth - marginX, pageHeight - 12);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...palette.muted);
+      doc.text(
+        `${appName} • Gerado em ${generatedAt} • Página ${page}/${pageCount}`,
+        pageWidth / 2,
+        pageHeight - 8,
+        { align: 'center' },
+      );
     }
-
-    // Totals section with background
-    doc.setFillColor(240, 248, 255);
-    doc.rect(14, yPos - 5, 180, 30, 'F');
-    doc.setFont('times', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(25, 25, 112);
-    doc.text('Totais do Plano Alimentar', 14, yPos);
-    yPos += 8;
-    doc.setFont('times', 'normal');
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Calorias: ${totals.totalKcal.toFixed(0)} kcal`, 16, yPos);
-    yPos += 5;
-    doc.text(`Proteínas: ${totals.totalProtein.toFixed(1)} g`, 16, yPos);
-    yPos += 5;
-    doc.text(`Carboidratos: ${totals.totalCarbs.toFixed(1)} g`, 16, yPos);
-    yPos += 5;
-    doc.text(`Gorduras: ${totals.totalFat.toFixed(1)} g`, 16, yPos);
-    yPos += 5;
-    doc.text(`Fibras: ${totals.totalFiber.toFixed(1)} g`, 16, yPos);
-
-    // Footer
-    const pageHeight = doc.internal.pageSize.height;
-    doc.setFont('times', 'italic');
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(
-      `Gerado em ${new Date().toLocaleDateString('pt-BR')} - SaaS Nutri`,
-      105,
-      pageHeight - 10,
-      { align: 'center' },
-    );
 
     doc.save('plano-alimentar-personalizado.pdf');
   }
