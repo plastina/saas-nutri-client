@@ -1,30 +1,63 @@
 <p-toast></p-toast>
 <p-confirmDialog icon="pi pi-exclamation-triangle"></p-confirmDialog>
-<p-toolbar styleClass="app-main-toolbar">
-  <div class="toolbar-group-start">
-    <i class="pi pi-table p-mr-2"></i> Plano Alimentar System
-  </div>
-</p-toolbar>
 
-<div class="global-actions">
-  <div class="p-d-flex p-flex-wrap">
-    <button
-      pButton
-      type="button"
-      label="Exportar (JSON)"
-      icon="pi pi-download"
-      (click)="exportToJson()"
-      [disabled]="!hasItemsInAnyMeal && !patientSessionData.name"
-      class="p-button-secondary p-mr-2 mb-2"
-    ></button>
-    <button
-      type="button"
-      pButton
-      label="Importar (JSON)"
-      icon="pi pi-upload"
-      (click)="fileImportInput.click()"
-      class="p-button-secondary p-mr-2 mb-2"
-    ></button>
+<!-- Header -->
+<header class="app-header">
+  <div class="container app-header__container">
+    <div class="app-header__brand">
+      <h1 class="app-header__title">Plano Alimentar</h1>
+      <p class="app-header__subtitle">
+        Registro nutricional com foco em acompanhamento de paciente e prescricao
+        alimentar.
+      </p>
+
+      <div class="app-header__meta">
+        <span class="meta-chip">
+          <i class="pi pi-save"></i>
+          Prontuario salvo automaticamente
+        </span>
+        <span class="meta-chip" [class.is-active]="hasItemsInAnyMeal">
+          <i class="pi pi-chart-line"></i>
+          {{ hasItemsInAnyMeal ? "Acompanhamento em curso" : "Nova avaliacao" }}
+        </span>
+      </div>
+    </div>
+
+    <nav class="app-header__actions" aria-label="Acoes do plano">
+      <button
+        pButton
+        type="button"
+        [icon]="currentTheme === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
+        (click)="toggleTheme()"
+        class="theme-toggle-btn"
+        pTooltip="Alternar tema"
+        tooltipPosition="bottom"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Exportar JSON"
+        icon="pi pi-download"
+        (click)="exportToJson()"
+        [disabled]="!hasItemsInAnyMeal && !patientSessionData.name"
+        class="btn btn-primary app-action-btn"
+        pTooltip="Exportar plano como JSON"
+        tooltipPosition="bottom"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        label="Importar JSON"
+        icon="pi pi-upload"
+        (click)="fileImportInput.click()"
+        class="btn btn-secondary app-action-btn"
+        pTooltip="Importar plano de arquivo JSON"
+        tooltipPosition="bottom"
+      ></button>
+    </nav>
+
     <input
       hidden
       type="file"
@@ -34,16 +67,18 @@
       #fileImportInput
     />
   </div>
-</div>
-<div class="app-layout-container grid p-4">
-  <div class="col-12 md:col-6 xl:col-6">
+</header>
+
+<!-- Main Content -->
+<main class="container">
+  <!-- Patient Section -->
+  <section class="plan-summary-wrapper">
     <app-patient-section
       [patientData]="patientSessionData"
       (patientDataChange)="onPatientDataChange()"
     ></app-patient-section>
-  </div>
 
-  <div class="col-12 md:col-6 xl:col-6">
+    <!-- Meal Management -->
     <app-meal-management
       [meals]="meals"
       [selectedMealName]="selectedMealName"
@@ -57,9 +92,6 @@
       (addFoodsToMeal)="addAllSelectedFoodsToMeal()"
       (selectedMealNameChange)="selectedMealName = $event"
     ></app-meal-management>
-  </div>
-
-  <div class="col-12">
     <app-plan-summary
       [meals]="meals"
       [availableMeasures]="availableMeasures"
@@ -80,5 +112,5 @@
       (mealNameChanged)="handleMealNameChange($event)"
       (mealDeleted)="handleMealDelete($event)"
     ></app-plan-summary>
-  </div>
-</div>
+  </section>
+</main>

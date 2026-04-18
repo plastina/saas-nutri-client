@@ -7,4 +7,5 @@ export interface DietItem {
   selectedMeasure: string;
   quantityInGrams: number;
   measures: Measure[];
+  kcal?: number;
 }

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { Textarea } from 'primeng/inputtextarea';
+import { Textarea } from 'primeng/textarea';
 import { PatientData } from '../../models/patient-data.model';
 
 @Component({
@@ -14,7 +14,7 @@ import { PatientData } from '../../models/patient-data.model';
     CommonModule,
     FormsModule,
     InputTextModule,
-    CalendarModule,
+    DatePickerModule,
     InputNumberModule,
     Textarea,
   ],

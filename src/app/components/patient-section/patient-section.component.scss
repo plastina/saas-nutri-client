@@ -1,37 +1,177 @@
+:host {
+  display: block;
+}
+
+.patient-data-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+.diet-builder-section {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-section);
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-surface);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow);
+  align-self: start;
+}
 .section-title {
-  margin: 0;
-  margin-bottom: var(--spacing-sm, 0.5rem);
-  color: var(--primary-color);
+  margin: 0 0 var(--spacing-md) 0;
+}
+.plan-summary-layout {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: var(--spacing-md);
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.patient-form-layout {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.patient-primary-fields {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1fr;
+}
+
+.field-name {
+  grid-column: 1 / -1;
 }
 
 .field {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-xs);
+}
 
-  label {
-    margin-bottom: 0.25rem;
-    font-weight: 500;
-    display: block;
+.field label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  display: block;
+}
+
+.field input[pInputText],
+.field textarea[pTextarea] {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: var(--control-height);
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-control);
+  font-size: var(--font-size-base);
+  background: var(--surface-section);
+  color: var(--text-color);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* PrimeNG wrappers */
+.field p-datepicker,
+.field p-inputNumber {
+  display: block;
+  width: 100%;
+}
+
+/* Keep date of birth field full-width even with icon wrapper */
+.dob-field ::ng-deep p-datepicker,
+.dob-field ::ng-deep .p-datepicker,
+.dob-field ::ng-deep .p-inputwrapper,
+.dob-field ::ng-deep .p-datepicker-input {
+  width: 100%;
+}
+
+/* PrimeNG inner inputs */
+.field ::ng-deep p-datepicker input,
+.field ::ng-deep p-inputNumber input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  min-height: var(--control-height);
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-control);
+  font-size: var(--font-size-base);
+  background: var(--surface-section);
+  color: var(--text-color);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field input[pInputText]:focus,
+.field ::ng-deep p-datepicker input:focus,
+.field ::ng-deep p-inputNumber input:focus,
+.field textarea[pTextarea]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.1);
+}
+
+.field textarea[pTextarea] {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Grid layout for form fields */
+.patient-form-layout .grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+  .patient-primary-fields {
+    grid-template-columns: minmax(260px, 2fr) repeat(3, minmax(150px, 1fr));
+    align-items: end;
   }
 
-  input[pInputText],
-  p-calendar,
-  p-inputNumber,
-  textarea[pInputTextarea] {
-    width: 100%;
-  }
-
-  p-calendar {
-    display: block;
-    width: 100%;
-  }
-
-  p-inputNumber {
-    display: block;
-    width: 100%;
+  .field-name {
+    grid-column: auto;
   }
 }
 
-.full-width-input {
-  width: 100%;
+/* Specific field styling */
+.field input[type="text"]::placeholder,
+.field textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Validation states */
+.field.error input,
+.field.error ::ng-deep p-datepicker input,
+.field.error ::ng-deep p-inputNumber input,
+.field.error textarea {
+  border-color: var(--error-color);
+}
+
+.field.error input:focus,
+.field.error ::ng-deep p-datepicker input:focus,
+.field.error ::ng-deep p-inputNumber input:focus,
+.field.error textarea:focus {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 3px rgb(var(--error-rgb) / 0.1);
+}
+
+/* Success states */
+.field.success input,
+.field.success ::ng-deep p-datepicker input,
+.field.success ::ng-deep p-inputNumber input,
+.field.success textarea {
+  border-color: var(--success-color);
+}
+
+/* Disabled states */
+.field input:disabled,
+.field ::ng-deep p-datepicker input:disabled,
+.field ::ng-deep p-inputNumber input:disabled,
+.field textarea:disabled {
+  background: var(--surface-ground);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }

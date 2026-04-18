@@ -5,10 +5,11 @@ import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
+import { DietItem } from '../../models/diet-item.model';
 import { Meal } from '../../models/meal.model';
 import { Measure } from '../../models/measure.model';
 
@@ -21,7 +22,7 @@ const DIET_BUILDER_IMPORTS = [
   ButtonModule,
   DividerModule,
   TooltipModule,
-  DropdownModule,
+  SelectModule,
 ];
 
 @Component({
@@ -106,5 +107,26 @@ export class DietBuilderComponent {
       },
       reject: () => {},
     });
+  }
+
+  getItemKcal(item: DietItem): number {
+    if (typeof item?.kcal === 'number') return item.kcal;
+    if (!item?.food || typeof item.quantityInGrams !== 'number') return 0;
+    const quantityFactor = item.quantityInGrams / 100;
+    return (item.food.energy_kcal || 0) * quantityFactor;
+  }
+
+  getMealKcal(meal: Meal): number {
+    const hasApiItems =
+      Array.isArray(meal?.items) &&
+      meal.items.some((item) => typeof item?.kcal === 'number');
+    if (typeof meal?.totalKcal === 'number' && (hasApiItems || !meal?.items)) {
+      return meal.totalKcal;
+    }
+    if (!meal?.items?.length) return 0;
+    return meal.items.reduce(
+      (total, item) => total + this.getItemKcal(item),
+      0,
+    );
   }
 }

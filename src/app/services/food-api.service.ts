@@ -5,9 +5,13 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 import { Food } from '../models/food.model';
 import { Measure } from '../models/measure.model';
+import {
+  PlanCalculateRequest,
+  PlanCalculateResponse,
+} from '../models/plan-calc.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +29,15 @@ export class FoodApiService {
   getFoodMeasures(foodId: string): Observable<Measure[]> {
     const url = `${this.apiUrl}/foods/${foodId}/measures`;
     return this.http.get<Measure[]>(url).pipe(catchError(this.handleError));
+  }
+
+  calculatePlanCalories(
+    payload: PlanCalculateRequest,
+  ): Observable<PlanCalculateResponse> {
+    const url = `${this.apiUrl}/plan/calculate`;
+    return this.http
+      .post<PlanCalculateResponse>(url, payload)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

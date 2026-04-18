@@ -1,32 +1,124 @@
+:host {
+  display: block;
+}
+
+/* Global actions */
 .global-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 0.5rem;
-  margin-right: 1.7rem;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--surface-border);
+}
+
+/* Plan summary layout */
+.plan-summary-layout {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: var(--spacing-md);
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+/* Inner cards for plan sections */
+.diet-builder-section,
+.totals-section {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-section);
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-surface);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow);
+  align-self: start;
+}
+
+/* Diet builder section */
+.diet-builder-section {
+  min-width: 0;
 }
 
 .totals {
-  .total-item {
-    margin: 0;
-    padding-bottom: 0.25rem;
-  }
-
-  .total-item-last {
-    padding-bottom: 0;
-    margin-bottom: 1rem;
-  }
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-sm);
 }
 
-.no-totals-message {
-  margin-top: 1rem;
+.total-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.45rem 0.6rem;
+  background: var(--surface-ground);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--surface-border);
 }
 
-.section-title {
-  margin: 0;
-  margin-bottom: var(--spacing-sm, 0.5rem);
+.total-item i {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+}
+
+.total-item span {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+}
+
+.total-item .value {
+  margin-left: auto;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   color: var(--primary-color);
 }
 
-.app-layout-container.grid.align-start {
-  align-items: flex-start;
+.total-item-last {
+  border-top: 2px solid var(--primary-color);
+  background: var(--primary-light);
+}
+
+.no-totals-message {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: var(--spacing-xl);
+}
+
+/* Section titles */
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+/* Responsive design */
+@media (max-width: 1023px) {
+  .plan-summary-layout {
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 767px) {
+  .global-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .totals {
+    grid-template-columns: 1fr;
+  }
+
+  .total-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .total-item .value {
+    margin-left: 0;
+    align-self: flex-end;
+  }
 }

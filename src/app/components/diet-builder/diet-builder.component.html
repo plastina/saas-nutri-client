@@ -8,6 +8,9 @@
         <div class="meal-card-header-content">
           <div *ngIf="editingMealIndex !== mealIndex" class="meal-header-view">
             <h4 class="meal-title">{{ meal.name }}</h4>
+            <div class="meal-kcal">
+              {{ getMealKcal(meal) | number: "1.0-0" }} kcal
+            </div>
             <div class="meal-header-actions">
               <button
                 pButton
@@ -75,7 +78,7 @@
           >
             <div class="item-name heading-xs">{{ item.food.name }}</div>
 
-            <div class="item-qty-measure">
+            <div class="item-qty">
               <p-inputNumber
                 [(ngModel)]="item.displayQuantity"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
@@ -87,21 +90,26 @@
                 [minFractionDigits]="0"
                 [maxFractionDigits]="1"
                 class="meal-item-quantity-input p-inputtext-sm"
-                [style]="{ width: '80px' }"
               ></p-inputNumber>
+            </div>
 
-              <p-dropdown
+            <div class="item-measure">
+              <p-select
                 placeholder="Medida"
                 class="meal-item-measure-dropdown p-inputtext-sm"
-                [style]="{ 'min-width': '130px' }"
                 appendTo="body"
                 [options]="item.measures"
                 [(ngModel)]="item.selectedMeasure"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
                 optionLabel="measure_name"
                 optionValue="measure_name"
-              ></p-dropdown>
+              ></p-select>
             </div>
+
+            <div class="item-kcal">
+              {{ getItemKcal(item) | number: "1.0-0" }} kcal
+            </div>
+
             <div class="item-actions">
               <button
                 pButton

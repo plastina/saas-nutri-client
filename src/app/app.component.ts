@@ -36,9 +36,14 @@ import { Food } from './models/food.model';
 import { Meal } from './models/meal.model';
 import { Measure } from './models/measure.model';
 import { PatientData } from './models/patient-data.model';
+import {
+  PlanCalculateRequest,
+  PlanCalculateResponse,
+} from './models/plan-calc.model';
 import { PlanTotals } from './models/plan-totals.model';
 import { FoodApiService } from './services/food-api.service';
 import { PdfExportService } from './services/pdf-export.service';
+import { Theme, ThemeService } from './services/theme.service';
 
 const IMPORTS = [
   FormsModule,
@@ -97,18 +102,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   totalFat = 0;
   totalFiber = 0;
 
+  currentTheme: Theme = 'light';
+
   private readonly AUTOSAVE_STORAGE_KEY = 'saasNutri_autoSaveData_v1';
   private stateChanged = new Subject<void>();
   private autoSaveSubscription?: Subscription;
   private searchSubject = new Subject<string>();
   private searchSubscription?: Subscription;
+  private planCalcSubject = new Subject<void>();
+  private planCalcSubscription?: Subscription;
+  private planCalcItemIndexMap: number[][] = [];
 
   constructor(
     private foodApiService: FoodApiService,
     private messageService: MessageService,
     private pdfExportService: PdfExportService,
     private cdr: ChangeDetectorRef,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private themeService: ThemeService,
   ) {}
 
   get hasItemsInAnyMeal(): boolean {
@@ -121,12 +132,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadStateWithConfirmation();
     this.setupAutoSave();
     this.setupSearchDebounce();
+    this.setupPlanCalcDebounce();
     if (this.meals.length === 0) {
       this.initializeDefaultMeals();
     }
     if (this.meals.length > 0 && !this.selectedMealName) {
       this.selectedMealName = this.meals[0].name;
     }
+    // Initialize theme
+    this.currentTheme = this.themeService.currentThemeValue;
   }
 
   ngAfterViewInit(): void {
@@ -136,6 +150,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.autoSaveSubscription?.unsubscribe();
     this.searchSubscription?.unsubscribe();
+    this.planCalcSubscription?.unsubscribe();
   }
 
   private initializeDefaultMeals(): void {
@@ -172,9 +187,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               });
               this.isLoadingResults = false;
               return EMPTY;
-            })
+            }),
           );
-        })
+        }),
       )
       .subscribe((results) => {
         this.foodSearchSuggestions = results;
@@ -186,6 +201,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             detail: `Nenhum alimento encontrado.`,
           });
         }
+      });
+  }
+
+  private setupPlanCalcDebounce(): void {
+    this.planCalcSubscription = this.planCalcSubject
+      .pipe(
+        debounceTime(300),
+        switchMap(() => {
+          const payload = this.buildPlanCalculatePayload();
+          if (!payload) return EMPTY;
+          return this.foodApiService.calculatePlanCalories(payload).pipe(
+            catchError((err) => {
+              console.error('Erro ao calcular calorias:', err);
+              return EMPTY;
+            }),
+          );
+        }),
+      )
+      .subscribe((response) => {
+        this.applyPlanCalories(response);
       });
   }
 
@@ -231,7 +266,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         accept: () => {
           this.meals = savedState.meals;
           this.patientSessionData = this.parsePatientDataOnLoad(
-            savedState.patientSessionData
+            savedState.patientSessionData,
           );
           this.selectedMealName =
             this.meals.length > 0 ? this.meals[0].name : '';
@@ -242,6 +277,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             detail: 'Trabalho anterior restaurado.',
           });
           this.triggerStateChange();
+          this.triggerPlanCalc();
         },
         reject: () => {
           this.clearAutoSavedState();
@@ -284,7 +320,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const mealName = name.trim();
     if (!mealName) return;
     const exists = this.meals.some(
-      (m) => m.name.toLowerCase() === mealName.toLowerCase()
+      (m) => m.name.toLowerCase() === mealName.toLowerCase(),
     );
     if (exists) {
       this.messageService.add({
@@ -302,18 +338,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       detail: `Refeição "${mealName}" adicionada!`,
     });
     this.triggerStateChange();
+    this.triggerPlanCalc();
   }
 
   handleMealNameChange(event: { index: number; newName: string }): void {
     const currentName = this.meals[event.index]?.name;
     const updatedMeals = this.meals.map((meal, index) =>
-      index === event.index ? { ...meal, name: event.newName } : meal
+      index === event.index ? { ...meal, name: event.newName } : meal,
     );
     this.meals = updatedMeals;
     if (this.selectedMealName === currentName) {
       this.selectedMealName = event.newName;
     }
     this.triggerStateChange();
+    this.triggerPlanCalc();
   }
 
   handleMealDelete(indexToRemove: number): void {
@@ -324,6 +362,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.calculateTotals();
     this.triggerStateChange();
+    this.triggerPlanCalc();
   }
 
   onPatientDataChange(): void {
@@ -358,7 +397,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     const targetMeal = this.meals.find(
-      (meal) => meal.name === this.selectedMealName
+      (meal) => meal.name === this.selectedMealName,
     );
     if (!targetMeal) {
       this.messageService.add({
@@ -386,22 +425,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               ...measures,
             ];
 
+        // Remove duplicates by measure_name
+        const uniqueMeasures = allMeasures.filter(
+          (m, index, arr) =>
+            arr.findIndex((x) => x.measure_name === m.measure_name) === index,
+        );
+
         const newItem: DietItem = {
           food: food,
           displayQuantity: 100,
           selectedMeasure: 'grama',
           quantityInGrams: 100,
-          measures: allMeasures,
+          measures: uniqueMeasures,
         };
         targetMeal.items.push(newItem);
         this.calculateTotals();
         this.triggerStateChange();
+        this.triggerPlanCalc();
       });
     });
 
     this.selectedFoodsForAdding = [];
     this.calculateTotals();
     this.triggerStateChange();
+    this.triggerPlanCalc();
     this.messageService.add({
       severity: 'success',
       summary: 'Sucesso',
@@ -436,8 +483,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               },
               ...measures,
             ];
+        // Remove duplicates by measure_name
+        this.availableMeasures = this.availableMeasures.filter(
+          (m, index, arr) =>
+            arr.findIndex((x) => x.measure_name === m.measure_name) === index,
+        );
         this.availableMeasures.sort((a, b) =>
-          a.display_name.localeCompare(b.display_name)
+          a.display_name.localeCompare(b.display_name),
         );
       },
       error: (err) => {
@@ -456,7 +508,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateGrams(item: DietItem): void {
     const selectedMeasureData = item.measures.find(
-      (m) => m.measure_name === item.selectedMeasure
+      (m) => m.measure_name === item.selectedMeasure,
     );
     if (item.selectedMeasure === 'grama' || !selectedMeasureData) {
       item.quantityInGrams = item.displayQuantity;
@@ -474,6 +526,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.updateGrams(item);
       this.calculateTotals();
       this.triggerStateChange();
+      this.triggerPlanCalc();
     }
   }
 
@@ -482,6 +535,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.meals[indices.mealIndex].items.splice(indices.itemIndex, 1);
       this.calculateTotals();
       this.triggerStateChange();
+      this.triggerPlanCalc();
     }
   }
 
@@ -510,6 +564,80 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.totalCarbs = Math.round(this.totalCarbs * 10) / 10;
     this.totalFat = Math.round(this.totalFat * 10) / 10;
     this.totalFiber = Math.round(this.totalFiber * 10) / 10;
+  }
+
+  private triggerPlanCalc(): void {
+    this.planCalcSubject.next();
+  }
+
+  private buildPlanCalculatePayload(): PlanCalculateRequest | null {
+    if (!this.meals || this.meals.length === 0) return null;
+
+    this.planCalcItemIndexMap = [];
+    const mealsPayload = this.meals.map((meal, mealIndex) => {
+      const itemIndexMap: number[] = [];
+      const itemsPayload = (meal.items || [])
+        .map((item, itemIndex) => {
+          if (!item?.food?.id) {
+            item.kcal = 0;
+            return null;
+          }
+          itemIndexMap.push(itemIndex);
+          return {
+            food_id: item.food.id,
+            quantity_in_grams: item.quantityInGrams || 0,
+          };
+        })
+        .filter((item) => item !== null);
+
+      this.planCalcItemIndexMap[mealIndex] = itemIndexMap;
+      return {
+        name: meal.name,
+        items: itemsPayload as { food_id: string; quantity_in_grams: number }[],
+      };
+    });
+
+    const hasItems = mealsPayload.some((meal) => meal.items.length > 0);
+    if (!hasItems) {
+      this.meals.forEach((meal) => {
+        meal.totalKcal = 0;
+        meal.items.forEach((item) => {
+          item.kcal = 0;
+        });
+      });
+      return null;
+    }
+
+    return { meals: mealsPayload };
+  }
+
+  private applyPlanCalories(response: PlanCalculateResponse): void {
+    if (
+      !response ||
+      !response.meals ||
+      !Array.isArray(response.meals) ||
+      response.meals.length === 0
+    )
+      return;
+
+    response.meals.forEach((mealResponse, mealIndex) => {
+      const targetMeal = this.meals[mealIndex];
+      if (!targetMeal) return;
+
+      targetMeal.totalKcal = mealResponse.total_kcal;
+      const itemIndexMap = this.planCalcItemIndexMap[mealIndex] || [];
+      if (!mealResponse.items) mealResponse.items = [];
+      mealResponse.items.forEach((itemResponse, itemIndex) => {
+        const targetItemIndex = itemIndexMap[itemIndex];
+        const targetItem = targetMeal.items[targetItemIndex];
+        if (!targetItem) return;
+        targetItem.kcal = itemResponse.kcal;
+      });
+    });
+
+    if (typeof response.total_kcal === 'number') {
+      this.totalKcal = Math.round(response.total_kcal);
+    }
   }
 
   handleFileInput(event: Event): void {
@@ -560,6 +688,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
         this.calculateTotals();
         this.triggerStateChange();
+        this.triggerPlanCalc();
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
@@ -655,12 +784,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pdfExportService.generateDietPlanPdf(
       this.meals,
       currentTotals,
-      currentPatientData
+      currentPatientData,
     );
     this.messageService.add({
       severity: 'success',
       summary: 'Sucesso',
       detail: 'PDF gerado!',
     });
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+    this.currentTheme = this.themeService.currentThemeValue;
   }
 }
