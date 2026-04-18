@@ -256,6 +256,65 @@ body {
   background: var(--surface-hover);
 }
 
+/* PrimeNG buttons using app button tokens */
+.p-button.btn.btn-primary {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.p-button.btn.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.p-button.btn.btn-secondary {
+  background: var(--surface-section) !important;
+  border-color: var(--surface-border) !important;
+  color: var(--text-color) !important;
+}
+
+.p-button.btn.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-hover) !important;
+  border-color: var(--surface-border) !important;
+}
+
+.p-button.p-button-success {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.p-button.p-button-success:hover:not(:disabled) {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+/* Restore work confirmation dialog button tones */
+.restore-work-reject-btn {
+  background: #ffeceb !important;
+  border-color: #f8c8c5 !important;
+  color: #a33a34 !important;
+}
+
+.restore-work-reject-btn:hover:not(:disabled) {
+  background: #ffdedd !important;
+  border-color: #efb2ae !important;
+  color: #8f2f2a !important;
+}
+
+.restore-work-accept-btn {
+  background: #e9f9ef !important;
+  border-color: #bde8cd !important;
+  color: #1f6a45 !important;
+}
+
+.restore-work-accept-btn:hover:not(:disabled) {
+  background: #dcf3e5 !important;
+  border-color: #a9ddbc !important;
+  color: #185738 !important;
+}
+
 /* Typography */
 h1,
 h2,

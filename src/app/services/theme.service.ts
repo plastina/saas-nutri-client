@@ -40,6 +40,8 @@ export class ThemeService {
   }
 
   private applyTheme(theme: Theme): void {
-    document.documentElement.setAttribute('data-theme', theme);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.classList.toggle('my-app-dark', theme === 'dark');
   }
 }

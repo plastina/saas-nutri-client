@@ -88,6 +88,58 @@
   width: 100%;
 }
 
+.dob-field ::ng-deep .p-datepicker {
+  display: flex;
+  align-items: stretch;
+}
+
+.dob-field ::ng-deep .p-datepicker .p-datepicker-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+}
+
+.dob-field ::ng-deep .p-datepicker .p-datepicker-trigger,
+.dob-field ::ng-deep .p-datepicker .p-datepicker-dropdown {
+  flex: 0 0 var(--control-height);
+  width: var(--control-height);
+  min-width: var(--control-height);
+  min-height: var(--control-height);
+  margin: 0;
+  padding: 0;
+  border: var(--border-width) solid var(--surface-border);
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: var(--radius-control);
+  border-bottom-right-radius: var(--radius-control);
+  background: var(--surface-section);
+  color: var(--text-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dob-field ::ng-deep .p-datepicker .p-datepicker-trigger:hover,
+.dob-field ::ng-deep .p-datepicker .p-datepicker-dropdown:hover {
+  background: var(--surface-hover);
+  color: var(--primary-color);
+}
+
+.dob-field ::ng-deep .p-datepicker .p-datepicker-trigger .pi,
+.dob-field ::ng-deep .p-datepicker .p-datepicker-dropdown .pi {
+  color: currentColor;
+  line-height: 1;
+}
+
+.dob-field ::ng-deep .p-datepicker:focus-within .p-datepicker-input,
+.dob-field ::ng-deep .p-datepicker:focus-within .p-datepicker-trigger,
+.dob-field ::ng-deep .p-datepicker:focus-within .p-datepicker-dropdown {
+  border-color: var(--primary-color);
+}
+
 /* PrimeNG inner inputs */
 .field ::ng-deep p-datepicker input,
 .field ::ng-deep p-inputNumber input {
