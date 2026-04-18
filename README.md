@@ -1,24 +1,27 @@
 # Saas Nutri Frontend
 
-Frontend Angular do SaaS Nutri. Esta app consome a API local em `http://localhost:8080` (ver `src/environments/environment.ts`).
+Angular application responsible for the meal-plan authoring experience.
 
-## Requisitos
+## What This Project Does
 
-- Node.js 18+ (ou versao compativel com Angular 19)
-- Angular CLI 19.2.6
+- Captures patient data.
+- Allows food search and selection.
+- Organizes meals and plan items.
+- Displays nutrition totals and supports export.
 
-## Rodar local
+## API Context
+
+This client consumes the local API at `http://localhost:8080` (see `src/environments/environment.ts`) to:
+
+- fetch foods and household measures;
+- send meal-plan data for nutrition calculation;
+- present results for final adjustments in the UI.
+
+## Run Locally
 
 ```bash
 npm install
 npm run start
 ```
 
-Acesse `http://localhost:4200`.
-
-## Scripts
-
-- `npm run start` - dev server
-- `npm run build` - build de producao
-- `npm run test` - testes unitarios
-- `npm run lint` - lint
+Open `http://localhost:4200`.
