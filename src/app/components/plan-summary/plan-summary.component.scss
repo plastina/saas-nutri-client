@@ -2,31 +2,7 @@
   display: block;
 }
 
-/* Global actions */
-.global-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  margin-bottom: var(--spacing-sm);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--surface-border);
-}
-
-/* Plan summary layout */
-.plan-summary-layout {
-  display: grid;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  gap: var(--spacing-md);
-  align-items: start;
-  grid-template-columns: 1fr;
-}
-
-/* Inner cards for plan sections */
-.diet-builder-section,
-.totals-section {
+.rail-card {
   width: 100%;
   box-sizing: border-box;
   background: var(--surface-section);
@@ -34,17 +10,19 @@
   border-radius: var(--radius-surface);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow);
-  align-self: start;
 }
 
-/* Diet builder section */
-.diet-builder-section {
-  min-width: 0;
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-md) 0;
 }
 
+/* Totals */
 .totals {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--spacing-sm);
 }
 
@@ -70,9 +48,10 @@
 
 .total-item .value {
   margin-left: auto;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: var(--primary-color);
+  font-variant-numeric: tabular-nums;
 }
 
 .total-item-last {
@@ -84,42 +63,61 @@
   text-align: center;
   color: var(--text-muted);
   font-style: italic;
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-sm);
 }
 
-/* Section titles */
-.section-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-color);
-  margin: 0 0 var(--spacing-md) 0;
+.no-totals-message__icon {
+  font-size: 2rem;
+  color: var(--text-muted);
 }
 
-/* Responsive design */
+.no-totals-message p {
+  margin: var(--spacing-sm) 0 0;
+}
+
+/* Actions */
+.rail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--surface-border);
+}
+
+.rail-action {
+  width: 100%;
+  justify-content: center;
+}
+
+.rail-action .pi {
+  font-size: 0.85rem;
+}
+
+.rail-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* On wide screens the rail is a sidebar; on narrow ones it stacks and the
+   action buttons sit side by side to save vertical space. */
 @media (max-width: 1023px) {
-  .plan-summary-layout {
-    gap: var(--spacing-md);
+  .totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rail-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .rail-action {
+    flex: 1 1 180px;
   }
 }
 
-@media (max-width: 767px) {
-  .global-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
+@media (max-width: 600px) {
   .totals {
     grid-template-columns: 1fr;
-  }
-
-  .total-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
-  }
-
-  .total-item .value {
-    margin-left: 0;
-    align-self: flex-end;
   }
 }

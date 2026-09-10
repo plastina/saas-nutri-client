@@ -1,76 +1,78 @@
-<div class="plan-summary-layout">
-  <div class="diet-builder-section">
-    <h3 class="section-title">{{ "summary.currentPlan" | t }}</h3>
-    <app-diet-builder
-      [meals]="meals"
-      [availableMeasures]="availableMeasures"
-      [selectedMealIndex]="selectedMealIndex"
-      [selectedItemIndex]="selectedItemIndex"
-      (itemRemoved)="itemRemoved.emit($event)"
-      (itemChanged)="itemChanged.emit($event)"
-      (itemSelectedForEdit)="itemSelectedForEdit.emit($event)"
-      (mealNameChanged)="mealNameChanged.emit($event)"
-      (mealDeleted)="mealDeleted.emit($event)"
-    ></app-diet-builder>
-  </div>
-
-  <div class="totals-section">
-    <div *ngIf="hasItemsInAnyMeal; else noTotals">
-      <h3 class="section-title">{{ "summary.totals" | t }}</h3>
-      <div class="totals">
-        <div class="total-item">
-          <i class="pi pi-bolt"></i>
-          <span>{{ "summary.calories" | t }}</span>
-          <span class="value">{{ totalKcal | number: "1.0-0" }} kcal</span>
-        </div>
-        <div class="total-item">
-          <i class="pi pi-chart-line"></i>
-          <span>{{ "summary.protein" | t }}</span>
-          <span class="value">{{ totalProtein | number: "1.1-1" }} g</span>
-        </div>
-        <div class="total-item">
-          <i class="pi pi-chart-bar"></i>
-          <span>{{ "summary.carbs" | t }}</span>
-          <span class="value">{{ totalCarbs | number: "1.1-1" }} g</span>
-        </div>
-        <div class="total-item">
-          <i class="pi pi-circle"></i>
-          <span>{{ "summary.fat" | t }}</span>
-          <span class="value">{{ totalFat | number: "1.1-1" }} g</span>
-        </div>
-        <div class="total-item">
-          <i class="pi pi-leaf"></i>
-          <span>{{ "summary.fiber" | t }}</span>
-          <span class="value">{{ totalFiber | number: "1.1-1" }} g</span>
-        </div>
-        <div class="total-item total-item-last">
-          <i class="pi pi-check-circle"></i>
-          <span>{{ "summary.totalMeals" | t }}</span>
-          <span class="value">{{ meals.length }}</span>
-        </div>
+<div class="rail-card">
+  <div *ngIf="hasItemsInAnyMeal; else noTotals">
+    <h3 class="section-title">{{ "summary.totals" | t }}</h3>
+    <div class="totals">
+      <div class="total-item">
+        <i class="pi pi-bolt"></i>
+        <span>{{ "summary.calories" | t }}</span>
+        <span class="value">{{ totalKcal | number: "1.0-0" }} kcal</span>
+      </div>
+      <div class="total-item">
+        <i class="pi pi-chart-line"></i>
+        <span>{{ "summary.protein" | t }}</span>
+        <span class="value">{{ totalProtein | number: "1.1-1" }} g</span>
+      </div>
+      <div class="total-item">
+        <i class="pi pi-chart-bar"></i>
+        <span>{{ "summary.carbs" | t }}</span>
+        <span class="value">{{ totalCarbs | number: "1.1-1" }} g</span>
+      </div>
+      <div class="total-item">
+        <i class="pi pi-circle"></i>
+        <span>{{ "summary.fat" | t }}</span>
+        <span class="value">{{ totalFat | number: "1.1-1" }} g</span>
+      </div>
+      <div class="total-item">
+        <i class="pi pi-leaf"></i>
+        <span>{{ "summary.fiber" | t }}</span>
+        <span class="value">{{ totalFiber | number: "1.1-1" }} g</span>
+      </div>
+      <div class="total-item total-item-last">
+        <i class="pi pi-check-circle"></i>
+        <span>{{ "summary.totalMeals" | t }}</span>
+        <span class="value">{{ meals.length }}</span>
       </div>
     </div>
-    <ng-template #noTotals>
-      <div class="no-totals-message">
-        <i
-          class="pi pi-info-circle"
-          style="font-size: 2rem; color: var(--text-muted)"
-        ></i>
-        <p>{{ "summary.empty" | t }}</p>
-      </div>
-    </ng-template>
   </div>
-</div>
+  <ng-template #noTotals>
+    <div class="no-totals-message">
+      <i class="pi pi-info-circle no-totals-message__icon"></i>
+      <p>{{ "summary.empty" | t }}</p>
+    </div>
+  </ng-template>
 
-<div class="global-actions">
-  <button
-    pButton
-    type="button"
-    [label]="'summary.exportPdf' | t"
-    icon="pi pi-file-pdf"
-    (click)="exportToPdf.emit()"
-    class="btn btn-secondary"
-    [pTooltip]="'summary.exportPdfTooltip' | t"
-    tooltipPosition="top"
-  ></button>
+  <div class="rail-actions">
+    <button
+      type="button"
+      (click)="exportToPdf.emit()"
+      [disabled]="!hasItemsInAnyMeal"
+      class="btn btn-primary rail-action"
+    >
+      <i class="pi pi-file-pdf" aria-hidden="true"></i>
+      {{ "summary.exportPdf" | t }}
+    </button>
+    <button
+      type="button"
+      (click)="exportToJson.emit()"
+      class="btn btn-secondary rail-action"
+    >
+      <i class="pi pi-download" aria-hidden="true"></i>
+      {{ "header.exportJson" | t }}
+    </button>
+    <button
+      type="button"
+      (click)="fileImportInput.click()"
+      class="btn btn-secondary rail-action"
+    >
+      <i class="pi pi-upload" aria-hidden="true"></i>
+      {{ "header.importJson" | t }}
+    </button>
+    <input
+      hidden
+      type="file"
+      accept=".json"
+      (change)="onFileInput($event)"
+      #fileImportInput
+    />
+  </div>
 </div>

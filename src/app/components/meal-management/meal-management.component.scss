@@ -3,7 +3,7 @@
   width: 100%;
 }
 
-.meal-management-card {
+.food-search-card {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -14,112 +14,29 @@
   box-shadow: var(--shadow);
 }
 
-.section-title {
-  margin: 0 0 var(--spacing-lg) 0;
-}
-
-.subsection-title {
-  font-size: var(--subtitle-size);
-  font-weight: var(--subtitle-weight);
-  color: var(--text-muted);
-  margin: 0 0 var(--spacing-md) 0;
-}
-
-.top-inputs-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-lg);
-  align-items: start;
-  width: 100%;
-  padding: var(--spacing-xs) 0 0;
-}
-
-.meal-add-controls {
+.food-search-card__head {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: var(--spacing-sm);
-  width: 100%;
-  min-width: 0;
+  margin-bottom: var(--spacing-md);
 }
 
-.search-controls {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  width: 100%;
-  min-width: 0;
-}
-
-.meal-input-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--spacing-sm);
-  width: 100%;
-  min-width: 0;
-}
-
-.meal-input-row .new-meal-input {
-  width: 100%;
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-control);
-  min-width: 0;
-  height: var(--control-height);
-  padding: 0.45rem 0.7rem;
-  font-size: var(--control-font-size);
-  background: var(--surface-section);
-  color: var(--text-color);
-}
-
-.meal-input-row .new-meal-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.12);
-}
-
-.meal-input-row > .p-button {
-  flex: 0 0 auto;
-  width: auto;
+.food-search-card__head .section-title {
   margin: 0;
-  height: var(--control-height);
-  padding: 0.45rem 0.8rem;
-  border-radius: var(--radius-control);
-  border: var(--border-width) solid transparent;
-  background: var(--primary-color);
-  color: #fff;
-  font-size: var(--control-font-size);
-  font-weight: var(--font-weight-semibold);
-  white-space: nowrap;
 }
 
-.top-inputs-row .section-title {
-  margin-bottom: var(--spacing-sm);
-  min-height: 0;
-  display: flex;
-  align-items: center;
+.food-search-card__target {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
 }
 
-.meal-input-row > .p-button:hover:not(:disabled) {
-  background: var(--primary-hover);
-}
-
-.meal-input-row > .p-button:disabled {
-  background: var(--text-muted);
-  cursor: not-allowed;
-}
-
-/* Autocomplete section */
 .autocomplete-wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
   width: 100%;
-}
-
-.section-autocomplete-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
 }
 
 .autocomplete-wrapper ::ng-deep .p-autocomplete,
@@ -147,6 +64,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-sm);
   padding: var(--spacing-sm);
   border-radius: var(--border-radius);
   transition: background-color 0.2s ease;
@@ -161,147 +79,12 @@
   font-size: var(--font-size-xs);
 }
 
-/* Temporary list section */
-.temporary-list-section {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
-  background: var(--surface-ground);
-  border-radius: var(--radius-surface);
-  border: var(--border-width) solid var(--surface-border);
-  width: 100%;
-}
-
-.temporary-list-section h4 {
-  margin: 0 0 var(--spacing-md) 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-color);
-}
-
-/* Responsive design */
 @media (max-width: 767px) {
-  .top-inputs-row {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-  }
-
   .section-title {
     font-size: var(--font-size-lg);
   }
 
-  .search-controls,
-  .meal-add-controls {
-    width: 100%;
-  }
-
-  .autocomplete-wrapper {
-    max-width: 100%;
-  }
-
-  .autocomplete-wrapper ::ng-deep p-autoComplete {
-    width: 100%;
-  }
-  .top-inputs-row .section-title {
-    margin-bottom: var(--spacing-xs);
-  }
-}
-
-@media (max-width: 420px) {
-  .meal-input-row > .p-button {
-    padding-left: 0.65rem;
-    padding-right: 0.65rem;
-  }
-
-  .meal-input-row > .p-button ::ng-deep .p-button-label {
-    display: none;
-  }
-}
-
-.temporary-food-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 170px;
-  overflow-y: auto;
-  border: 1px solid var(--surface-border);
-  border-radius: var(--border-radius);
-  padding: 0.5rem;
-}
-
-.temporary-list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0.4rem 0.5rem;
-  border-bottom: 1px solid var(--surface-hover);
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  button {
-    margin-left: 0.5rem;
-  }
-}
-
-.add-to-meal-controls {
-  margin-top: var(--spacing-md);
-  display: flex;
-  align-items: stretch;
-  gap: var(--spacing-sm);
-  width: 100%;
-}
-
-.meal-target-dropdown {
-  flex: 1;
-  min-width: 0;
-}
-
-.add-to-meal-controls ::ng-deep .p-dropdown,
-.add-to-meal-controls ::ng-deep .p-dropdown-label,
-.add-to-meal-controls ::ng-deep .p-select,
-.add-to-meal-controls ::ng-deep .p-select-label {
-  background: var(--surface-section);
-  color: var(--text-color);
-  border-color: var(--surface-border);
-}
-
-.add-to-meal-controls ::ng-deep .p-dropdown,
-.add-to-meal-controls ::ng-deep .p-select {
-  width: 100%;
-  min-height: var(--control-height);
-  border-radius: var(--radius-control);
-}
-
-.add-to-meal-controls ::ng-deep .p-dropdown-label,
-.add-to-meal-controls ::ng-deep .p-select-label {
-  min-height: var(--control-height);
-  display: flex;
-  align-items: center;
-  font-size: var(--control-font-size);
-}
-
-.add-to-meal-controls .p-button {
-  min-height: var(--control-height);
-  padding: 0.5rem 0.85rem;
-  font-size: var(--control-font-size);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-control);
-  white-space: nowrap;
-}
-
-@media (max-width: 767px) {
-  .temporary-list-section {
-    max-width: 100%;
-  }
-
-  .add-to-meal-controls {
-    flex-direction: column;
-  }
-
-  .add-to-meal-controls .p-button {
-    width: 100%;
-    justify-content: center;
+  .food-search-card__target {
+    margin-left: 0;
   }
 }

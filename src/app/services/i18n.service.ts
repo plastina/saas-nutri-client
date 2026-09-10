@@ -34,14 +34,10 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'meal.new.placeholder': 'Nova refeição',
     'meal.add': 'Adicionar',
     'meal.addAria': 'Adicionar refeição',
-    'meal.search.title': 'Buscar e adicionar alimentos',
+    'meal.search.title': 'Adicionar alimento',
     'meal.search.placeholder': 'Ex: arroz, feijão, maçã...',
-    'meal.selectedFoods': 'Alimentos selecionados:',
-    'meal.removeTemp.tooltip': 'Remover da lista temporária',
-    'meal.removeTemp.aria': 'Remover da lista temporária',
-    'meal.select.placeholder': 'Selecione a refeição',
-    'meal.addToMeal': 'Adicionar à refeição',
-    'meal.addToMealAria': 'Adicionar alimentos selecionados à refeição',
+    'meal.search.target': 'adiciona em {mealName}',
+    'meal.search.noTarget': 'crie uma refeição para começar',
 
     'patient.title': 'Dados do paciente',
     'patient.name': 'Nome',
@@ -50,6 +46,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'patient.dob': 'Data de nascimento',
     'patient.goals': 'Objetivos',
     'patient.observations': 'Observações',
+    'patient.toggleAria': 'Mostrar ou ocultar dados do paciente',
+    'patient.ageSuffix': 'anos',
 
     'summary.currentPlan': 'Plano alimentar atual',
     'summary.totals': 'Totais do plano',
@@ -72,9 +70,14 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'builder.cancel': 'Cancelar',
     'builder.cancelEdit': 'Cancelar edição',
     'builder.measure': 'Medida',
+    'builder.quantity': 'Quantidade',
     'builder.removeItem': 'Remover item',
     'builder.emptyMeal': 'Refeição vazia.',
     'builder.noMeals': 'Nenhuma refeição adicionada ainda.',
+    'builder.useAsTarget': 'Usar como alvo',
+    'builder.useAsTargetAria': 'Definir {mealName} como refeição de destino da busca',
+    'builder.currentTarget': 'Alvo da busca',
+    'builder.addMeal': 'Adicionar refeição',
 
     'confirm.deleteMeal.message':
       'Tem certeza de que deseja excluir a refeição "{mealName}" e todos os seus itens?',
@@ -97,10 +100,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'toast.mealExists': 'Refeição "{mealName}" já existe.',
     'toast.mealAdded': 'Refeição "{mealName}" adicionada!',
-    'toast.selectMealAndFoods':
-      'Selecione uma refeição e alimentos para adicionar.',
     'toast.targetMealNotFound': 'Refeição de destino não encontrada.',
-    'toast.foodsAdded': 'Alimentos adicionados à refeição.',
+    'toast.foodAdded': '{foodName} adicionado a {mealName}.',
 
     'toast.measureErrorSummary': 'Erro ao carregar medidas',
     'toast.measureErrorDetail':
@@ -147,14 +148,10 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'meal.new.placeholder': 'New meal',
     'meal.add': 'Add',
     'meal.addAria': 'Add meal',
-    'meal.search.title': 'Search and add foods',
+    'meal.search.title': 'Add food',
     'meal.search.placeholder': 'Eg: rice, beans, apple...',
-    'meal.selectedFoods': 'Selected foods:',
-    'meal.removeTemp.tooltip': 'Remove from temporary list',
-    'meal.removeTemp.aria': 'Remove from temporary list',
-    'meal.select.placeholder': 'Select meal',
-    'meal.addToMeal': 'Add to meal',
-    'meal.addToMealAria': 'Add selected foods to meal',
+    'meal.search.target': 'adds to {mealName}',
+    'meal.search.noTarget': 'create a meal to start',
 
     'patient.title': 'Patient data',
     'patient.name': 'Name',
@@ -163,6 +160,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'patient.dob': 'Date of birth',
     'patient.goals': 'Goals',
     'patient.observations': 'Observations',
+    'patient.toggleAria': 'Show or hide patient data',
+    'patient.ageSuffix': 'yrs',
 
     'summary.currentPlan': 'Current meal plan',
     'summary.totals': 'Plan totals',
@@ -184,9 +183,14 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'builder.cancel': 'Cancel',
     'builder.cancelEdit': 'Cancel editing',
     'builder.measure': 'Measure',
+    'builder.quantity': 'Quantity',
     'builder.removeItem': 'Remove item',
     'builder.emptyMeal': 'Empty meal.',
     'builder.noMeals': 'No meals added yet.',
+    'builder.useAsTarget': 'Use as target',
+    'builder.useAsTargetAria': 'Set {mealName} as the search target meal',
+    'builder.currentTarget': 'Search target',
+    'builder.addMeal': 'Add meal',
 
     'confirm.deleteMeal.message':
       'Are you sure you want to delete meal "{mealName}" and all its items?',
@@ -209,9 +213,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'toast.mealExists': 'Meal "{mealName}" already exists.',
     'toast.mealAdded': 'Meal "{mealName}" added!',
-    'toast.selectMealAndFoods': 'Select a meal and foods to add.',
     'toast.targetMealNotFound': 'Target meal not found.',
-    'toast.foodsAdded': 'Foods added to meal.',
+    'toast.foodAdded': '{foodName} added to {mealName}.',
 
     'toast.measureErrorSummary': 'Measure load error',
     'toast.measureErrorDetail': 'Could not load household measures.',
@@ -257,14 +260,10 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'meal.new.placeholder': 'Nouveau repas',
     'meal.add': 'Ajouter',
     'meal.addAria': 'Ajouter un repas',
-    'meal.search.title': 'Rechercher et ajouter des aliments',
+    'meal.search.title': 'Ajouter un aliment',
     'meal.search.placeholder': 'Ex: riz, haricots, pomme...',
-    'meal.selectedFoods': 'Aliments selectionnes :',
-    'meal.removeTemp.tooltip': 'Retirer de la liste temporaire',
-    'meal.removeTemp.aria': 'Retirer de la liste temporaire',
-    'meal.select.placeholder': 'Selectionner un repas',
-    'meal.addToMeal': 'Ajouter au repas',
-    'meal.addToMealAria': 'Ajouter les aliments selectionnes au repas',
+    'meal.search.target': 'ajoute a {mealName}',
+    'meal.search.noTarget': 'creez un repas pour commencer',
 
     'patient.title': 'Donnees du patient',
     'patient.name': 'Nom',
@@ -273,6 +272,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'patient.dob': 'Date de naissance',
     'patient.goals': 'Objectifs',
     'patient.observations': 'Observations',
+    'patient.toggleAria': 'Afficher ou masquer les donnees du patient',
+    'patient.ageSuffix': 'ans',
 
     'summary.currentPlan': 'Plan alimentaire actuel',
     'summary.totals': 'Totaux du plan',
@@ -295,9 +296,14 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     'builder.cancel': 'Annuler',
     'builder.cancelEdit': 'Annuler la modification',
     'builder.measure': 'Mesure',
+    'builder.quantity': 'Quantite',
     'builder.removeItem': 'Retirer l item',
     'builder.emptyMeal': 'Repas vide.',
     'builder.noMeals': 'Aucun repas ajoute pour le moment.',
+    'builder.useAsTarget': 'Definir comme cible',
+    'builder.useAsTargetAria': 'Definir {mealName} comme repas cible de la recherche',
+    'builder.currentTarget': 'Cible de la recherche',
+    'builder.addMeal': 'Ajouter un repas',
 
     'confirm.deleteMeal.message':
       'Voulez-vous vraiment supprimer le repas "{mealName}" et tous ses elements?',
@@ -320,10 +326,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'toast.mealExists': 'Le repas "{mealName}" existe deja.',
     'toast.mealAdded': 'Repas "{mealName}" ajoute !',
-    'toast.selectMealAndFoods':
-      'Selectionnez un repas et des aliments a ajouter.',
     'toast.targetMealNotFound': 'Repas cible introuvable.',
-    'toast.foodsAdded': 'Aliments ajoutes au repas.',
+    'toast.foodAdded': '{foodName} ajoute a {mealName}.',
 
     'toast.measureErrorSummary': 'Erreur de chargement des mesures',
     'toast.measureErrorDetail': 'Impossible de charger les mesures menageres.',

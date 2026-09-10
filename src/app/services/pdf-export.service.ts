@@ -5,12 +5,13 @@ import { Meal } from '../models/meal.model';
 import { PatientData } from '../models/patient-data.model';
 import { PlanTotals } from '../models/plan-totals.model';
 
+/** jsPDF augmented with the property jspdf-autotable sets after each table. */
+type AutoTableDoc = jsPDF & { lastAutoTable: { finalY: number } };
+
 @Injectable({
   providedIn: 'root',
 })
 export class PdfExportService {
-  constructor() {}
-
   generateDietPlanPdf(
     meals: Meal[],
     totals: PlanTotals,
@@ -278,7 +279,7 @@ export class PdfExportService {
           margin: { left: marginX, right: marginX },
           alternateRowStyles: { fillColor: palette.surfaceBlue },
         });
-        yPos = (doc as any).lastAutoTable.finalY;
+        yPos = (doc as AutoTableDoc).lastAutoTable.finalY;
       } else {
         doc.setFont('helvetica', 'italic');
         doc.setFontSize(9);

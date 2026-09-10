@@ -26,99 +26,71 @@
     </div>
 
     <nav class="app-header__actions" [attr.aria-label]="'header.actions' | t">
-      <div class="app-header__actions-top">
-        <p-dropdown
-          [options]="languageOptions"
-          [(ngModel)]="currentLanguage"
-          (ngModelChange)="changeLanguage($event)"
-          optionLabel="label"
-          optionValue="value"
-          appendTo="body"
-          [ariaLabel]="'header.languageAria' | t"
-        >
-          <ng-template pTemplate="selectedItem" let-selectedOption>
-            <span *ngIf="selectedOption"
-              >{{ selectedOption.flag }} {{ selectedOption.label }}</span
-            >
-          </ng-template>
-          <ng-template pTemplate="item" let-option>
-            <span>{{ option.flag }} {{ option.label }}</span>
-          </ng-template>
-        </p-dropdown>
+      <p-dropdown
+        [options]="languageOptions"
+        [(ngModel)]="currentLanguage"
+        (ngModelChange)="changeLanguage($event)"
+        optionLabel="label"
+        optionValue="value"
+        appendTo="body"
+        [ariaLabel]="'header.languageAria' | t"
+      >
+        <ng-template pTemplate="selectedItem" let-selectedOption>
+          <span *ngIf="selectedOption"
+            >{{ selectedOption.flag }} {{ selectedOption.label }}</span
+          >
+        </ng-template>
+        <ng-template pTemplate="item" let-option>
+          <span>{{ option.flag }} {{ option.label }}</span>
+        </ng-template>
+      </p-dropdown>
 
-        <button
-          pButton
-          type="button"
-          [icon]="currentTheme === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
-          (click)="toggleTheme()"
-          class="theme-toggle-btn"
-          [pTooltip]="'header.themeToggle' | t"
-          tooltipPosition="bottom"
-        ></button>
-      </div>
-
-      <div class="app-header__actions-bottom">
-        <button
-          pButton
-          type="button"
-          [label]="'header.exportJson' | t"
-          icon="pi pi-download"
-          (click)="exportToJson()"
-          [disabled]="!hasItemsInAnyMeal && !patientSessionData.name"
-          class="btn btn-primary app-action-btn"
-          [pTooltip]="'header.exportJsonTooltip' | t"
-          tooltipPosition="bottom"
-        ></button>
-
-        <button
-          pButton
-          type="button"
-          [label]="'header.importJson' | t"
-          icon="pi pi-upload"
-          (click)="fileImportInput.click()"
-          class="btn btn-secondary app-action-btn"
-          [pTooltip]="'header.importJsonTooltip' | t"
-          tooltipPosition="bottom"
-        ></button>
-      </div>
+      <button
+        pButton
+        type="button"
+        [icon]="currentTheme === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
+        (click)="toggleTheme()"
+        class="theme-toggle-btn"
+        [pTooltip]="'header.themeToggle' | t"
+        tooltipPosition="bottom"
+        [attr.aria-label]="'header.themeToggle' | t"
+      ></button>
     </nav>
-
-    <input
-      hidden
-      type="file"
-      id="import-json"
-      accept=".json"
-      (change)="handleFileInput($event)"
-      #fileImportInput
-    />
   </div>
 </header>
 
 <main class="container">
-  <section class="plan-summary-wrapper">
-    <app-patient-section
-      [patientData]="patientSessionData"
-      (patientDataChange)="onPatientDataChange()"
-    ></app-patient-section>
+  <app-patient-section
+    [patientData]="patientSessionData"
+    [startExpanded]="patientPanelExpanded"
+    (patientDataChange)="onPatientDataChange()"
+  ></app-patient-section>
 
-    <app-meal-management
-      [meals]="meals"
-      [selectedMealName]="selectedMealName"
-      [foodSearchSuggestions]="foodSearchSuggestions"
-      [selectedFoodsForAdding]="selectedFoodsForAdding"
-      [selectedFoodAutoComplete]="selectedFoodAutoComplete"
-      (mealAdded)="addMeal($event)"
-      (foodSearch)="searchFoodsByTerm($event)"
-      (foodSelected)="onFoodSelectedFromAutocomplete($event)"
-      (foodRemoved)="removeFoodFromTemporaryList($event)"
-      (addFoodsToMeal)="addAllSelectedFoodsToMeal()"
-      (selectedMealNameChange)="selectedMealName = $event"
-    ></app-meal-management>
+  <div class="editor-shell">
+    <div class="editor-primary">
+      <app-meal-management
+        [selectedMealName]="selectedMealName"
+        [foodSearchSuggestions]="foodSearchSuggestions"
+        [selectedFoodAutoComplete]="selectedFoodAutoComplete"
+        (foodSearch)="searchFoodsByTerm($event)"
+        (foodSelected)="addFoodToActiveMeal($event)"
+      ></app-meal-management>
+
+      <app-diet-builder
+        [meals]="meals"
+        [selectedMealName]="selectedMealName"
+        (itemRemoved)="handleRemoveFood($event)"
+        (itemChanged)="handleItemChange($event)"
+        (mealNameChanged)="handleMealNameChange($event)"
+        (mealDeleted)="handleMealDelete($event)"
+        (mealTargeted)="selectedMealName = $event"
+        (mealAdded)="addMeal($event)"
+      ></app-diet-builder>
+    </div>
+
     <app-plan-summary
+      class="editor-rail"
       [meals]="meals"
-      [availableMeasures]="availableMeasures"
-      [selectedMealIndex]="selectedMealIndex"
-      [selectedItemIndex]="selectedItemIndex"
       [hasItemsInAnyMeal]="hasItemsInAnyMeal"
       [totalKcal]="totalKcal"
       [totalProtein]="totalProtein"
@@ -128,11 +100,6 @@
       (exportToJson)="exportToJson()"
       (exportToPdf)="exportPlanToPdf()"
       (importFromFile)="handleFileInput($event)"
-      (itemRemoved)="handleRemoveFood($event)"
-      (itemChanged)="handleItemChange($event)"
-      (itemSelectedForEdit)="loadMeasuresForItem($event)"
-      (mealNameChanged)="handleMealNameChange($event)"
-      (mealDeleted)="handleMealDelete($event)"
     ></app-plan-summary>
-  </section>
+  </div>
 </main>

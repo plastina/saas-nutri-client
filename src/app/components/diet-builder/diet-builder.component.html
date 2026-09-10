@@ -1,7 +1,12 @@
+<h3 class="section-title builder-title" *ngIf="meals.length > 0">
+  {{ "summary.currentPlan" | t }}
+</h3>
+
 <div class="meals-container" *ngIf="meals.length > 0">
   <div
     *ngFor="let meal of meals; let mealIndex = index"
     class="meal-column-card"
+    [class.is-target]="meal.name === selectedMealName"
   >
     <p-card class="meal-card">
       <ng-template pTemplate="header">
@@ -12,6 +17,29 @@
               {{ getMealKcal(meal) | number: "1.0-0" }} kcal
             </div>
             <div class="meal-header-actions">
+              <span
+                *ngIf="meal.name === selectedMealName"
+                class="meal-target-flag"
+              >
+                <i class="pi pi-bullseye" aria-hidden="true"></i>
+                {{ "builder.currentTarget" | t }}
+              </span>
+              <button
+                *ngIf="meal.name !== selectedMealName"
+                pButton
+                type="button"
+                icon="pi pi-bullseye"
+                [label]="'builder.useAsTarget' | t"
+                class="meal-target-btn p-button-sm p-button-text"
+                (click)="mealTargeted.emit(meal.name)"
+                [pTooltip]="
+                  'builder.useAsTargetAria' | t: { mealName: meal.name }
+                "
+                tooltipPosition="top"
+                [attr.aria-label]="
+                  'builder.useAsTargetAria' | t: { mealName: meal.name }
+                "
+              ></button>
               <button
                 pButton
                 type="button"
@@ -74,11 +102,10 @@
           <div
             *ngFor="let item of meal.items; let itemIndex = index"
             class="diet-item"
-            (click)="selectItem(mealIndex, itemIndex)"
           >
             <div class="item-name heading-xs">{{ item.food.name }}</div>
 
-            <div class="item-qty">
+            <div class="item-qty" [attr.data-label]="'builder.quantity' | t">
               <p-inputNumber
                 [(ngModel)]="item.displayQuantity"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
@@ -93,7 +120,7 @@
               ></p-inputNumber>
             </div>
 
-            <div class="item-measure">
+            <div class="item-measure" [attr.data-label]="'builder.measure' | t">
               <p-select
                 [placeholder]="'builder.measure' | t"
                 class="meal-item-measure-dropdown p-inputtext-sm"
@@ -106,7 +133,7 @@
               ></p-select>
             </div>
 
-            <div class="item-kcal">
+            <div class="item-kcal" [attr.data-label]="'summary.calories' | t">
               {{ getItemKcal(item) | number: "1.0-0" }} kcal
             </div>
 
@@ -116,10 +143,7 @@
                 type="button"
                 icon="pi pi-times"
                 class="item-remove-btn p-button-sm p-button-danger p-button-text"
-                (click)="
-                  removeFoodFromDiet(mealIndex, itemIndex);
-                  $event.stopPropagation()
-                "
+                (click)="removeFoodFromDiet(mealIndex, itemIndex)"
                 [pTooltip]="'builder.removeItem' | t"
                 tooltipPosition="top"
                 [attr.aria-label]="'builder.removeItem' | t"
@@ -137,4 +161,47 @@
     </p-card>
   </div>
 </div>
-<p *ngIf="!meals || meals.length === 0">{{ "builder.noMeals" | t }}</p>
+
+<p *ngIf="!meals || meals.length === 0" class="builder-no-meals">
+  {{ "builder.noMeals" | t }}
+</p>
+
+<div class="add-meal-row">
+  <button
+    *ngIf="!addingMeal"
+    type="button"
+    class="add-meal-btn"
+    (click)="startAddMeal()"
+  >
+    <i class="pi pi-plus" aria-hidden="true"></i>
+    {{ "builder.addMeal" | t }}
+  </button>
+
+  <div *ngIf="addingMeal" class="add-meal-form p-inputgroup">
+    <input
+      pInputText
+      type="text"
+      [(ngModel)]="newMealName"
+      [placeholder]="'meal.new.placeholder' | t"
+      (keydown.enter)="confirmAddMeal()"
+      (keydown.escape)="cancelAddMeal()"
+      class="p-inputtext-sm"
+    />
+    <button
+      pButton
+      type="button"
+      icon="pi pi-check"
+      class="p-button-sm p-button-success p-button-text"
+      (click)="confirmAddMeal()"
+      [attr.aria-label]="'meal.addAria' | t"
+    ></button>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-times"
+      class="p-button-sm p-button-secondary p-button-text"
+      (click)="cancelAddMeal()"
+      [attr.aria-label]="'builder.cancel' | t"
+    ></button>
+  </div>
+</div>

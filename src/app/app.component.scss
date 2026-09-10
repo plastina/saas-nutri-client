@@ -23,9 +23,6 @@
   --toggle-bg-hover: #f3f9ff;
   --toggle-border: #d5e4f2;
   --toggle-text: #33506f;
-
-  --header-primary-btn-bg: #1f7ab8;
-  --header-primary-btn-bg-hover: #16639a;
 }
 
 :host-context([data-theme="dark"]) {
@@ -49,9 +46,6 @@
   --toggle-bg-hover: #162a44;
   --toggle-border: #355173;
   --toggle-text: #cae5ff;
-
-  --header-primary-btn-bg: #2f90cf;
-  --header-primary-btn-bg-hover: #2478ad;
 }
 
 /* Header styles */
@@ -75,8 +69,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-xl);
-  padding-top: 0.95rem;
-  padding-bottom: 0.95rem;
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
 }
 
 .app-header__brand {
@@ -85,22 +79,6 @@
   gap: var(--spacing-xs);
   min-width: 0;
   flex: 1;
-}
-
-.app-header__badge {
-  width: fit-content;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #0b4b73;
-  background: #e9f4ff;
-  border: 1px solid #bfdcff;
-  border-radius: 999px;
-  padding: 0.24rem 0.64rem;
 }
 
 .app-header__title {
@@ -147,28 +125,9 @@
 
 .app-header__actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.app-header__actions-top,
-.app-header__actions-bottom {
-  display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 12px;
-  width: 100%;
-}
-
-.app-header__actions-top {
-  justify-content: flex-end;
-}
-
-.app-header__actions-bottom {
-  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 /* Theme toggle button */
@@ -189,57 +148,60 @@
   transform: translateY(-1px);
 }
 
-.app-action-btn {
-  min-height: var(--control-height);
-  border-radius: var(--radius-control);
-  box-shadow: var(--shadow-sm);
-}
-
-.app-header__actions-bottom .app-action-btn {
-  min-height: 2.2rem;
-  padding: 0.35rem 0.65rem;
-  font-size: var(--font-size-xs);
-}
-
-.app-header .btn.btn-primary {
-  background: var(--header-primary-btn-bg);
-  border-color: var(--header-primary-btn-bg);
-}
-
-.app-header .btn.btn-primary:hover {
-  background: var(--header-primary-btn-bg-hover);
-  border-color: var(--header-primary-btn-bg-hover);
-}
-
 /* Main content */
 main {
   flex: 1;
+  display: block;
+  padding-bottom: var(--spacing-2xl);
 }
 
-.plan-summary-wrapper {
+/* Editor: primary column + sticky totals rail */
+.editor-shell {
   margin-top: var(--spacing-lg);
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.editor-primary {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-/* Card styles for sections */
-.card {
-  width: 100%;
-  box-sizing: border-box;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
+.editor-rail {
+  position: sticky;
+  top: calc(var(--control-height) + var(--spacing-2xl));
+  align-self: start;
+}
+
+app-patient-section {
+  display: block;
+  margin-top: var(--spacing-lg);
 }
 
 /* Responsive adjustments */
+@media (max-width: 1023px) {
+  .editor-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-rail {
+    position: static;
+  }
+}
+
 @media (max-width: 767px) {
   .container {
     padding-left: var(--spacing-sm);
     padding-right: var(--spacing-sm);
+  }
+
+  /* The header is tall once stacked; don't let it pin over the editor. */
+  .app-header {
+    position: static;
   }
 
   .app-header__container {
@@ -249,29 +211,12 @@ main {
   }
 
   .app-header__actions {
-    align-items: stretch;
-  }
-
-  .app-header__actions-top,
-  .app-header__actions-bottom {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    width: auto;
-  }
-
-  .app-action-btn {
-    flex: 1 1 auto;
-    justify-content: center;
-  }
-
-  .card {
-    padding: 0;
+    justify-content: space-between;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle-btn,
-  .app-action-btn {
+  .theme-toggle-btn {
     transition: none;
   }
 }
@@ -280,16 +225,4 @@ main {
 .btn:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
-}
-
-/* Loading states */
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-/* Error states */
-.error {
-  border-color: var(--error-color);
-  background: rgb(var(--error-rgb) / 0.05);
 }
