@@ -197,6 +197,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 summary: this.i18nService.t('toast.searchErrorSummary'),
                 detail: err.message,
               });
+              this.foodSearchSuggestions = [];
               this.isLoadingResults = false;
               return EMPTY;
             }),
@@ -204,9 +205,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }),
       )
       .subscribe((results) => {
-        this.foodSearchSuggestions = results;
+        const suggestions = Array.isArray(results) ? results : [];
+        this.foodSearchSuggestions = suggestions;
         this.isLoadingResults = false;
-        if (results.length === 0) {
+        if (suggestions.length === 0) {
           this.messageService.add({
             severity: 'info',
             summary: this.i18nService.t('toast.noResultsSummary'),
