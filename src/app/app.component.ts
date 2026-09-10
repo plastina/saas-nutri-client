@@ -10,14 +10,13 @@ import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
-import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { Textarea } from 'primeng/inputtextarea';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -65,13 +64,12 @@ const IMPORTS = [
   ButtonModule,
   InputTextModule,
   Textarea,
-  DropdownModule,
+  SelectModule,
   DividerModule,
   ToolbarModule,
   ToastModule,
   ProgressSpinnerModule,
   ConfirmDialogModule,
-  CalendarModule,
   InputNumberModule,
   AutoCompleteModule,
   TooltipModule,
