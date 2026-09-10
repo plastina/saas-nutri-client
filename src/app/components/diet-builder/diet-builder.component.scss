@@ -2,17 +2,124 @@
   display: block;
 }
 
+.builder-title {
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.builder-no-meals {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
 /* Meals container */
 .meals-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
 }
 
 /* Meal cards */
 .meal-column-card {
   display: flex;
+}
+
+.meal-column-card.is-target .meal-card {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color), var(--shadow);
+}
+
+/* Target-meal controls */
+.meal-target-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-text);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-color);
+  border-radius: 999px;
+  padding: 0.16rem 0.55rem;
+  white-space: nowrap;
+}
+
+.meal-target-flag .pi {
+  font-size: 0.7rem;
+}
+
+.meal-header-actions ::ng-deep .meal-target-btn {
+  padding: 0.2rem 0.45rem;
+}
+
+.meal-header-actions ::ng-deep .meal-target-btn .p-button-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* On tight cards, collapse the target control to its icon; tooltip + aria
+   still name the action. */
+@media (max-width: 520px) {
+  .meal-target-flag {
+    gap: 0;
+    font-size: 0;
+    padding: 0.28rem;
+  }
+
+  .meal-target-flag .pi {
+    font-size: 0.75rem;
+  }
+
+  .meal-header-actions ::ng-deep .meal-target-btn .p-button-label {
+    display: none;
+  }
+}
+
+/* Add-meal affordance */
+.add-meal-row {
+  margin-top: var(--spacing-lg);
+}
+
+.add-meal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  justify-content: center;
+  padding: var(--spacing-md);
+  background: transparent;
+  border: 1px dashed var(--surface-border);
+  border-radius: var(--radius-surface);
+  color: var(--text-muted);
+  font-size: var(--control-font-size);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.add-meal-btn:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.add-meal-form {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  max-width: 420px;
+}
+
+.add-meal-form input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-meal-btn {
+    transition: none;
+  }
 }
 
 .meal-card {
@@ -62,9 +169,14 @@
 .meal-header-view {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-md);
   flex: 1;
   min-width: 0;
+}
+
+.meal-header-view .meal-title {
+  min-width: 6rem;
 }
 
 .meal-title {
@@ -92,7 +204,9 @@
 .meal-header-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--spacing-xs);
+  margin-left: auto;
 }
 
 .meal-header-edit {
@@ -353,69 +467,4 @@
   margin-left: 0;
   padding: 1px;
   width: 100%;
-}
-
-.meal-title {
-  margin-left: 0;
-}
-
-.item-qty-measure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  padding: 0.25rem;
-
-  .calculated-grams {
-    margin-left: 0.5rem;
-    white-space: nowrap;
-    color: var(--text-color-secondary);
-    align-self: center;
-  }
-}
-
-.item-actions {
-  flex-shrink: 0;
-  margin-left: 0;
-}
-
-// Responsividade
-@media (max-width: 768px) {
-  .diet-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    border: 1px solid var(--surface-border);
-    border-radius: var(--border-radius);
-  }
-
-  .item-name {
-    width: 100%;
-    font-size: 1.1rem;
-  }
-
-  .item-qty,
-  .item-measure,
-  .item-kcal,
-  .item-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .item-qty,
-  .item-measure {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .item-kcal {
-    text-align: left;
-  }
-
-  .item-actions {
-    justify-content: flex-end;
-  }
 }

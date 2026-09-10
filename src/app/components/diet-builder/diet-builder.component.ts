@@ -40,6 +40,7 @@ export class DietBuilderComponent {
   @Input() availableMeasures: Measure[] = [];
   @Input() selectedMealIndex: number | null = null;
   @Input() selectedItemIndex: number | null = null;
+  @Input() selectedMealName = '';
 
   @Output() itemRemoved = new EventEmitter<{
     mealIndex: number;
@@ -58,9 +59,14 @@ export class DietBuilderComponent {
     newName: string;
   }>();
   @Output() mealDeleted = new EventEmitter<number>();
+  @Output() mealTargeted = new EventEmitter<string>();
+  @Output() mealAdded = new EventEmitter<string>();
 
   editingMealIndex: number | null = null;
   editedMealName = '';
+
+  addingMeal = false;
+  newMealName = '';
 
   constructor(
     private confirmationService: ConfirmationService,
@@ -97,6 +103,24 @@ export class DietBuilderComponent {
     } else {
       this.cancelEditMeal();
     }
+  }
+
+  startAddMeal(): void {
+    this.addingMeal = true;
+    this.newMealName = '';
+  }
+
+  confirmAddMeal(): void {
+    const name = this.newMealName.trim();
+    if (name) {
+      this.mealAdded.emit(name);
+    }
+    this.cancelAddMeal();
+  }
+
+  cancelAddMeal(): void {
+    this.addingMeal = false;
+    this.newMealName = '';
   }
 
   deleteMeal(index: number): void {

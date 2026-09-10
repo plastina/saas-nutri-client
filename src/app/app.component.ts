@@ -28,6 +28,7 @@ import {
   distinctUntilChanged,
   switchMap,
 } from 'rxjs/operators';
+import { DietBuilderComponent } from './components/diet-builder/diet-builder.component';
 import { MealManagementComponent } from './components/meal-management/meal-management.component';
 import { PatientSectionComponent } from './components/patient-section/patient-section.component';
 import { PlanSummaryComponent } from './components/plan-summary/plan-summary.component';
@@ -66,6 +67,7 @@ const IMPORTS = [
   TranslatePipe,
   PatientSectionComponent,
   MealManagementComponent,
+  DietBuilderComponent,
   PlanSummaryComponent,
 ];
 
@@ -92,8 +94,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   foodSearchSuggestions: Food[] = [];
   selectedFoodAutoComplete: Food | string | null = null;
-  selectedFoodsForAdding: Food[] = [];
   isLoadingResults = false;
+  patientPanelExpanded = true;
 
   availableMeasures: Measure[] = [];
   selectedMealIndex: number | null = null;
@@ -151,6 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.meals.length > 0 && !this.selectedMealName) {
       this.selectedMealName = this.meals[0].name;
     }
+    this.syncPatientPanelState();
     // Initialize theme
     this.currentTheme = this.themeService.currentThemeValue;
   }
@@ -289,6 +292,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           );
           this.selectedMealName =
             this.meals.length > 0 ? this.meals[0].name : '';
+          this.syncPatientPanelState();
           this.calculateTotals();
           this.messageService.add({
             severity: 'info',
@@ -326,6 +330,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         observations: null,
       }
     );
+  }
+
+  /** Collapse the patient panel once a patient name exists; keep it open otherwise. */
+  private syncPatientPanelState(): void {
+    this.patientPanelExpanded = !this.patientSessionData?.name?.trim();
   }
 
   triggerStateChange(): void {
@@ -392,36 +401,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchSubject.next(query);
   }
 
-  onFoodSelectedFromAutocomplete(food: Food): void {
-    if (food && food.id && typeof food === 'object') {
-      if (!this.selectedFoodsForAdding.some((f) => f.id === food.id)) {
-        this.selectedFoodsForAdding.push(food);
-      }
-    }
+  addFoodToActiveMeal(food: Food): void {
+    if (!food || typeof food !== 'object' || !food.id) return;
+
+    const targetMeal = this.meals.find((m) => m.name === this.selectedMealName);
     this.selectedFoodAutoComplete = '';
     this.foodSearchSuggestions = [];
-  }
 
-  removeFoodFromTemporaryList(index: number): void {
-    this.selectedFoodsForAdding.splice(index, 1);
-  }
-
-  addAllSelectedFoodsToMeal(): void {
-    if (!this.selectedMealName || this.selectedFoodsForAdding.length === 0) {
+    if (!targetMeal) {
       this.messageService.add({
         severity: 'warn',
         summary: this.i18nService.t('toast.warning'),
-        detail: this.i18nService.t('toast.selectMealAndFoods'),
-      });
-      return;
-    }
-    const targetMeal = this.meals.find(
-      (meal) => meal.name === this.selectedMealName,
-    );
-    if (!targetMeal) {
-      this.messageService.add({
-        severity: 'error',
-        summary: this.i18nService.t('toast.error'),
         detail: this.i18nService.t('toast.targetMealNotFound'),
       });
       return;
@@ -430,49 +420,56 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       targetMeal.items = [];
     }
 
-    this.selectedFoodsForAdding.forEach((food) => {
-      this.foodApiService.getFoodMeasures(food.id).subscribe((measures) => {
-        const hasGrama = measures.some((m) => m.measure_name === 'grama');
-        const allMeasures = hasGrama
-          ? measures
-          : [
-              {
-                measure_name: 'grama',
-                display_name: 'Gram',
-                gram_equivalent: 1,
-              },
-              ...measures,
-            ];
-
-        // Remove duplicates by measure_name
-        const uniqueMeasures = allMeasures.filter(
-          (m, index, arr) =>
-            arr.findIndex((x) => x.measure_name === m.measure_name) === index,
-        );
-
-        const newItem: DietItem = {
-          food: food,
-          displayQuantity: 100,
-          selectedMeasure: 'grama',
-          quantityInGrams: 100,
-          measures: uniqueMeasures,
-        };
-        targetMeal.items.push(newItem);
-        this.calculateTotals();
-        this.triggerStateChange();
-        this.triggerPlanCalc();
+    const pushItem = (measures: Measure[]): void => {
+      const newItem: DietItem = {
+        food,
+        displayQuantity: 100,
+        selectedMeasure: 'grama',
+        quantityInGrams: 100,
+        measures,
+      };
+      targetMeal.items.push(newItem);
+      this.calculateTotals();
+      this.triggerStateChange();
+      this.triggerPlanCalc();
+      this.messageService.add({
+        severity: 'success',
+        summary: this.i18nService.t('toast.success'),
+        detail: this.i18nService.t('toast.foodAdded', {
+          foodName: food.name,
+          mealName: targetMeal.name,
+        }),
       });
-    });
+    };
 
-    this.selectedFoodsForAdding = [];
-    this.calculateTotals();
-    this.triggerStateChange();
-    this.triggerPlanCalc();
-    this.messageService.add({
-      severity: 'success',
-      summary: this.i18nService.t('toast.success'),
-      detail: this.i18nService.t('toast.foodsAdded'),
+    this.foodApiService.getFoodMeasures(food.id).subscribe({
+      next: (measures) => pushItem(this.normalizeMeasures(measures)),
+      error: (err) => {
+        this.messageService.add({
+          severity: 'warn',
+          summary: this.i18nService.t('toast.measureErrorSummary'),
+          detail:
+            err.message || this.i18nService.t('toast.measureErrorDetail'),
+        });
+        pushItem([
+          { measure_name: 'grama', display_name: 'Gram', gram_equivalent: 1 },
+        ]);
+      },
     });
+  }
+
+  private normalizeMeasures(measures: Measure[]): Measure[] {
+    const gram: Measure = {
+      measure_name: 'grama',
+      display_name: 'Gram',
+      gram_equivalent: 1,
+    };
+    const hasGrama = measures.some((m) => m.measure_name === 'grama');
+    const allMeasures = hasGrama ? measures : [gram, ...measures];
+    return allMeasures.filter(
+      (m, index, arr) =>
+        arr.findIndex((x) => x.measure_name === m.measure_name) === index,
+    );
   }
 
   loadMeasuresForItem(indices: { mealIndex: number; itemIndex: number }): void {
@@ -704,6 +701,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.patientSessionData =
           this.parsePatientDataOnLoad(importedPatientData);
         this.selectedMealName = this.meals.length > 0 ? this.meals[0].name : '';
+        this.syncPatientPanelState();
         this.calculateTotals();
         this.triggerStateChange();
         this.triggerPlanCalc();
