@@ -237,13 +237,6 @@
   align-items: center;
   padding: var(--spacing-sm) 0;
   border-bottom: 1px solid var(--surface-border);
-  border-radius: var(--border-radius);
-  transition: background-color 0.2s ease;
-  cursor: pointer;
-}
-
-.diet-item:hover {
-  background: var(--surface-hover);
 }
 
 .diet-item:last-child {
@@ -371,10 +364,21 @@
   padding: var(--spacing-lg);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+/* Responsive design — wider breakpoints first so narrower ones win the cascade */
+@media (max-width: 1200px) {
   .meals-container {
     grid-template-columns: 1fr;
+  }
+
+  .diet-item {
+    grid-template-columns:
+      minmax(0, 1fr) minmax(84px, 100px) minmax(100px, 130px)
+      minmax(64px, 84px) 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .meals-container {
     gap: var(--spacing-md);
   }
 
@@ -388,8 +392,10 @@
     width: 100%;
   }
 
+  /* Row becomes a labelled stack: name on top, then one field per line. */
   .diet-item {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-sm);
     padding: var(--spacing-md);
     border: 1px solid var(--surface-border);
@@ -397,58 +403,38 @@
   }
 
   .item-name {
-    grid-column: 1 / -1;
     font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing-xs);
+    white-space: normal;
+    text-align: left;
   }
 
   .item-qty,
   .item-measure,
-  .item-kcal,
-  .item-actions {
+  .item-kcal {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: 0;
   }
 
-  .item-qty::before {
-    content: "Quantidade: ";
-    font-weight: var(--font-weight-medium);
-    color: var(--text-muted);
-  }
-
-  .item-measure::before {
-    content: "Medida: ";
-    font-weight: var(--font-weight-medium);
-    color: var(--text-muted);
-  }
-
+  .item-qty::before,
+  .item-measure::before,
   .item-kcal::before {
-    content: "Calorias: ";
+    content: attr(data-label);
+    font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     color: var(--text-muted);
+  }
+
+  .item-kcal {
+    text-align: left;
   }
 
   .item-actions {
     justify-content: flex-end;
-  }
-}
-
-@media (max-width: 1200px) {
-  .meals-container {
-    grid-template-columns: 1fr;
-  }
-
-  .diet-item {
-    grid-template-columns:
-      minmax(0, 1fr) minmax(84px, 100px) minmax(100px, 130px)
-      minmax(64px, 84px) 36px;
-    gap: var(--spacing-sm);
-  }
-
-  .item-actions {
-    width: 36px;
-    min-width: 36px;
+    width: 100%;
   }
 }
 
@@ -456,10 +442,6 @@
   .meal-card ::ng-deep .p-card-header,
   .meal-card ::ng-deep .p-card-content {
     padding: var(--spacing-md);
-  }
-
-  .diet-item {
-    padding: var(--spacing-sm);
   }
 }
 

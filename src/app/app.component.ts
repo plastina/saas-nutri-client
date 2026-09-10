@@ -48,6 +48,17 @@ import { AppLanguage, I18nService } from './services/i18n.service';
 import { PdfExportService } from './services/pdf-export.service';
 import { Theme, ThemeService } from './services/theme.service';
 
+/** Patient data as it comes back from JSON (dob is serialised as a string). */
+type PersistedPatientData = Omit<PatientData, 'dob'> & {
+  dob?: string | Date | null;
+};
+
+interface AutoSaveState {
+  meals: Meal[];
+  patientSessionData: PersistedPatientData;
+  timestamp: string;
+}
+
 const IMPORTS = [
   FormsModule,
   CommonModule,
@@ -97,10 +108,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingResults = false;
   patientPanelExpanded = true;
 
-  availableMeasures: Measure[] = [];
-  selectedMealIndex: number | null = null;
-  selectedItemIndex: number | null = null;
-
   totalKcal = 0;
   totalProtein = 0;
   totalCarbs = 0;
@@ -109,11 +116,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   currentTheme: Theme = 'light';
   currentLanguage: AppLanguage = 'en';
-  languageOptions: Array<{
-    label: string;
-    value: AppLanguage;
-    flag: string;
-  }> = [];
+  languageOptions: { label: string; value: AppLanguage; flag: string }[] = [];
 
   private readonly AUTOSAVE_STORAGE_KEY = 'saasNutri_autoSaveData_v1';
   private stateChanged = new Subject<void>();
@@ -255,13 +258,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private loadStateFromLocalStorage(): any | null {
+  private loadStateFromLocalStorage(): AutoSaveState | null {
     try {
       const savedStateString = localStorage.getItem(this.AUTOSAVE_STORAGE_KEY);
       if (savedStateString) {
-        const savedState = JSON.parse(savedStateString);
+        const savedState = JSON.parse(savedStateString) as Partial<AutoSaveState>;
         if (savedState && savedState.meals && savedState.patientSessionData) {
-          return savedState;
+          return savedState as AutoSaveState;
         }
       }
     } catch (error) {
@@ -312,24 +315,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private parsePatientDataOnLoad(data: any): PatientData {
-    if (data?.dob && typeof data.dob === 'string') {
-      try {
-        return { ...data, dob: new Date(data.dob) };
-      } catch (e) {
-        return { ...data, dob: null };
-      }
+  private parsePatientDataOnLoad(
+    data: PersistedPatientData | null | undefined,
+  ): PatientData {
+    const fallback: PatientData = {
+      name: null,
+      dob: null,
+      goals: null,
+      weight: null,
+      height: null,
+      observations: null,
+    };
+    if (!data) return fallback;
+
+    let dob: Date | null = null;
+    if (typeof data.dob === 'string') {
+      const parsed = new Date(data.dob);
+      dob = Number.isNaN(parsed.getTime()) ? null : parsed;
+    } else if (data.dob instanceof Date) {
+      dob = data.dob;
     }
-    return (
-      data || {
-        name: null,
-        dob: null,
-        goals: null,
-        weight: null,
-        height: null,
-        observations: null,
-      }
-    );
+    return { ...fallback, ...data, dob };
   }
 
   /** Collapse the patient panel once a patient name exists; keep it open otherwise. */
@@ -340,7 +346,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   triggerStateChange(): void {
     this.stateChanged.next();
   }
-  clearAutoSavedState(reason?: string): void {
+  clearAutoSavedState(): void {
     localStorage.removeItem(this.AUTOSAVE_STORAGE_KEY);
   }
 
@@ -470,55 +476,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       (m, index, arr) =>
         arr.findIndex((x) => x.measure_name === m.measure_name) === index,
     );
-  }
-
-  loadMeasuresForItem(indices: { mealIndex: number; itemIndex: number }): void {
-    this.selectedMealIndex = indices.mealIndex;
-    this.selectedItemIndex = indices.itemIndex;
-    this.availableMeasures = [];
-    const item = this.meals[indices.mealIndex]?.items[indices.itemIndex];
-    const foodId = item?.food?.id;
-
-    if (!foodId) {
-      this.availableMeasures = [
-        { measure_name: 'grama', display_name: 'Gram', gram_equivalent: 1 },
-      ];
-      return;
-    }
-
-    this.foodApiService.getFoodMeasures(foodId).subscribe({
-      next: (measures) => {
-        const hasGrama = measures.some((m) => m.measure_name === 'grama');
-        this.availableMeasures = hasGrama
-          ? measures
-          : [
-              {
-                measure_name: 'grama',
-                display_name: 'Gram',
-                gram_equivalent: 1,
-              },
-              ...measures,
-            ];
-        // Remove duplicates by measure_name
-        this.availableMeasures = this.availableMeasures.filter(
-          (m, index, arr) =>
-            arr.findIndex((x) => x.measure_name === m.measure_name) === index,
-        );
-        this.availableMeasures.sort((a, b) =>
-          a.display_name.localeCompare(b.display_name),
-        );
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: this.i18nService.t('toast.measureErrorSummary'),
-          detail: err.message || this.i18nService.t('toast.measureErrorDetail'),
-        });
-        this.availableMeasures = [
-          { measure_name: 'grama', display_name: 'Gram', gram_equivalent: 1 },
-        ];
-      },
-    });
   }
 
   updateGrams(item: DietItem): void {

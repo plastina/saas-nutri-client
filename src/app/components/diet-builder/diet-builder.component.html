@@ -102,11 +102,10 @@
           <div
             *ngFor="let item of meal.items; let itemIndex = index"
             class="diet-item"
-            (click)="selectItem(mealIndex, itemIndex)"
           >
             <div class="item-name heading-xs">{{ item.food.name }}</div>
 
-            <div class="item-qty">
+            <div class="item-qty" [attr.data-label]="'builder.quantity' | t">
               <p-inputNumber
                 [(ngModel)]="item.displayQuantity"
                 (ngModelChange)="onItemInputChange(mealIndex, itemIndex)"
@@ -121,7 +120,7 @@
               ></p-inputNumber>
             </div>
 
-            <div class="item-measure">
+            <div class="item-measure" [attr.data-label]="'builder.measure' | t">
               <p-select
                 [placeholder]="'builder.measure' | t"
                 class="meal-item-measure-dropdown p-inputtext-sm"
@@ -134,7 +133,7 @@
               ></p-select>
             </div>
 
-            <div class="item-kcal">
+            <div class="item-kcal" [attr.data-label]="'summary.calories' | t">
               {{ getItemKcal(item) | number: "1.0-0" }} kcal
             </div>
 
@@ -144,10 +143,7 @@
                 type="button"
                 icon="pi pi-times"
                 class="item-remove-btn p-button-sm p-button-danger p-button-text"
-                (click)="
-                  removeFoodFromDiet(mealIndex, itemIndex);
-                  $event.stopPropagation()
-                "
+                (click)="removeFoodFromDiet(mealIndex, itemIndex)"
                 [pTooltip]="'builder.removeItem' | t"
                 tooltipPosition="top"
                 [attr.aria-label]="'builder.removeItem' | t"

@@ -11,7 +11,6 @@ import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { DietItem } from '../../models/diet-item.model';
 import { Meal } from '../../models/meal.model';
-import { Measure } from '../../models/measure.model';
 import { TranslatePipe } from '../../pipes/t.pipe';
 import { I18nService } from '../../services/i18n.service';
 
@@ -37,9 +36,6 @@ const DIET_BUILDER_IMPORTS = [
 })
 export class DietBuilderComponent {
   @Input() meals: Meal[] = [];
-  @Input() availableMeasures: Measure[] = [];
-  @Input() selectedMealIndex: number | null = null;
-  @Input() selectedItemIndex: number | null = null;
   @Input() selectedMealName = '';
 
   @Output() itemRemoved = new EventEmitter<{
@@ -47,10 +43,6 @@ export class DietBuilderComponent {
     itemIndex: number;
   }>();
   @Output() itemChanged = new EventEmitter<{
-    mealIndex: number;
-    itemIndex: number;
-  }>();
-  @Output() itemSelectedForEdit = new EventEmitter<{
     mealIndex: number;
     itemIndex: number;
   }>();
@@ -75,10 +67,6 @@ export class DietBuilderComponent {
 
   onItemInputChange(mealIndex: number, itemIndex: number): void {
     this.itemChanged.emit({ mealIndex, itemIndex });
-  }
-
-  selectItem(mealIndex: number, itemIndex: number): void {
-    this.itemSelectedForEdit.emit({ mealIndex, itemIndex });
   }
 
   removeFoodFromDiet(mealIndex: number, itemIndex: number): void {
@@ -137,7 +125,6 @@ export class DietBuilderComponent {
       accept: () => {
         this.mealDeleted.emit(index);
       },
-      reject: () => {},
     });
   }
 

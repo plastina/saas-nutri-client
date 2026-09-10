@@ -53,6 +53,7 @@
         class="theme-toggle-btn"
         [pTooltip]="'header.themeToggle' | t"
         tooltipPosition="bottom"
+        [attr.aria-label]="'header.themeToggle' | t"
       ></button>
     </nav>
   </div>
@@ -77,13 +78,9 @@
 
       <app-diet-builder
         [meals]="meals"
-        [availableMeasures]="availableMeasures"
-        [selectedMealIndex]="selectedMealIndex"
-        [selectedItemIndex]="selectedItemIndex"
         [selectedMealName]="selectedMealName"
         (itemRemoved)="handleRemoveFood($event)"
         (itemChanged)="handleItemChange($event)"
-        (itemSelectedForEdit)="loadMeasuresForItem($event)"
         (mealNameChanged)="handleMealNameChange($event)"
         (mealDeleted)="handleMealDelete($event)"
         (mealTargeted)="selectedMealName = $event"
