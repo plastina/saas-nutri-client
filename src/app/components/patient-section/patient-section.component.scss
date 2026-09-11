@@ -102,9 +102,11 @@
 }
 
 .field label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-color);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
   display: block;
 }
 
@@ -128,6 +130,12 @@
 .field p-inputNumber {
   display: block;
   width: 100%;
+}
+
+/* Weight/height are measured figures — tabular mono keeps them scannable */
+.field ::ng-deep p-inputNumber input {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Date of birth — calendar icon sits inside the input (iconDisplay="input") */

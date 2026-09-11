@@ -24,23 +24,23 @@ body {
 /* Design tokens */
 :root {
   /* Colors */
-  --surface-ground: #f8fafc;
+  --surface-ground: #f1f4ea;
   --surface-section: #ffffff;
-  --surface-border: #e2e8f0;
-  --surface-hover: #f1f5f9;
+  --surface-border: #c9cdbe;
+  --surface-hover: #e4efe6;
 
-  --text-color: #334155;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --text-color: #171b14;
+  --text-muted: #5b6153;
+  --text-light: #8b9080;
 
-  --primary-color: #1f7ab8;
-  --primary-hover: #16639a;
-  --primary-light: #e8f4ff;
-  --primary-text: #0b4b73;
-  --primary-rgb: 31 122 184;
+  --primary-color: #2f6b4a;
+  --primary-hover: #26593d;
+  --primary-light: #e4efe6;
+  --primary-text: #1d4530;
+  --primary-rgb: 47 107 74;
 
-  --accent-color: #2a9d8f;
-  --accent-hover: #1f7d72;
+  --accent-color: #b9812a;
+  --accent-hover: #9c6d22;
 
   --success-color: #22a06b;
   --warning-color: #f59e0b;
@@ -59,13 +59,13 @@ body {
   --spacing-xl: 1.3rem;
   --spacing-2xl: 1.9rem;
 
-  /* Border radius */
-  --border-radius-sm: 0.25rem;
-  --border-radius: 0.5rem;
-  --border-radius-lg: 0.75rem;
-  --border-radius-xl: 1rem;
-  --radius-control: 0.625rem;
-  --radius-surface: 0.875rem;
+  /* Border radius — flatter, closer to a printed label than a soft app card */
+  --border-radius-sm: 0.2rem;
+  --border-radius: 0.25rem;
+  --border-radius-lg: 0.375rem;
+  --border-radius-xl: 0.5rem;
+  --radius-control: 0.25rem;
+  --radius-surface: 0.25rem;
 
   /* Controls */
   --control-height: 2.5rem;
@@ -78,9 +78,13 @@ body {
   --title-weight: var(--font-weight-semibold);
   --subtitle-weight: var(--font-weight-medium);
 
-  /* Base font family */
+  /* Font families — condensed display for headings, humanist sans for
+     body/controls, tabular mono for kcal/macro figures */
+  --font-family-display: "Archivo Black", "Segoe UI", Arial, sans-serif;
   --font-family:
-    "Segoe UI", "Inter", "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+    "Work Sans", "Segoe UI", "Source Sans 3", "Helvetica Neue", Arial,
+    sans-serif;
+  --font-family-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -105,23 +109,23 @@ body {
 
 /* Dark theme */
 [data-theme="dark"] {
-  --surface-ground: #0f172a;
-  --surface-section: #1e293b;
-  --surface-border: #334155;
-  --surface-hover: #334155;
+  --surface-ground: #14170f;
+  --surface-section: #1c2117;
+  --surface-border: #3a4032;
+  --surface-hover: #22301f;
 
-  --text-color: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
+  --text-color: #ecefe4;
+  --text-muted: #aeb4a0;
+  --text-light: #767c6c;
 
-  --primary-color: #4aa3de;
-  --primary-hover: #3a8fc7;
-  --primary-light: #0f3b55;
-  --primary-text: #dff3ff;
-  --primary-rgb: 74 163 222;
+  --primary-color: #7bc79c;
+  --primary-hover: #93d3af;
+  --primary-light: #22301f;
+  --primary-text: #d6f0e0;
+  --primary-rgb: 123 199 156;
 
-  --accent-color: #5ec0b5;
-  --accent-hover: #49a69b;
+  --accent-color: #e5b45f;
+  --accent-hover: #edc885;
 
   --success-color: #3fb879;
   --warning-color: #fbbf24;
@@ -206,8 +210,11 @@ body {
 }
 
 .section-title {
+  font-family: var(--font-family-display);
   font-size: var(--title-size-section);
   font-weight: var(--title-weight);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: var(--text-color);
   margin: 0 0 var(--spacing-md) 0;
   line-height: 1.3;

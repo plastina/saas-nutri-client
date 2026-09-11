@@ -2,31 +2,31 @@ import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 
 const customGreenPalette = {
-  50: '#e9fdf2',
-  100: '#c8f7df',
-  200: '#a5f1cb',
-  300: '#82eab7',
-  400: '#5ee4a3',
-  500: '#3bde90',
-  600: '#2fbe78',
-  700: '#239f61',
-  800: '#187f4a',
-  900: '#0c4025',
-  950: '#061e13',
+  50: '#eaf3ec',
+  100: '#cfe4d6',
+  200: '#a9cdb6',
+  300: '#7eb392',
+  400: '#56966f',
+  500: '#2f6b4a',
+  600: '#275a3e',
+  700: '#204a33',
+  800: '#193a28',
+  900: '#12291c',
+  950: '#0a170f',
 };
 
 const customGrayPalette = {
-  50: '#f9fafb',
-  100: '#f3f4f6',
-  200: '#e5e7eb',
-  300: '#d1d5db',
-  400: '#cbd5e1',
-  500: '#94a3b8',
-  600: '#64748b',
-  700: '#475569',
-  800: '#334155',
-  900: '#1e293b',
-  950: '#0f172a', // Antes era quase preto sólido, agora é azul-cinza escuro
+  50: '#f7f8f3',
+  100: '#eef0e6',
+  200: '#dde1d1',
+  300: '#c9cdbe',
+  400: '#a9af9c',
+  500: '#8b9080',
+  600: '#5b6153',
+  700: '#454a3d',
+  800: '#2e3227',
+  900: '#1c2117',
+  950: '#14170f',
 };
 
 export const MyPreset = definePreset(Aura, {

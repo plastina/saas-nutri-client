@@ -14,19 +14,15 @@
 
 /* Meals container */
 .meals-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-lg);
 }
 
 /* Meal cards */
 .meal-column-card {
   display: flex;
-}
-
-.meal-column-card.is-target .meal-card {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 1px var(--primary-color), var(--shadow);
+  flex: 1 1 360px;
 }
 
 /* Target-meal controls */
@@ -36,11 +32,13 @@
   gap: 0.3rem;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  color: var(--primary-text);
-  background: var(--primary-light);
-  border: 1px solid var(--primary-color);
-  border-radius: 999px;
-  padding: 0.16rem 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   white-space: nowrap;
 }
 
@@ -55,6 +53,9 @@
 .meal-header-actions ::ng-deep .meal-target-btn .p-button-label {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-light);
 }
 
 /* On tight cards, collapse the target control to its icon; tooltip + aria
@@ -124,22 +125,30 @@
 
 .meal-card {
   width: 100%;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   background: var(--surface-section);
   border: var(--border-width) solid var(--surface-border);
+  border-top: 4px solid var(--text-color);
   border-radius: var(--radius-surface);
-  box-shadow: var(--shadow);
+  box-shadow: none;
   overflow: hidden;
   transition: box-shadow 0.2s ease;
 }
 
+.meal-column-card.is-target .meal-card {
+  border-color: var(--surface-border);
+  border-top-color: var(--primary-color);
+  box-shadow: none;
+}
+
 .meal-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow);
 }
 
 .meal-card ::ng-deep .p-card-header {
-  background: var(--primary-light);
+  background: var(--surface-section);
   border-bottom: 1px solid var(--surface-border);
   padding: var(--spacing-md) var(--spacing-lg);
 }
@@ -180,9 +189,11 @@
 }
 
 .meal-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--primary-text);
+  font-family: var(--font-family-display);
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--text-color);
   margin: 0;
   flex: 1;
   min-width: 0;
@@ -192,13 +203,14 @@
 }
 
 .meal-kcal {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
-  background: var(--surface-section);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--surface-border);
+  background: transparent;
+  padding: 0;
+  border: none;
 }
 
 .meal-header-actions {
@@ -230,7 +242,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) 88px 96px 66px 36px;
+  grid-template-columns: minmax(0, 1.35fr) 96px 96px 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -277,10 +289,11 @@
   max-width: 100%;
 }
 
-/* Narrower stacked +/- buttons so they don't eat into the qty column and
-   overlap the typed number when the row is tight. */
+/* Horizontal +/- buttons (not the default stacked overlay) so they sit
+   beside the typed number in normal flow instead of floating on top of
+   it — narrowed too, so the qty column stays compact. */
 .item-qty ::ng-deep .p-inputnumber {
-  --p-inputnumber-button-width: 1.25rem;
+  --p-inputnumber-button-width: 1.15rem;
 }
 
 .item-qty ::ng-deep .p-inputnumber,
@@ -299,6 +312,14 @@
   min-height: var(--control-height);
   display: flex;
   align-items: center;
+}
+
+.item-qty ::ng-deep .p-inputnumber-input {
+  padding-left: 3px;
+  padding-right: 3px;
+  text-align: center;
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .item-measure ::ng-deep .p-select-label {
@@ -331,6 +352,8 @@
 
 .item-kcal {
   text-align: center;
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-semibold);
   color: var(--primary-color);
   font-size: var(--font-size-sm);
@@ -371,11 +394,11 @@
 /* Responsive design — wider breakpoints first so narrower ones win the cascade */
 @media (max-width: 1200px) {
   .meals-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .diet-item {
-    grid-template-columns: minmax(0, 1fr) 92px 100px 64px 36px;
+    grid-template-columns: minmax(0, 1fr) 96px 100px 64px 36px;
   }
 }
 

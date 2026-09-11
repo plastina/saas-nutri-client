@@ -83,8 +83,10 @@
 
 .app-header__title {
   margin: 0;
+  font-family: var(--font-family-display);
   font-size: var(--title-size-page);
   font-weight: var(--title-weight);
+  letter-spacing: -0.01em;
   line-height: 1.2;
   color: var(--header-title);
 }
