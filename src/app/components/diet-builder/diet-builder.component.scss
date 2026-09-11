@@ -195,6 +195,18 @@
   white-space: nowrap;
 }
 
+.meal-macros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.meal-macro {
+  white-space: nowrap;
+}
+
 .meal-header-actions {
   display: flex;
   align-items: center;
