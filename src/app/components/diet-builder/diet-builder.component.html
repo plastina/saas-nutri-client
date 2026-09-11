@@ -103,7 +103,13 @@
             *ngFor="let item of meal.items; let itemIndex = index"
             class="diet-item"
           >
-            <div class="item-name heading-xs">{{ item.food.name }}</div>
+            <div
+              class="item-name heading-xs"
+              [pTooltip]="item.food.name"
+              tooltipPosition="top"
+            >
+              {{ item.food.name }}
+            </div>
 
             <div class="item-qty" [attr.data-label]="'builder.quantity' | t">
               <p-inputNumber

@@ -26,7 +26,7 @@
     </div>
 
     <nav class="app-header__actions" [attr.aria-label]="'header.actions' | t">
-      <p-dropdown
+      <p-select
         [options]="languageOptions"
         [(ngModel)]="currentLanguage"
         (ngModelChange)="changeLanguage($event)"
@@ -43,7 +43,7 @@
         <ng-template pTemplate="item" let-option>
           <span>{{ option.flag }} {{ option.label }}</span>
         </ng-template>
-      </p-dropdown>
+      </p-select>
 
       <button
         pButton

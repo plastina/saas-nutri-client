@@ -230,9 +230,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1.35fr) minmax(80px, 100px) minmax(96px, 132px)
-    minmax(66px, 84px) 36px;
+  grid-template-columns: minmax(0, 1.35fr) 80px 96px 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -371,9 +369,7 @@
   }
 
   .diet-item {
-    grid-template-columns:
-      minmax(0, 1fr) minmax(84px, 100px) minmax(100px, 130px)
-      minmax(64px, 84px) 36px;
+    grid-template-columns: minmax(0, 1fr) 84px 100px 64px 36px;
   }
 }
 
