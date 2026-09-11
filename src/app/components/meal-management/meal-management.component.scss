@@ -77,6 +77,8 @@
 .autocomplete-suggestion-item small {
   color: var(--text-muted);
   font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 767px) {

@@ -1,37 +1,55 @@
 <div class="rail-card">
   <div *ngIf="hasItemsInAnyMeal; else noTotals">
     <h3 class="section-title">{{ "summary.totals" | t }}</h3>
-    <div class="totals">
-      <div class="total-item">
-        <i class="pi pi-bolt"></i>
-        <span>{{ "summary.calories" | t }}</span>
-        <span class="value">{{ totalKcal | number: "1.0-0" }} kcal</span>
-      </div>
-      <div class="total-item">
-        <i class="pi pi-chart-line"></i>
-        <span>{{ "summary.protein" | t }}</span>
-        <span class="value">{{ totalProtein | number: "1.1-1" }} g</span>
-      </div>
-      <div class="total-item">
-        <i class="pi pi-chart-bar"></i>
-        <span>{{ "summary.carbs" | t }}</span>
-        <span class="value">{{ totalCarbs | number: "1.1-1" }} g</span>
-      </div>
-      <div class="total-item">
-        <i class="pi pi-circle"></i>
-        <span>{{ "summary.fat" | t }}</span>
-        <span class="value">{{ totalFat | number: "1.1-1" }} g</span>
-      </div>
-      <div class="total-item">
-        <i class="pi pi-leaf"></i>
-        <span>{{ "summary.fiber" | t }}</span>
-        <span class="value">{{ totalFiber | number: "1.1-1" }} g</span>
-      </div>
-      <div class="total-item total-item-last">
-        <i class="pi pi-check-circle"></i>
-        <span>{{ "summary.totalMeals" | t }}</span>
-        <span class="value">{{ meals.length }}</span>
-      </div>
+
+    <hr class="rule-thick" />
+    <div class="kcal-row">
+      <span class="kcal-row__label">{{ "summary.calories" | t }}</span>
+      <span class="kcal-row__value">
+        <span class="num">{{ totalKcal | number: "1.0-0" }}</span>
+        <span class="unit">kcal</span>
+      </span>
+    </div>
+    <hr class="rule-thick" />
+
+    <div class="macro-row">
+      <span class="label"
+        ><i class="pi pi-chart-line" aria-hidden="true"></i
+        >{{ "summary.protein" | t }}</span
+      >
+      <span class="num">{{ totalProtein | number: "1.1-1" }} g</span>
+    </div>
+    <hr class="rule-thin" />
+    <div class="macro-row">
+      <span class="label"
+        ><i class="pi pi-chart-bar" aria-hidden="true"></i
+        >{{ "summary.carbs" | t }}</span
+      >
+      <span class="num">{{ totalCarbs | number: "1.1-1" }} g</span>
+    </div>
+    <hr class="rule-thin" />
+    <div class="macro-row">
+      <span class="label"
+        ><i class="pi pi-circle" aria-hidden="true"></i
+        >{{ "summary.fat" | t }}</span
+      >
+      <span class="num">{{ totalFat | number: "1.1-1" }} g</span>
+    </div>
+    <hr class="rule-thin" />
+    <div class="macro-row">
+      <span class="label"
+        ><i class="pi pi-leaf" aria-hidden="true"></i
+        >{{ "summary.fiber" | t }}</span
+      >
+      <span class="num">{{ totalFiber | number: "1.1-1" }} g</span>
+    </div>
+    <hr class="rule-thick" />
+    <div class="macro-row macro-row--meta">
+      <span class="label"
+        ><i class="pi pi-check-circle" aria-hidden="true"></i
+        >{{ "summary.totalMeals" | t }}</span
+      >
+      <span class="num">{{ meals.length }}</span>
     </div>
   </div>
   <ng-template #noTotals>

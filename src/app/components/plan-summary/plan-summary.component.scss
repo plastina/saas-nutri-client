@@ -6,57 +6,108 @@
   width: 100%;
   box-sizing: border-box;
   background: var(--surface-section);
-  border: var(--border-width) solid var(--surface-border);
+  border: 3px solid var(--text-color);
   border-radius: var(--radius-surface);
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow);
+  box-shadow: none;
 }
 
 .section-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-display);
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
   color: var(--text-color);
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0 0 var(--spacing-sm) 0;
 }
 
-/* Totals */
-.totals {
-  display: grid;
-  grid-template-columns: 1fr;
+/* Nutrition-label rule hierarchy: thick rules bracket the headline energy
+   value, thin rules separate each macro row below it. */
+.rule-thick {
+  border: none;
+  border-top: 5px solid var(--text-color);
+  margin: var(--spacing-sm) 0;
+}
+
+.rule-thin {
+  border: none;
+  border-top: 1px solid var(--surface-border);
+  margin: 0;
+}
+
+.kcal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.35rem 0;
   gap: var(--spacing-sm);
 }
 
-.total-item {
+.kcal-row__label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+}
+
+.kcal-row__value {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.kcal-row__value .num {
+  font-size: 1.6rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+}
+
+.kcal-row__value .unit {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 0.2rem;
+  font-family: var(--font-family);
+}
+
+.macro-row {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0.45rem 0.6rem;
-  background: var(--surface-ground);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--surface-border);
-}
-
-.total-item i {
-  color: var(--primary-color);
-  font-size: var(--font-size-lg);
-}
-
-.total-item span {
-  font-weight: var(--font-weight-semibold);
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: var(--font-size-sm);
   color: var(--text-color);
+  gap: var(--spacing-sm);
 }
 
-.total-item .value {
-  margin-left: auto;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
+.macro-row .label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.macro-row i {
   color: var(--primary-color);
-  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
-.total-item-last {
-  border-top: 2px solid var(--primary-color);
-  background: var(--primary-light);
+.macro-row .num {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.macro-row--meta {
+  color: var(--text-muted);
+}
+
+.macro-row--meta i {
+  color: var(--text-muted);
+}
+
+.macro-row--meta .num {
+  font-weight: var(--font-weight-medium);
 }
 
 .no-totals-message {
@@ -99,13 +150,7 @@
   cursor: not-allowed;
 }
 
-/* On wide screens the rail is a sidebar; on narrow ones it stacks and the
-   action buttons sit side by side to save vertical space. */
 @media (max-width: 1023px) {
-  .totals {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .rail-actions {
     flex-direction: row;
     flex-wrap: wrap;
@@ -113,11 +158,5 @@
 
   .rail-action {
     flex: 1 1 180px;
-  }
-}
-
-@media (max-width: 600px) {
-  .totals {
-    grid-template-columns: 1fr;
   }
 }
