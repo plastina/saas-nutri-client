@@ -15,24 +15,28 @@ const customBluePalette = {
   950: '#172554',
 };
 
-const customGrayPalette = {
-  50: '#f7f8f3',
-  100: '#eef0e6',
-  200: '#dde1d1',
-  300: '#c9cdbe',
-  400: '#a9af9c',
-  500: '#8b9080',
-  600: '#5b6153',
-  700: '#454a3d',
-  800: '#2e3227',
-  900: '#1c2117',
-  950: '#14170f',
+const customSlatePalette = {
+  50: '#f8fafc',
+  100: '#f1f5f9',
+  200: '#e2e8f0',
+  300: '#cbd5e1',
+  400: '#94a3b8',
+  500: '#64748b',
+  600: '#475569',
+  700: '#334155',
+  800: '#1e293b',
+  900: '#0f172a',
+  950: '#020617',
 };
 
 export const MyPreset = definePreset(Aura, {
+  primitive: {
+    // Toast/message/tag "success" usam a escala green do tema base; aponta pro azul.
+    green: customBluePalette,
+  },
   semantic: {
     primary: customBluePalette,
-    neutral: customGrayPalette,
+    neutral: customSlatePalette,
     input: {
       background: '#2a2d32', // Fundo preto acinzentado
       color: '#f0f2f5', // Texto claro

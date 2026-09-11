@@ -24,14 +24,14 @@ body {
 /* Design tokens */
 :root {
   /* Colors */
-  --surface-ground: #f1f4ea;
+  --surface-ground: #f1f5f9;
   --surface-section: #ffffff;
-  --surface-border: #c9cdbe;
-  --surface-hover: #e4efe6;
+  --surface-border: #cbd5e1;
+  --surface-hover: #e2e8f0;
 
-  --text-color: #171b14;
-  --text-muted: #5b6153;
-  --text-light: #8b9080;
+  --text-color: #0f172a;
+  --text-muted: #475569;
+  --text-light: #64748b;
 
   --primary-color: #2563eb;
   --primary-hover: #1d4ed8;
@@ -110,14 +110,14 @@ body {
 
 /* Dark theme */
 [data-theme="dark"] {
-  --surface-ground: #14170f;
-  --surface-section: #1c2117;
-  --surface-border: #3a4032;
-  --surface-hover: #22301f;
+  --surface-ground: #020617;
+  --surface-section: #0f172a;
+  --surface-border: #334155;
+  --surface-hover: #1e293b;
 
-  --text-color: #ecefe4;
-  --text-muted: #aeb4a0;
-  --text-light: #767c6c;
+  --text-color: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
 
   --primary-color: #60a5fa;
   --primary-hover: #93c5fd;
@@ -313,15 +313,15 @@ body {
 }
 
 .restore-work-accept-btn {
-  background: #e9f9ef !important;
-  border-color: #bde8cd !important;
-  color: #1f6a45 !important;
+  background: var(--primary-light) !important;
+  border-color: rgb(var(--primary-rgb) / 0.3) !important;
+  color: var(--primary-text) !important;
 }
 
 .restore-work-accept-btn:hover:not(:disabled) {
-  background: #dcf3e5 !important;
-  border-color: #a9ddbc !important;
-  color: #185738 !important;
+  background: rgb(var(--primary-rgb) / 0.16) !important;
+  border-color: rgb(var(--primary-rgb) / 0.5) !important;
+  color: var(--primary-text) !important;
 }
 
 /* Typography */
