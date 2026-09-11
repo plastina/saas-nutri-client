@@ -1,6 +1,9 @@
 <div class="rail-card">
   <div *ngIf="hasItemsInAnyMeal; else noTotals">
     <h3 class="section-title">{{ "summary.totals" | t }}</h3>
+    <p class="rail-subtitle">
+      {{ "summary.totalMeals" | t }} · {{ meals.length }}
+    </p>
 
     <hr class="rule-thick" />
     <div class="kcal-row">
@@ -14,7 +17,7 @@
 
     <div class="macro-row">
       <span class="label"
-        ><i class="pi pi-chart-line" aria-hidden="true"></i
+        ><span class="swatch swatch--protein" aria-hidden="true"></span
         >{{ "summary.protein" | t }}</span
       >
       <span class="num">{{ totalProtein | number: "1.1-1" }} g</span>
@@ -22,7 +25,7 @@
     <hr class="rule-thin" />
     <div class="macro-row">
       <span class="label"
-        ><i class="pi pi-chart-bar" aria-hidden="true"></i
+        ><span class="swatch swatch--carbs" aria-hidden="true"></span
         >{{ "summary.carbs" | t }}</span
       >
       <span class="num">{{ totalCarbs | number: "1.1-1" }} g</span>
@@ -30,7 +33,7 @@
     <hr class="rule-thin" />
     <div class="macro-row">
       <span class="label"
-        ><i class="pi pi-circle" aria-hidden="true"></i
+        ><span class="swatch swatch--fat" aria-hidden="true"></span
         >{{ "summary.fat" | t }}</span
       >
       <span class="num">{{ totalFat | number: "1.1-1" }} g</span>
@@ -38,19 +41,12 @@
     <hr class="rule-thin" />
     <div class="macro-row">
       <span class="label"
-        ><i class="pi pi-leaf" aria-hidden="true"></i
+        ><span class="swatch swatch--fiber" aria-hidden="true"></span
         >{{ "summary.fiber" | t }}</span
       >
       <span class="num">{{ totalFiber | number: "1.1-1" }} g</span>
     </div>
     <hr class="rule-thick" />
-    <div class="macro-row macro-row--meta">
-      <span class="label"
-        ><i class="pi pi-check-circle" aria-hidden="true"></i
-        >{{ "summary.totalMeals" | t }}</span
-      >
-      <span class="num">{{ meals.length }}</span>
-    </div>
   </div>
   <ng-template #noTotals>
     <div class="no-totals-message">

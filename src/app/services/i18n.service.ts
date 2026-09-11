@@ -64,6 +64,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'builder.editMeal': 'Editar nome da refeição',
     'builder.deleteMeal': 'Excluir refeição',
+    'builder.edit': 'Editar',
+    'builder.delete': 'Excluir',
     'builder.newName': 'Novo nome',
     'builder.save': 'Salvar',
     'builder.saveNewName': 'Salvar novo nome',
@@ -177,6 +179,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'builder.editMeal': 'Edit meal name',
     'builder.deleteMeal': 'Delete meal',
+    'builder.edit': 'Edit',
+    'builder.delete': 'Delete',
     'builder.newName': 'New name',
     'builder.save': 'Save',
     'builder.saveNewName': 'Save new name',
@@ -290,6 +294,8 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
 
     'builder.editMeal': 'Modifier le nom du repas',
     'builder.deleteMeal': 'Supprimer le repas',
+    'builder.edit': 'Modifier',
+    'builder.delete': 'Supprimer',
     'builder.newName': 'Nouveau nom',
     'builder.save': 'Enregistrer',
     'builder.saveNewName': 'Enregistrer le nouveau nom',

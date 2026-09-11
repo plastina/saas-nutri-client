@@ -2,14 +2,15 @@
   display: block;
 }
 
-/* Collapsible patient panel */
+/* Collapsible patient panel — a flowing record, not a boxed card */
 .patient-panel {
   width: 100%;
   box-sizing: border-box;
-  background: var(--surface-section);
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-surface);
-  box-shadow: var(--shadow);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--surface-border);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .patient-panel__summary {
@@ -29,7 +30,6 @@
 .patient-panel__summary:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
-  border-radius: var(--radius-surface);
 }
 
 .patient-panel__chevron {
@@ -113,16 +113,14 @@
 .field input[pInputText],
 .field textarea[pTextarea] {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  min-height: var(--control-height);
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-control);
+  padding: 0.3rem 0.05rem;
+  border: none;
+  border-bottom: 1px solid var(--surface-border);
+  border-radius: 0;
   font-size: var(--font-size-base);
-  background: var(--surface-section);
+  background: transparent;
   color: var(--text-color);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 /* PrimeNG wrappers */
@@ -159,16 +157,14 @@
 .field ::ng-deep p-datepicker input,
 .field ::ng-deep p-inputNumber input {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  min-height: var(--control-height);
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-control);
+  padding: 0.3rem 0.05rem;
+  border: none;
+  border-bottom: 1px solid var(--surface-border);
+  border-radius: 0;
   font-size: var(--font-size-base);
-  background: var(--surface-section);
+  background: transparent;
   color: var(--text-color);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .field input[pInputText]:focus,
@@ -177,7 +173,7 @@
 .field textarea[pTextarea]:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.1);
+  box-shadow: none;
 }
 
 .field textarea[pTextarea] {
@@ -221,7 +217,7 @@
 .field.error ::ng-deep p-inputNumber input:focus,
 .field.error textarea:focus {
   border-color: var(--error-color);
-  box-shadow: 0 0 0 3px rgb(var(--error-rgb) / 0.1);
+  box-shadow: none;
 }
 
 /* Success states */
@@ -237,7 +233,7 @@
 .field ::ng-deep p-datepicker input:disabled,
 .field ::ng-deep p-inputNumber input:disabled,
 .field textarea:disabled {
-  background: var(--surface-ground);
+  background: transparent;
   color: var(--text-muted);
   cursor: not-allowed;
 }
