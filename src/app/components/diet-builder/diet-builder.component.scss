@@ -14,14 +14,15 @@
 
 /* Meals container */
 .meals-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-lg);
 }
 
 /* Meal cards */
 .meal-column-card {
   display: flex;
+  flex: 1 1 360px;
 }
 
 .meal-column-card.is-target .meal-card {
@@ -124,6 +125,7 @@
 
 .meal-card {
   width: 100%;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   background: var(--surface-section);
@@ -371,7 +373,7 @@
 /* Responsive design — wider breakpoints first so narrower ones win the cascade */
 @media (max-width: 1200px) {
   .meals-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .diet-item {
