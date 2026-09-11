@@ -12,17 +12,17 @@
   margin: 0;
 }
 
-/* Meals container */
+/* Meals container — one meal per row, always, at any viewport width. */
 .meals-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--spacing-lg);
 }
 
 /* Meal cards */
 .meal-column-card {
   display: flex;
-  flex: 1 1 360px;
+  width: 100%;
 }
 
 /* Target-meal controls */
@@ -231,7 +231,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) 96px 96px 66px 36px;
+  grid-template-columns: minmax(0, 1.35fr) 132px 96px 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -415,12 +415,8 @@
 
 /* Responsive design — wider breakpoints first so narrower ones win the cascade */
 @media (max-width: 1200px) {
-  .meals-container {
-    flex-direction: column;
-  }
-
   .diet-item {
-    grid-template-columns: minmax(0, 1fr) 96px 100px 64px 36px;
+    grid-template-columns: minmax(0, 1fr) 128px 100px 64px 36px;
   }
 }
 
