@@ -243,7 +243,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) 96px 96px 66px 36px;
+  grid-template-columns: 120px 96px minmax(96px, 320px) 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -432,7 +432,7 @@
   }
 
   .diet-item {
-    grid-template-columns: minmax(0, 1fr) 96px 100px 64px 36px;
+    grid-template-columns: 100px 96px minmax(84px, 220px) 60px 36px;
   }
 }
 
