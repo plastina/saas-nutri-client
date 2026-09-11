@@ -1,38 +1,42 @@
 import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 
-const customGreenPalette = {
-  50: '#eaf3ec',
-  100: '#cfe4d6',
-  200: '#a9cdb6',
-  300: '#7eb392',
-  400: '#56966f',
-  500: '#2f6b4a',
-  600: '#275a3e',
-  700: '#204a33',
-  800: '#193a28',
-  900: '#12291c',
-  950: '#0a170f',
+const customBluePalette = {
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
+  600: '#2563eb',
+  700: '#1d4ed8',
+  800: '#1e40af',
+  900: '#1e3a8a',
+  950: '#172554',
 };
 
-const customGrayPalette = {
-  50: '#f7f8f3',
-  100: '#eef0e6',
-  200: '#dde1d1',
-  300: '#c9cdbe',
-  400: '#a9af9c',
-  500: '#8b9080',
-  600: '#5b6153',
-  700: '#454a3d',
-  800: '#2e3227',
-  900: '#1c2117',
-  950: '#14170f',
+const customSlatePalette = {
+  50: '#f8fafc',
+  100: '#f1f5f9',
+  200: '#e2e8f0',
+  300: '#cbd5e1',
+  400: '#94a3b8',
+  500: '#64748b',
+  600: '#475569',
+  700: '#334155',
+  800: '#1e293b',
+  900: '#0f172a',
+  950: '#020617',
 };
 
 export const MyPreset = definePreset(Aura, {
+  primitive: {
+    // Toast/message/tag "success" usam a escala green do tema base; aponta pro azul.
+    green: customBluePalette,
+  },
   semantic: {
-    primary: customGreenPalette,
-    neutral: customGrayPalette,
+    primary: customBluePalette,
+    neutral: customSlatePalette,
     input: {
       background: '#2a2d32', // Fundo preto acinzentado
       color: '#f0f2f5', // Texto claro
