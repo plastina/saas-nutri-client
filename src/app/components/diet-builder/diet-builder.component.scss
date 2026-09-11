@@ -243,7 +243,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) 132px 96px 66px 36px;
+  grid-template-columns: 160px 132px minmax(110px, 300px) 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -428,7 +428,7 @@
 /* Responsive design — wider breakpoints first so narrower ones win the cascade */
 @media (max-width: 1200px) {
   .diet-item {
-    grid-template-columns: minmax(0, 1fr) 128px 100px 64px 36px;
+    grid-template-columns: 130px 128px minmax(96px, 220px) 60px 36px;
   }
 }
 
