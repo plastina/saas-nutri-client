@@ -313,15 +313,15 @@ body {
 }
 
 .restore-work-accept-btn {
-  background: #e9f9ef !important;
-  border-color: #bde8cd !important;
-  color: #1f6a45 !important;
+  background: var(--primary-light) !important;
+  border-color: rgb(var(--primary-rgb) / 0.3) !important;
+  color: var(--primary-text) !important;
 }
 
 .restore-work-accept-btn:hover:not(:disabled) {
-  background: #dcf3e5 !important;
-  border-color: #a9ddbc !important;
-  color: #185738 !important;
+  background: rgb(var(--primary-rgb) / 0.16) !important;
+  border-color: rgb(var(--primary-rgb) / 0.5) !important;
+  color: var(--primary-text) !important;
 }
 
 /* Typography */

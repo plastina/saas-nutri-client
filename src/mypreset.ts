@@ -30,6 +30,10 @@ const customSlatePalette = {
 };
 
 export const MyPreset = definePreset(Aura, {
+  primitive: {
+    // Toast/message/tag "success" usam a escala green do tema base; aponta pro azul.
+    green: customBluePalette,
+  },
   semantic: {
     primary: customBluePalette,
     neutral: customSlatePalette,
