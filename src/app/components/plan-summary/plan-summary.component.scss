@@ -18,6 +18,12 @@
   text-transform: uppercase;
   letter-spacing: -0.01em;
   color: var(--text-color);
+  margin: 0 0 0.15rem 0;
+}
+
+.rail-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
   margin: 0 0 var(--spacing-sm) 0;
 }
 
@@ -85,10 +91,28 @@
   min-width: 0;
 }
 
-.macro-row i {
-  color: var(--primary-color);
-  font-size: 0.85rem;
+.swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
   flex-shrink: 0;
+}
+
+.swatch--protein {
+  background: var(--primary-color);
+}
+
+.swatch--carbs {
+  background: var(--accent-color);
+}
+
+.swatch--fat {
+  background: var(--berry-color);
+}
+
+.swatch--fiber {
+  background: var(--text-light);
 }
 
 .macro-row .num {
@@ -96,18 +120,6 @@
   font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
-}
-
-.macro-row--meta {
-  color: var(--text-muted);
-}
-
-.macro-row--meta i {
-  color: var(--text-muted);
-}
-
-.macro-row--meta .num {
-  font-weight: var(--font-weight-medium);
 }
 
 .no-totals-message {

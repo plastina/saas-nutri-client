@@ -42,15 +42,12 @@
   white-space: nowrap;
 }
 
-.meal-target-flag .pi {
-  font-size: 0.7rem;
-}
-
 .meal-header-actions ::ng-deep .meal-target-btn {
   padding: 0.2rem 0.45rem;
 }
 
-.meal-header-actions ::ng-deep .meal-target-btn .p-button-label {
+.meal-header-actions ::ng-deep .meal-target-btn .p-button-label,
+.meal-header-icons ::ng-deep .p-button .p-button-label {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.06em;
@@ -58,22 +55,16 @@
   color: var(--text-light);
 }
 
-/* On tight cards, collapse the target control to its icon; tooltip + aria
-   still name the action. */
-@media (max-width: 520px) {
-  .meal-target-flag {
-    gap: 0;
-    font-size: 0;
-    padding: 0.28rem;
-  }
+.meal-header-icons ::ng-deep .p-button {
+  padding: 0.2rem 0.4rem;
+}
 
-  .meal-target-flag .pi {
-    font-size: 0.75rem;
-  }
+.meal-header-icons ::ng-deep .meal-edit-btn:hover .p-button-label {
+  color: var(--text-color);
+}
 
-  .meal-header-actions ::ng-deep .meal-target-btn .p-button-label {
-    display: none;
-  }
+.meal-header-icons ::ng-deep .meal-delete-btn:hover .p-button-label {
+  color: var(--error-color);
 }
 
 /* Add-meal affordance */
@@ -385,8 +376,8 @@
   text-align: center;
   font-family: var(--font-family-mono);
   font-variant-numeric: tabular-nums;
-  font-weight: var(--font-weight-semibold);
-  color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
   font-size: var(--font-size-sm);
 }
 

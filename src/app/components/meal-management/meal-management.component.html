@@ -1,14 +1,4 @@
 <div class="food-search-card">
-  <div class="food-search-card__head">
-    <h3 class="section-title">{{ "meal.search.title" | t }}</h3>
-    <span class="food-search-card__target">
-      <ng-container *ngIf="selectedMealName; else noTarget">
-        {{ "meal.search.target" | t: { mealName: selectedMealName } }}
-      </ng-container>
-      <ng-template #noTarget>{{ "meal.search.noTarget" | t }}</ng-template>
-    </span>
-  </div>
-
   <div class="autocomplete-wrapper p-fluid">
     <p-autoComplete
       inputId="foodAutocomplete"
@@ -19,7 +9,7 @@
       field="name"
       [placeholder]="'meal.search.placeholder' | t"
       [minLength]="3"
-      class="w-full"
+      class="autocomplete-input"
       appendTo="body"
       icon="pi pi-search"
       inputStyleClass="p-inputtext p-inputtext-sm"
@@ -34,5 +24,11 @@
         </div>
       </ng-template>
     </p-autoComplete>
+    <span class="food-search-card__target">
+      <ng-container *ngIf="selectedMealName; else noTarget">
+        {{ "meal.search.target" | t: { mealName: selectedMealName } }}
+      </ng-container>
+      <ng-template #noTarget>{{ "meal.search.noTarget" | t }}</ng-template>
+    </span>
   </div>
 </div>

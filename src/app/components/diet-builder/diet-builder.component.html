@@ -23,14 +23,12 @@
                 *ngIf="meal.name === selectedMealName"
                 class="meal-target-flag"
               >
-                <i class="pi pi-bullseye" aria-hidden="true"></i>
                 {{ "builder.currentTarget" | t }}
               </span>
               <button
                 *ngIf="meal.name !== selectedMealName"
                 pButton
                 type="button"
-                icon="pi pi-bullseye"
                 [label]="'builder.useAsTarget' | t"
                 class="meal-target-btn p-button-sm p-button-text"
                 (click)="mealTargeted.emit(meal.name)"
@@ -46,7 +44,7 @@
                 <button
                   pButton
                   type="button"
-                  icon="pi pi-pencil"
+                  [label]="'builder.edit' | t"
                   class="meal-edit-btn p-button-sm p-button-text"
                   (click)="startEditMeal(mealIndex, meal.name)"
                   [pTooltip]="'builder.editMeal' | t"
@@ -56,7 +54,7 @@
                 <button
                   pButton
                   type="button"
-                  icon="pi pi-trash"
+                  [label]="'builder.delete' | t"
                   class="meal-delete-btn p-button-sm p-button-danger p-button-text"
                   (click)="deleteMeal(mealIndex)"
                   [pTooltip]="'builder.deleteMeal' | t"
