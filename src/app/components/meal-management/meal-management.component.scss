@@ -7,11 +7,11 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background: var(--surface-section);
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-surface);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: var(--spacing-lg) 0;
+  box-shadow: none;
 }
 
 .food-search-card__head {
@@ -37,27 +37,34 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   width: 100%;
+  border-bottom: 2px solid var(--text-color);
+  padding-bottom: var(--spacing-xs);
+  transition: border-color 0.2s ease;
+}
+
+.autocomplete-wrapper:focus-within {
+  border-bottom-color: var(--primary-color);
 }
 
 .autocomplete-wrapper ::ng-deep .p-autocomplete,
 .autocomplete-wrapper ::ng-deep .p-autocomplete-input,
 .autocomplete-wrapper ::ng-deep .p-inputtext {
   width: 100%;
-  background: var(--surface-section);
+  background: transparent;
   color: var(--text-color);
-  border-color: var(--surface-border);
+  border: none;
 }
 
 .autocomplete-wrapper ::ng-deep .p-autocomplete-input {
   min-height: var(--control-height);
   font-size: var(--control-font-size);
-  padding: 0.45rem 0.7rem;
+  padding: 0.45rem 0.2rem;
 }
 
 .autocomplete-wrapper ::ng-deep .p-autocomplete-input:focus,
 .autocomplete-wrapper ::ng-deep .p-inputtext:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .autocomplete-suggestion-item {

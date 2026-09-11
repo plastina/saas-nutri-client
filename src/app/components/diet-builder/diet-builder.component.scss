@@ -129,22 +129,14 @@
   display: flex;
   flex-direction: column;
   background: var(--surface-section);
-  border: var(--border-width) solid var(--surface-border);
   border-top: 4px solid var(--text-color);
-  border-radius: var(--radius-surface);
+  border-radius: 0;
   box-shadow: none;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
 }
 
 .meal-column-card.is-target .meal-card {
-  border-color: var(--surface-border);
   border-top-color: var(--primary-color);
-  box-shadow: none;
-}
-
-.meal-card:hover {
-  box-shadow: var(--shadow);
 }
 
 .meal-card ::ng-deep .p-card-header {
@@ -167,25 +159,24 @@
   background: var(--surface-section);
 }
 
-/* Meal header */
+/* Meal header — two rows: name + kcal on top, target/edit/delete below,
+   matching the nutrition-label header grammar. */
 .meal-card-header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
+  display: block;
 }
 
 .meal-header-view {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm) var(--spacing-md);
-  flex: 1;
+  flex-direction: column;
+  gap: 0.45rem;
   min-width: 0;
 }
 
-.meal-header-view .meal-title {
-  min-width: 6rem;
+.meal-header-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
 }
 
 .meal-title {
@@ -195,7 +186,6 @@
   letter-spacing: 0.01em;
   color: var(--text-color);
   margin: 0;
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -211,12 +201,20 @@
   background: transparent;
   padding: 0;
   border: none;
+  white-space: nowrap;
 }
 
 .meal-header-actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.meal-header-icons {
+  display: flex;
+  align-items: center;
   gap: var(--spacing-xs);
   margin-left: auto;
 }
@@ -296,6 +294,21 @@
   --p-inputnumber-button-width: 1.15rem;
 }
 
+/* Small bordered squares instead of PrimeNG's default filled buttons —
+   quiet chrome that matches the label's flat, rule-based controls. */
+.item-qty ::ng-deep .p-inputnumber-button {
+  border: 1px solid var(--surface-border);
+  border-radius: 3px;
+  background: var(--surface-section);
+  color: var(--text-muted);
+}
+
+.item-qty ::ng-deep .p-inputnumber-button:hover {
+  border-color: var(--text-muted);
+  background: var(--surface-section);
+  color: var(--text-color);
+}
+
 .item-qty ::ng-deep .p-inputnumber,
 .item-measure ::ng-deep .p-select {
   width: 100%;
@@ -343,11 +356,29 @@
   border-color: var(--surface-border);
 }
 
+/* Measure is a plain underline, not a boxed dropdown — quieter than the
+   quantity field, which stays a real editable box. */
+.item-measure ::ng-deep .p-select {
+  border: none;
+  border-bottom: 1px solid var(--surface-border);
+  border-radius: 0;
+  background: transparent;
+}
+
+.item-measure ::ng-deep .p-select:not(.p-disabled).p-focus {
+  border-bottom-color: var(--primary-color);
+  box-shadow: none;
+}
+
 .item-qty ::ng-deep .p-inputnumber-input:focus,
-.item-measure ::ng-deep .p-select:focus-within,
 .edit-meal-name-input:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.1);
+}
+
+.item-measure ::ng-deep .p-select:focus-within {
+  border-bottom-color: var(--primary-color);
+  box-shadow: none;
 }
 
 .item-kcal {
@@ -405,16 +436,6 @@
 @media (max-width: 768px) {
   .meals-container {
     gap: var(--spacing-md);
-  }
-
-  .meal-card-header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-  }
-
-  .meal-header-view {
-    width: 100%;
   }
 
   /* Row becomes a labelled stack: name on top, then one field per line. */

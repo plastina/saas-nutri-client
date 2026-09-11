@@ -2,14 +2,15 @@
   display: block;
 }
 
-/* Collapsible patient panel */
+/* Collapsible patient panel — a flowing record, not a boxed card */
 .patient-panel {
   width: 100%;
   box-sizing: border-box;
-  background: var(--surface-section);
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-surface);
-  box-shadow: var(--shadow);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--surface-border);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .patient-panel__summary {
@@ -29,7 +30,6 @@
 .patient-panel__summary:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
-  border-radius: var(--radius-surface);
 }
 
 .patient-panel__chevron {
