@@ -18,6 +18,24 @@
                 {{ getMealKcal(meal) | number: "1.0-0" }} kcal
               </div>
             </div>
+            <div class="meal-macros" *ngIf="meal.items?.length">
+              <span class="meal-macro"
+                >{{ "summary.protein" | t }}
+                {{ getMealMacros(meal).protein | number: "1.1-1" }}g</span
+              >
+              <span class="meal-macro"
+                >{{ "summary.carbs" | t }}
+                {{ getMealMacros(meal).carbs | number: "1.1-1" }}g</span
+              >
+              <span class="meal-macro"
+                >{{ "summary.fat" | t }}
+                {{ getMealMacros(meal).fat | number: "1.1-1" }}g</span
+              >
+              <span class="meal-macro"
+                >{{ "summary.fiber" | t }}
+                {{ getMealMacros(meal).fiber | number: "1.1-1" }}g</span
+              >
+            </div>
             <div class="meal-header-actions">
               <span
                 *ngIf="meal.name === selectedMealName"

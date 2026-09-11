@@ -148,4 +148,33 @@ export class DietBuilderComponent {
       0,
     );
   }
+
+  getMealMacros(meal: Meal): {
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+  } {
+    let protein = 0;
+    let carbs = 0;
+    let fat = 0;
+    let fiber = 0;
+    if (meal?.items?.length) {
+      for (const item of meal.items) {
+        if (!item?.food || typeof item.quantityInGrams !== 'number')
+          continue;
+        const quantityFactor = item.quantityInGrams / 100;
+        protein += (item.food.protein_g || 0) * quantityFactor;
+        carbs += (item.food.carbohydrate_g || 0) * quantityFactor;
+        fat += (item.food.fat_g || 0) * quantityFactor;
+        fiber += (item.food.fiber_g || 0) * quantityFactor;
+      }
+    }
+    return {
+      protein: Math.round(protein * 10) / 10,
+      carbs: Math.round(carbs * 10) / 10,
+      fat: Math.round(fat * 10) / 10,
+      fiber: Math.round(fiber * 10) / 10,
+    };
+  }
 }
