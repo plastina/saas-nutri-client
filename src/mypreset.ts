@@ -1,18 +1,18 @@
 import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 
-const customGreenPalette = {
-  50: '#eaf3ec',
-  100: '#cfe4d6',
-  200: '#a9cdb6',
-  300: '#7eb392',
-  400: '#56966f',
-  500: '#2f6b4a',
-  600: '#275a3e',
-  700: '#204a33',
-  800: '#193a28',
-  900: '#12291c',
-  950: '#0a170f',
+const customBluePalette = {
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
+  600: '#2563eb',
+  700: '#1d4ed8',
+  800: '#1e40af',
+  900: '#1e3a8a',
+  950: '#172554',
 };
 
 const customGrayPalette = {
@@ -31,7 +31,7 @@ const customGrayPalette = {
 
 export const MyPreset = definePreset(Aura, {
   semantic: {
-    primary: customGreenPalette,
+    primary: customBluePalette,
     neutral: customGrayPalette,
     input: {
       background: '#2a2d32', // Fundo preto acinzentado
