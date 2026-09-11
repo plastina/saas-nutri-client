@@ -230,7 +230,7 @@
 
 .diet-item {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) 80px 96px 66px 36px;
+  grid-template-columns: minmax(0, 1.35fr) 88px 96px 66px 36px;
   gap: var(--spacing-sm);
   align-items: center;
   padding: var(--spacing-sm) 0;
@@ -275,6 +275,12 @@
   width: 100%;
   min-width: 0 !important;
   max-width: 100%;
+}
+
+/* Narrower stacked +/- buttons so they don't eat into the qty column and
+   overlap the typed number when the row is tight. */
+.item-qty ::ng-deep .p-inputnumber {
+  --p-inputnumber-button-width: 1.25rem;
 }
 
 .item-qty ::ng-deep .p-inputnumber,
@@ -369,7 +375,7 @@
   }
 
   .diet-item {
-    grid-template-columns: minmax(0, 1fr) 84px 100px 64px 36px;
+    grid-template-columns: minmax(0, 1fr) 92px 100px 64px 36px;
   }
 }
 
